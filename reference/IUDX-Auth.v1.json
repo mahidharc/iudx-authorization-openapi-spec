@@ -3,7 +3,7 @@
   "info": {
     "title": "IUDX Auth",
     "version": "1.0",
-    "description": "API specification for IUDX Auth operations.",
+    "description": "API specification for IUDX Auth operations. All operations require a valid IUDX recognized HTTP client certificate.",
     "contact": {
       "name": "Mahidhar Chellamani",
       "url": "https://www.iudx.org.in/",
@@ -11,10 +11,6 @@
     }
   },
   "servers": [
-    {
-      "url": "https://authdev.iudx.io",
-      "description": "Development Server"
-    },
     {
       "url": "https://authorization.iudx.org.in",
       "description": "Production Server"
