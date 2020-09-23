@@ -1,0 +1,64 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IUDX Auth",
+    "version": "1.0",
+    "description": "API specification for IUDX Auth operations.",
+    "contact": {
+      "name": "Mahidhar Chellamani",
+      "url": "https://www.iudx.org.in/",
+      "email": "mahidhar.chellamani@datakaveri.org"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://authdev.iudx.io",
+      "description": "Development Server"
+    },
+    {
+      "url": "https://authorization.iudx.org.in",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/auth/v1/certificate-info": {
+      "post": {
+        "summary": "Get user certificate details",
+        "tags": [],
+        "operationId": "post-auth-v1-certificate-info",
+        "parameters": [],
+        "description": "Requires a valid HTTP client certificate. Get and validate certificate details.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "certificate-class": {
+                      "type": "string"
+                    },
+                    "serial": {
+                      "type": "string"
+                    },
+                    "fingerprint": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {}
+  }
+}
