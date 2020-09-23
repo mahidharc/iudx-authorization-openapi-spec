@@ -1,7 +1,8 @@
 openapi: 3.0.0
 info:
-  title: IUDX-Consent.v1.json
+  title: IUDX-Consent
   version: '1.0'
+  description: API specification for all IUDX consent APIs. These APIs are used for registration for various roles.
 servers:
   - url: 'https://consent.iudx.org.in'
 paths:
