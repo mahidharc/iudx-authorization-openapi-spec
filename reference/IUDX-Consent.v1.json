@@ -14,7 +14,7 @@
     "v1/provider/registration": {
       "parameters": [],
       "post": {
-        "summary": "",
+        "summary": "Provider Registration",
         "operationId": "postv1-provider-registration",
         "responses": {
           "200": {
@@ -186,12 +186,13 @@
             }
           },
           "description": ""
-        }
+        },
+        "parameters": []
       }
     },
     "/v1/registration": {
       "post": {
-        "summary": "",
+        "summary": "Consumer/Onboarder/Data Ingester Registration",
         "operationId": "post-v1-registration",
         "responses": {
           "200": {
@@ -391,7 +392,7 @@
     },
     "/v1/organizations": {
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "Get all registered Organizations",
         "tags": [],
         "operationId": "get-v1-organizations",
         "description": "Get name and organization ID for all registered organizations",
