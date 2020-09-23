@@ -22,14 +22,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
+                  "$ref": "#/components/schemas/Generic-Success"
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "success": true
                     }
                   }
-                },
-                "examples": {}
+                }
               }
             }
           },
@@ -187,6 +188,267 @@
           "description": ""
         }
       }
+    },
+    "/v1/registration": {
+      "post": {
+        "summary": "",
+        "operationId": "post-v1-registration",
+        "responses": {
+          "200": {
+            "description": "Successful Registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Generic-Success"
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid Data (email, phone, CSR, roles, organization, name) OR\nData Ingester/Onboarder email does not match the organization website OR\nUser trying to to register for a role they have already registered for",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Invalid CSR": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (csr)"
+                      }
+                    }
+                  },
+                  "Invalid email ": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (email)"
+                      }
+                    }
+                  },
+                  "Registered onboarder trying to register as onboarder again": {
+                    "value": {
+                      "error": {
+                        "message": "Already registered as onboarder"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Organization ID does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Organization not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error OR\nError in certificate generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Internal error": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  },
+                  "Error in certificate generation": {
+                    "value": {
+                      "error": {
+                        "message": "Certificate Error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Register for Consumer, Onboarder and Data Ingester roles\nA Consumer can access secure APIs\nAn Onboarder can add items to a catalogue on behalf of a Provider\nA Data Ingester can push data into a resource server on behalf of a Provider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "firstName": {
+                        "type": "string"
+                      },
+                      "lastName": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title"
+                    ]
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "organization": {
+                    "type": "integer",
+                    "description": "Organization ID not required for consumers"
+                  },
+                  "csr": {
+                    "type": "string",
+                    "description": "CSR is necessary if the user has not registered for another role before"
+                  },
+                  "roles": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "consumer",
+                        "onboarder",
+                        "data ingester"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "email",
+                  "roles"
+                ]
+              },
+              "examples": {
+                "Registering for Onboarder and Data ingester": {
+                  "value": {
+                    "name": {
+                      "title": "Ms.",
+                      "firstName": "Jane",
+                      "lastName": "Doe"
+                    },
+                    "phone": "9845596201",
+                    "email": "jane.doe@acme.org",
+                    "organization": 7,
+                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
+                    "roles": [
+                      "onboarder",
+                      "data ingester"
+                    ]
+                  }
+                },
+                "Registering for Consumer (Organization ID not required)": {
+                  "value": {
+                    "name": {
+                      "title": "Mr.",
+                      "firstName": "John",
+                      "lastName": "Doe"
+                    },
+                    "phone": "9845596201",
+                    "email": "john.doe@hotmail.org",
+                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
+                    "roles": [
+                      "consumer"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "The organization field is not required for Consumer registration\nFor Onboarders and Data Ingesters, the domain of the email must match the website of the organization\nThe csr field is not required if the user has already registered"
+        }
+      }
+    },
+    "/v1/organizations": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "operationId": "get-v1-organizations",
+        "description": "Get name and organization ID for all registered organizations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organizations": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "organizations": [
+                        {
+                          "id": 1,
+                          "name": "IISc"
+                        },
+                        {
+                          "id": 2,
+                          "name": "Data Kaveri"
+                        },
+                        {
+                          "id": 3,
+                          "name": "ACME Corp"
+                        },
+                        {
+                          "id": 4,
+                          "name": "Testing CORP"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -202,6 +464,15 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "Generic-Success": {
+        "title": "Generic-Success",
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
           }
         }
       }
