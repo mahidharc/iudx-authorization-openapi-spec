@@ -157,7 +157,8 @@
                   },
                   "email": {
                     "type": "string",
-                    "description": "A valid email address"
+                    "description": "",
+                    "format": "email"
                   }
                 },
                 "required": [
@@ -185,7 +186,7 @@
               }
             }
           },
-          "description": ""
+          "description": "- `organization` is a valid organization ID obtained from the [GET /v1/organizations](reference/IUDX-Consent.v1.json/paths/~1v1~1organizations) API\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac"
         },
         "parameters": []
       }
@@ -213,7 +214,7 @@
             }
           },
           "403": {
-            "description": "Invalid Data (email, phone, CSR, roles, organization, name) OR\nData Ingester/Onboarder email does not match the organization website OR\nUser trying to to register for a role they have already registered for",
+            "description": "* Invalid Data (email, phone, CSR, roles, organization, name) OR\n* Data Ingester/Onboarder email does not match the organization website OR\n* User trying to to register for a role they have already registered for",
             "content": {
               "application/json": {
                 "schema": {
@@ -265,7 +266,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error OR\nError in certificate generation",
+            "description": "* Internal Server Error OR\n* Error in certificate generation",
             "content": {
               "application/json": {
                 "schema": {
@@ -291,7 +292,7 @@
             }
           }
         },
-        "description": "Register for Consumer, Onboarder and Data Ingester roles\nA Consumer can access secure APIs\nAn Onboarder can add items to a catalogue on behalf of a Provider\nA Data Ingester can push data into a resource server on behalf of a Provider",
+        "description": "Register for Consumer, Onboarder and Data Ingester roles\n( A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider",
         "requestBody": {
           "content": {
             "application/json": {
@@ -386,7 +387,7 @@
               }
             }
           },
-          "description": "The organization field is not required for Consumer registration\nFor Onboarders and Data Ingesters, the domain of the email must match the website of the organization\nThe csr field is not required if the user has already registered"
+          "description": "- The `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac\n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder or is an approved Provider\n- For a user that has registered as a Provider, but has not been approved, the CSR submitted will be used to generate their certificate"
         }
       }
     },
