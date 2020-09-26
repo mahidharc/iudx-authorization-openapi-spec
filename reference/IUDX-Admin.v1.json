@@ -3,7 +3,7 @@
   "info": {
     "title": "IUDX-Admin",
     "version": "1.0",
-    "description": "Admin APIs"
+    "description": "Admin APIs\n\n**All admin APIs require a valid client certificate issued by IUDX**"
   },
   "servers": [
     {
@@ -13,7 +13,7 @@
   "paths": {
     "/auth/v1/admin/provider/registrations": {
       "get": {
-        "summary": "",
+        "summary": "Get Provider Registrations",
         "operationId": "get-auth-v1-admin-provider-registrations",
         "responses": {
           "200": {
@@ -154,9 +154,28 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "If non-admin user calls API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
-        "description": "Get all provider registrations. The request can be filtered based on the status of registration:\n- pending\n- approved\n- rejected\nBy default, all pending registrations are returned",
+        "description": "**Requires a valid client certificate**\n\nGet all provider registrations. The request can be filtered based on the status of registration:\n- pending\n- approved\n- rejected\n\nIf no filter value is given, registrations with status pending is returned",
         "parameters": [
           {
             "schema": {
@@ -173,9 +192,364 @@
           }
         ]
       }
+    },
+    "/auth/v1/admin/provider/registrations/status": {
+      "parameters": [],
+      "put": {
+        "summary": "Update Provider Registration Status",
+        "operationId": "put-auth-v1-admin-provider-registrations-status",
+        "responses": {
+          "200": {
+            "description": "Registration status successfully updated. If status updated to `approved`, the Provider, the signed certificate will be sent to their registered email address.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "first_name": {
+                      "type": "string"
+                    },
+                    "last_name": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "approved",
+                        "rejected"
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "Approved Registration": {
+                    "value": {
+                      "id": 220,
+                      "title": "Ind",
+                      "first_name": "Testing",
+                      "last_name": "Testing",
+                      "role": "provider",
+                      "email": "vt1zca5csaa@v47nvz4wkci.com",
+                      "phone": "9859082091",
+                      "status": "approved"
+                    }
+                  },
+                  "Rejected Registration": {
+                    "value": {
+                      "id": 221,
+                      "title": "Ind",
+                      "first_name": "Testing",
+                      "last_name": "Testing",
+                      "role": "provider",
+                      "email": "bf8anssyfvn@v47nvz4wkci.com",
+                      "phone": "9859082091",
+                      "status": "rejected"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- If `user_id` or `status` are missing or invalid\n- If the registration status has already been updated for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "": {
+                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                    }
+                  }
+                },
+                "examples": {
+                  "Missing information": {
+                    "value": {
+                      "error": {
+                        "message": "Missing or invalid information"
+                      }
+                    }
+                  },
+                  "If updating status for provider who has already been approved/rejected": {
+                    "value": {
+                      "error": {
+                        "message": "User registration flow is complete"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "If non-admin user calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If user information not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "User information not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "If there was an error in certificate generation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Certificate Error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "**Requires a valid client certificate**\n\nUpdate the status of the Provider registration to `pending` or `approved`. The API takes the user ID (obtained from the GET /auth/v1/provider/registrations API), and the status to update to.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer"
+            },
+            "in": "query",
+            "name": "user_id",
+            "description": "User ID of provider",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "approved",
+                "rejected"
+              ]
+            },
+            "in": "query",
+            "name": "status",
+            "description": "Status to update to",
+            "required": true
+          }
+        ]
+      }
+    },
+    "/auth/v1/admin/organizations": {
+      "post": {
+        "summary": "Add an Organization",
+        "operationId": "post-auth-v1-admin-organizations",
+        "responses": {
+          "200": {
+            "description": "Organzation successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "website": {
+                            "type": "string"
+                          },
+                          "city": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string"
+                          },
+                          "country": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "organizations": [
+                        {
+                          "id": 74,
+                          "name": "ACME Organization",
+                          "website": "acme.org",
+                          "city": "Bengaluru",
+                          "state": "KA",
+                          "country": "IN",
+                          "created_at": "2020-09-26T14:46:42.506Z"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or missing organization information. Can occur for:\n- `name`\n- `website`\n- `city`\n- `state`\n- `country`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (organization)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "If the organization already exists or if non-admin user calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Registering same organization ": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (organization already exists, id: 74)"
+                      }
+                    }
+                  },
+                  "Invalid admin": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "**Requires a valid client certificate**\n\nAdd an organization",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "organization": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "website",
+                      "city",
+                      "state",
+                      "country"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "website": {
+                        "type": "string",
+                        "format": "hostname"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "organization"
+                ]
+              },
+              "examples": {
+                "Example": {
+                  "value": {
+                    "organization": {
+                      "name": "ACME Organization",
+                      "website": "acme.org",
+                      "city": "Bengaluru",
+                      "state": "KA",
+                      "country": "IN"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "- `website` must be a valid domain\n- `state` and `country` must be in standard 2-letter format (KA, UP, AP, IN)"
+        }
+      }
     }
   },
   "components": {
-    "schemas": {}
+    "schemas": {},
+    "securitySchemes": {}
   }
 }

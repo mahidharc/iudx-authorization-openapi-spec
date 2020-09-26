@@ -511,7 +511,8 @@
               }
             }
           }
-        }
+        },
+        "x-examples": {}
       },
       "Generic-Success": {
         "title": "Generic-Success",
