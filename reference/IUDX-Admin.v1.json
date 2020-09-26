@@ -1,0 +1,73 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IUDX-Admin",
+    "version": "1.0",
+    "description": "Admin APIs"
+  },
+  "servers": [
+    {
+      "url": "https://authorization.iudx.org.in"
+    }
+  ],
+  "paths": {
+    "/auth/v1/admin/provider/registrations": {
+      "get": {
+        "summary": "",
+        "operationId": "get-auth-v1-admin-provider-registrations",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {}
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "id": 0,
+                      "title": "string",
+                      "first_name": "string",
+                      "last_name": "string",
+                      "role": "string",
+                      "email": "user@example.com",
+                      "phone": "string",
+                      "status": "pending",
+                      "organization": {
+                        "name": "string",
+                        "website": "example.com",
+                        "city": "string",
+                        "state": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Get all provider registrations. The request can be filtered based on the status of registration:\n- pending\n- approved\n- rejected\nBy default, all pending registrations are returned",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "rejected",
+                "approved"
+              ]
+            },
+            "in": "query",
+            "name": "filter",
+            "description": "Filter based on status of registration"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}
