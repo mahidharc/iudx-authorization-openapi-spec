@@ -22,24 +22,132 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {}
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "first_name": {
+                        "type": "string"
+                      },
+                      "last_name": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "pattern": "^[9876]\\d{9}$"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending",
+                          "rejected",
+                          "approved"
+                        ]
+                      },
+                      "organization": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "website": {
+                            "type": "string"
+                          },
+                          "city": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": [
+                      {
+                        "id": 10,
+                        "title": "Mr",
+                        "first_name": "test",
+                        "last_name": "one",
+                        "role": "provider",
+                        "email": "test.one@acme.org",
+                        "phone": "9008732370",
+                        "status": "pending",
+                        "organization": {
+                          "name": "ACME Corp",
+                          "website": "acme.org",
+                          "city": "Bengaluru",
+                          "state": "KA",
+                          "country": "IN"
+                        }
+                      },
+                      {
+                        "id": 12,
+                        "title": "Ind",
+                        "first_name": "Testing",
+                        "last_name": "Testing",
+                        "role": "provider",
+                        "email": "vimk3xhwef@f069mxfchf.com",
+                        "phone": "9859082091",
+                        "status": "pending",
+                        "organization": {
+                          "name": "Testing CORP",
+                          "website": "f069mxfchf.com",
+                          "city": "Bengaluru",
+                          "state": "KA",
+                          "country": "IN"
+                        }
+                      },
+                      {
+                        "id": 13,
+                        "title": "Ind",
+                        "first_name": "Testing",
+                        "last_name": "Testing",
+                        "role": "provider",
+                        "email": "st1jes7y7l@oi4ne1re8tg.com",
+                        "phone": "9859082091",
+                        "status": "pending",
+                        "organization": {
+                          "name": "Testing CORP",
+                          "website": "oi4ne1re8tg.com",
+                          "city": "Bengaluru",
+                          "state": "KA",
+                          "country": "IN"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": " If the value of `filter` is invalid, or there are no registrations with that status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
                 },
                 "examples": {
                   "example-1": {
                     "value": {
-                      "id": 0,
-                      "title": "string",
-                      "first_name": "string",
-                      "last_name": "string",
-                      "role": "string",
-                      "email": "user@example.com",
-                      "phone": "string",
-                      "status": "pending",
-                      "organization": {
-                        "name": "string",
-                        "website": "example.com",
-                        "city": "string",
-                        "state": "string"
+                      "error": {
+                        "message": "Invalid filter value"
                       }
                     }
                   }
