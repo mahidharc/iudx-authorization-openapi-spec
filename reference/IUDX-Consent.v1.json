@@ -34,8 +34,8 @@
               }
             }
           },
-          "403": {
-            "description": "Invalid data or registering with an email address that has already been used",
+          "400": {
+            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `csr` - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
             "content": {
               "application/json": {
                 "schema": {
@@ -45,8 +45,8 @@
                       "type": "object",
                       "properties": {
                         "message": {
-                          "type": "string",
-                          "example": "Invalid data (<field>) / Email exists"
+                          "example": "Invalid data (<field>)",
+                          "type": "string"
                         }
                       }
                     }
@@ -60,17 +60,17 @@
                       }
                     }
                   },
-                  "Invalid Email address or phone number": {
+                  "Invalid Email address": {
                     "value": {
                       "error": {
-                        "message": "Invalid data (email/phone)"
+                        "message": "Invalid data (email)"
                       }
                     }
                   },
-                  "Registering with an email that has been used before": {
+                  "Invalid name": {
                     "value": {
                       "error": {
-                        "message": "Email exists"
+                        "message": "Invalid data (name)"
                       }
                     }
                   }
@@ -78,18 +78,25 @@
               }
             }
           },
-          "404": {
-            "description": "Organization ID does not exist",
+          "403": {
+            "description": "* The email address used has already been used for registration\n* An organization with the requested ID does not exist",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
-                  "Example": {
+                  "Organization ID does not exist": {
                     "value": {
                       "error": {
-                        "message": "Organization not registered"
+                        "message": "Invalid organization"
+                      }
+                    }
+                  },
+                  "Email has been used to register ": {
+                    "value": {
+                      "error": {
+                        "message": "Email exists"
                       }
                     }
                   }
@@ -148,8 +155,9 @@
                     "description": "Valid organization ID obtained GET organization API"
                   },
                   "phone": {
-                    "type": "integer",
-                    "description": "A valid mobile number"
+                    "type": "string",
+                    "description": "A valid mobile number",
+                    "pattern": "^[9876]\\d{9}$"
                   },
                   "csr": {
                     "type": "string",
@@ -186,7 +194,7 @@
               }
             }
           },
-          "description": "- `organization` is a valid organization ID obtained from the [GET /v1/organizations](reference/IUDX-Consent.v1.json/paths/~1v1~1organizations) API\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac"
+          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac"
         },
         "parameters": []
       }
@@ -197,7 +205,7 @@
         "operationId": "post-v1-registration",
         "responses": {
           "200": {
-            "description": "Successful Registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
+            "description": "Successful registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
             "content": {
               "application/json": {
                 "schema": {
@@ -213,8 +221,8 @@
               }
             }
           },
-          "403": {
-            "description": "* Invalid Data (email, phone, CSR, roles, organization, name) OR\n* Data Ingester/Onboarder email does not match the organization website OR\n* User trying to to register for a role they have already registered for",
+          "400": {
+            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `roles`\n- `csr` - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
             "content": {
               "application/json": {
                 "schema": {
@@ -234,30 +242,51 @@
                         "message": "Invalid data (email)"
                       }
                     }
-                  },
-                  "Registered onboarder trying to register as onboarder again": {
-                    "value": {
-                      "error": {
-                        "message": "Already registered as onboarder"
-                      }
-                    }
                   }
                 }
               }
             }
           },
-          "404": {
-            "description": "Organization ID does not exist",
+          "403": {
+            "description": "- An organization with the requested ID does not exist (applicable for Onboarder and Data Ingester)\n- Website of organization and domain of email address does not match (applicable for Onboarder and Data Ingester)\n- Attempting to register for an already registered role",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
-                  "Example": {
+                  "Organization does not exist": {
                     "value": {
                       "error": {
-                        "message": "Organization not found"
+                        "message": "Invalid organization"
+                      }
+                    }
+                  },
+                  "Domain of email address and organization website mismatching": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (domains do not match)"
+                      }
+                    }
+                  },
+                  "Re-registering as consumer": {
+                    "value": {
+                      "error": {
+                        "message": "Already registered as consumer"
+                      }
+                    }
+                  },
+                  "Re-registering as onboarder": {
+                    "value": {
+                      "error": {
+                        "message": "Already registered as onboarder"
+                      }
+                    }
+                  },
+                  "Re-registering as data ingester": {
+                    "value": {
+                      "error": {
+                        "message": "Already registered as data ingester"
                       }
                     }
                   }
@@ -292,7 +321,7 @@
             }
           }
         },
-        "description": "Register for Consumer, Onboarder and Data Ingester roles\n( A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider",
+        "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider",
         "requestBody": {
           "content": {
             "application/json": {
@@ -317,7 +346,8 @@
                     ]
                   },
                   "phone": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^[9876]\\d{9}$"
                   },
                   "email": {
                     "type": "string",
@@ -383,11 +413,25 @@
                       "consumer"
                     ]
                   }
+                },
+                "Registering as Consumer after already registering as Onboarder, Data Ingester": {
+                  "value": {
+                    "name": {
+                      "title": "Ms.",
+                      "firstName": "Jane",
+                      "lastName": "Doe"
+                    },
+                    "phone": "9845596201",
+                    "email": "jane.doe@acme.org",
+                    "roles": [
+                      "consumer"
+                    ]
+                  }
                 }
               }
             }
           },
-          "description": "- The `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac\n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder or is an approved Provider\n- For a user that has registered as a Provider, but has not been approved, the CSR submitted will be used to generate their certificate"
+          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac\n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder or is an approved Provider\n- For a user that has registered as a Provider, but has not been approved, the CSR submitted will be used to generate their certificate\n\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
         }
       }
     },
