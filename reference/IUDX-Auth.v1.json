@@ -36,13 +36,30 @@
                       "type": "string"
                     },
                     "certificate-class": {
-                      "type": "string"
+                      "type": "integer",
+                      "description": "The certificate class"
                     },
                     "serial": {
                       "type": "string"
                     },
                     "fingerprint": {
                       "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "certificate-class",
+                    "serial",
+                    "fingerprint"
+                  ]
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "id": "test@iisc.ac.in",
+                      "certificate-class": 3,
+                      "serial": "1b5e3735d350d93918730bb7e467fd1d3350e2b8",
+                      "fingerprint": "b4:5f:51:3d:35:af:cf:38:a9:98:a7:25:07:89:88:67:0e:17:13:cf"
                     }
                   }
                 }
@@ -79,8 +96,179 @@
         "operationId": "post-auth-v1-token-introspect",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "A successful introspection will return details of the token. ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "consumer": {
+                      "type": "string",
+                      "description": "Email of consumer who requested the token"
+                    },
+                    "expiry": {
+                      "type": "string",
+                      "description": "Time of expiry of token",
+                      "format": "date-time"
+                    },
+                    "request": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "The resource ID"
+                          },
+                          "apis": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "methods": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "body": {
+                            "type": "null"
+                          }
+                        }
+                      }
+                    },
+                    "consumer-class-certificate": {
+                      "type": "integer",
+                      "description": "Class of the certificate that requested the token"
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "consumer": "test@iisc.ac.in",
+                      "expiry": "2020-09-27T10:36:36.893Z",
+                      "request": [
+                        {
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/group-1/*",
+                          "apis": [
+                            "/ngsi-ld/v1/subscription"
+                          ],
+                          "body": null,
+                          "methods": [
+                            "*"
+                          ]
+                        },
+                        {
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/group-1/two",
+                          "apis": [
+                            "/ngsi-ld/v1/entities"
+                          ],
+                          "body": null,
+                          "methods": [
+                            "*"
+                          ]
+                        }
+                      ],
+                      "consumer-certificate-class": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- If `token` is missing or is a malformed token\n- SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Missing token field": {
+                    "value": {
+                      "error": {
+                        "message": "No 'token' found in the body"
+                      }
+                    }
+                  },
+                  "Malformed token": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid 'token'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "- If the token:\n  - does not exist\n  - is expired\n  - has been revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid 'token'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
+        },
+        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt)**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for\n\n**A resource server can only introspect a token that has been issued for resources that belong to it. **\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "A valid IUDX token"
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              }
+            }
+          },
+          "description": "The token is sent in the request"
         }
       }
     },
@@ -100,7 +288,10 @@
                       "type": "integer",
                       "minimum": 0
                     }
-                  }
+                  },
+                  "required": [
+                    "num-tokens-revoked"
+                  ]
                 },
                 "examples": {
                   "Example": {
@@ -227,7 +418,10 @@
                       "type": "integer",
                       "minimum": 0
                     }
-                  }
+                  },
+                  "required": [
+                    "num-tokens-revoked"
+                  ]
                 },
                 "examples": {
                   "Example": {
