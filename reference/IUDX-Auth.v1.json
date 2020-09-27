@@ -250,7 +250,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt)**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for\n\n**A resource server can only introspect a token that has been issued for resources that belong to it. **\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
+        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for\n\n**A resource server can only introspect a token that has been issued for resources that belong to it. **\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -265,6 +265,13 @@
                 "required": [
                   "token"
                 ]
+              },
+              "examples": {
+                "Example": {
+                  "value": {
+                    "token": "authorization.iudx.org.in/test@iisc.ac.in/704b949bdb7a7217c124c62821df6b62"
+                  }
+                }
               }
             }
           },
