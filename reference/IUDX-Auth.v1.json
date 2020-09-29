@@ -39,7 +39,7 @@
         ],
         "operationId": "post-auth-v1-certificate-info",
         "parameters": [],
-        "description": "Requires a valid HTTP client certificate. Get and validate certificate details.",
+        "description": "**Requires a valid HTTP client certificate**\n\nGet and validate certificate details.",
         "responses": {
           "200": {
             "description": "OK",
@@ -99,6 +99,7 @@
       "post": {
         "summary": "Request for a token",
         "operationId": "post-auth-v1-token",
+        "tags":["token"],
         "responses": {
           "200": {
             "description": "Token has been successfully generated for requested resources and respective APIs. \n**The token validity is set to 1 week**\n\nThe token structure is as follows:\n`Auth Server URL`/`Email address of token requester`/`Random string`",
@@ -146,7 +147,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed request body\n- SSL Errors",
+            "description": "- Missing or malformed request\n  - If `id` is invalid or no access policy set for it\n  - If `apis` is invalid\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -170,7 +171,7 @@
                               "type": "string"
                             },
                             "invalid-input": {
-                              "type": "string"
+                              "type": "object"
                             }
                           }
                         }
@@ -186,20 +187,16 @@
                       }
                     }
                   },
-                  "Missing id field": {
+                  "If no access policy set for the resource or an invalid id": {
                     "value": {
                       "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
                       "error": {
-                        "message": "no resource 'id' found in request",
-                        "invalid-input": {
-                          "apis": [
-                            "/ngsi-ld/v1/subscription"
-                          ]
-                        }
+                        "message": "Invalid 'id'; no access control policies have been set for this 'id' by the data provider",
+                        "invalidinput": "iisc.ac.in/85a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/t/*"
                       }
                     }
                   },
-                  "apis is not a JSON array": {
+                  "apis is invalid": {
                     "value": {
                       "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
                       "error": {
@@ -221,9 +218,96 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "- If not permitted to access a certain resource, or combination of resource and API\n- Incorrect Certificate used",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "//": {
+                          "type": "string"
+                        },
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "invalid-input": {
+                              "type": "object",
+                              "description": "The request object that is not accessible"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/Incorrect-Cert-Class"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Unauthorized to access resource with subcription API": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Unauthorized",
+                        "invalid-input": {
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/old",
+                          "api": "/ngsi-ld/v1/subscription",
+                          "method": "*"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "If user has issued too many tokens in a time frame",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Too many requests"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
-        "description": "Request for a token to access protected resources and APIs on those resources",
+        "description": "** Requires a valid class-2/consumer client certificate issued by IUDX **\n\nRequest for a token to access protected resources and APIs on those resources ",
         "requestBody": {
           "content": {
             "application/json": {
@@ -476,11 +560,18 @@
             }
           },
           "403": {
-            "description": "- If the token:\n  - does not exist\n  - is expired\n  - has been revoked",
+            "description": "- If the token:\n  - does not exist\n  - is expired\n  - has been revoked\n- Incorrect Certificate used",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error-Message"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Incorrect-Cert-Class"
+                    }
+                  ]
                 },
                 "examples": {
                   "Example": {
@@ -640,6 +731,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incorrect-Cert-Class"
+                }
+              }
+            }
           }
         },
         "description": "** Requires a valid class-3/provider client certificate issued by IUDX **\n\nRevoke list of tokens using token hashes obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
@@ -753,6 +854,16 @@
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incorrect-Cert-Class"
                 }
               }
             }
@@ -1054,6 +1165,16 @@
               }
             }
           },
+          "403": {
+            "description": "Incorrect Certificate used",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Incorrect-Cert-Class"
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal Server Error",
             "content": {
@@ -1159,6 +1280,32 @@
             }
           }
         }
+      },
+      "Incorrect-Cert-Class": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "x-examples": {
+          "Calling /auth/v1/token/introspect API with": {
+            "error": {
+              "message": "A class-1 certificate is required to call this API"
+            }
+          },
+          "Calling /auth/v1/revoke API with consumer certificate": {
+            "error": {
+              "message": "A class-3 or above certificate is required to call this API"
+            }
+          }
+        },
+        "description": "If an API is called with an incorrect certificate (non IUDX or incorrect class)"
       }
     },
     "securitySchemes": {}
