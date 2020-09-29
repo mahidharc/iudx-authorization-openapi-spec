@@ -99,7 +99,9 @@
       "post": {
         "summary": "Request for a token",
         "operationId": "post-auth-v1-token",
-        "tags":["token"],
+        "tags": [
+          "token"
+        ],
         "responses": {
           "200": {
             "description": "Token has been successfully generated for requested resources and respective APIs. \n**The token validity is set to 1 week**\n\nThe token structure is as follows:\n`Auth Server URL`/`Email address of token requester`/`Random string`",
@@ -1223,6 +1225,411 @@
             }
           },
           "description": "`hours` determines the number of hours for which the audit report is returned"
+        }
+      }
+    },
+    "/auth/v1/provider/access": {
+      "get": {
+        "summary": "Get all access policies",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "Access ID"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Email address of accesser"
+                      },
+                      "role": {
+                        "type": "string",
+                        "enum": [
+                          "consumer",
+                          "onboarder",
+                          "data ingester"
+                        ],
+                        "description": "Role of accesser"
+                      },
+                      "item_type": {
+                        "type": "string",
+                        "description": "Can be catalogue or resourcegroup",
+                        "enum": [
+                          "catalogue",
+                          "resourcegroup"
+                        ]
+                      },
+                      "item": {
+                        "type": "object",
+                        "properties": {
+                          "cat_id": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "policy": {
+                        "type": "string"
+                      },
+                      "capability": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "temporal",
+                            "complex",
+                            "subscription"
+                          ]
+                        }
+                      },
+                      "created": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "id": 4,
+                        "email": "test@datakaveri.org",
+                        "role": "onboarder",
+                        "item_type": "catalogue",
+                        "item": null,
+                        "policy": "test@datakaveri.org can access catalogue.iudx.io/catalogue/crud for 1 week",
+                        "created": "2020-09-23T05:41:59.349Z",
+                        "capabilities": null
+                      },
+                      {
+                        "id": 430,
+                        "email": "test2@datakaveri.org",
+                        "role": "consumer",
+                        "item_type": "resourcegroup",
+                        "item": {
+                          "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information"
+                        },
+                        "policy": "test2@datakaveri.org can access rs.iudx.io/surat-itms-realtime-information/* for 1 week if api = \"/ngsi-ld/v1/entityOperations/query\" or api = \"/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information\" or api = \"/ngsi-ld/v1/entities\" or api = \"/ngsi-ld/v1/temporal/entities\" or api = \"/ngsi-ld/v1/subscription\"",
+                        "created": "2020-09-29T10:36:40.704Z",
+                        "capabilities": [
+                          "complex",
+                          "temporal",
+                          "subscription"
+                        ]
+                      },
+                      {
+                        "id": 429,
+                        "email": "foobar@datakaveri.org",
+                        "role": "data ingester",
+                        "item_type": "resourcegroup",
+                        "item": {
+                          "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information"
+                        },
+                        "policy": "foobar@datakaveri.org can access rs.iudx.io/surat-itms-realtime-information/* for 1 week if api = \"/iudx/v1/adapter\"",
+                        "created": "2020-09-29T10:36:34.581Z",
+                        "capabilities": null
+                      },
+                      {
+                        "id": 431,
+                        "email": "onboarder@datakaveri.org",
+                        "role": "onboarder",
+                        "item_type": "catalogue",
+                        "item": null,
+                        "policy": "onboarder@datakaveri.org can access catalogue.iudx.io/catalogue/crud for 1 week",
+                        "created": "2020-09-29T10:36:45.543Z",
+                        "capabilities": null
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If a user who is not registered as a provider calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-v1-provider-access",
+        "description": "** Requires a valid IUDX issued client certificate and user must be registered provider **\n\nGet all access policies set for various users"
+      },
+      "post": {
+        "summary": "Give access to resources",
+        "operationId": "post-auth-v1-provider-access",
+        "responses": {
+          "200": {
+            "description": "If the access has been successfully given",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capability`\n- SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error-Message"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid email": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (email)"
+                      }
+                    }
+                  },
+                  "Invalid resource id": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (item-id)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If a user who is not registered as a provider calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- # if rule exists for particular provider AND `user_email` AND `user_role` AND `item/catalogue` AND `capability` (if applicable)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Giving access to unregistered user": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid Accesser"
+                      }
+                    }
+                  },
+                  "Resource ID does not belong to the provider": {
+                    "value": {
+                      "error": {
+                        "message": "Provider does not match resource owner"
+                      }
+                    }
+                  },
+                  "Giving access again for same resource and same data ingester": {
+                    "value": {
+                      "error": {
+                        "message": "Rule exists"
+                      }
+                    }
+                  },
+                  "Giving onboard access for same onboarder": {
+                    "value": {
+                      "error": {
+                        "message": "Rule exists"
+                      }
+                    }
+                  },
+                  "Giving access again to consumer for same resource and temporal capability": {
+                    "value": {
+                      "error": {
+                        "message": "Rule exists for temporal"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "** Requires a valid IUDX issued client certificate and user must be registered provider **\n\nGive registered consumers, data ingesters and onboarders access to provider's resources\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "user_role": {
+                    "type": "string",
+                    "enum": [
+                      "consumer",
+                      "onboarder",
+                      "data ingester"
+                    ]
+                  },
+                  "item_id": {
+                    "type": "string",
+                    "description": "A valid full resource ID (provider_domain_emai/sha1_of_provider_email)"
+                  },
+                  "item_type": {
+                    "type": "string",
+                    "description": "Must be resourcegroup"
+                  },
+                  "capability": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "subscription",
+                        "temporal",
+                        "complex"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "user_email",
+                  "user_role"
+                ]
+              },
+              "examples": {
+                "Giving onboarder access": {
+                  "value": {
+                    "user_email": "test@datakaveri.org",
+                    "user_role": "onboarder"
+                  }
+                },
+                "Giving data ingester access": {
+                  "value": {
+                    "user_email": "test@datakaveri.org",
+                    "user_role": "data ingester",
+                    "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                    "item_type": "resourcegroup"
+                  }
+                },
+                "Giving consumer access (all capabilities)": {
+                  "value": {
+                    "user_email": "test@datakaveri.org",
+                    "user_role": "consumer",
+                    "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                    "item_type": "resourcegroup",
+                    "capability": [
+                      "complex",
+                      "subscription",
+                      "temporal"
+                    ]
+                  }
+                },
+                "Giving consumer access (only subscription)": {
+                  "value": {
+                    "user_email": "test@datakaveri.org",
+                    "user_role": "consumer",
+                    "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-flood-sensor",
+                    "item_type": "resourcegroup",
+                    "capability": [
+                      "subscription"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capability` array is necessary. The `capability` array specifies the various APIs the consumer is allowed to call grouped by a specific capability\n  - `subscription` : ```/ngsi-ld/v1/subscription```\n  - `temporal` :    ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n  - `complex` :    ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n- Currently, setting data ingester access implicitly sets permission to access the resource with API `/iudx/v1/adapter`\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_"
         }
       }
     }
