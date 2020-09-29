@@ -5,9 +5,7 @@
     "version": "1.0",
     "description": "API specification for IUDX Auth operations. All operations require a valid IUDX recognized HTTP client certificate.",
     "contact": {
-      "name": "Mahidhar Chellamani",
-      "url": "https://www.iudx.org.in/",
-      "email": "mahidhar.chellamani@datakaveri.org"
+      "url": "https://www.iudx.org.in/"
     }
   },
   "servers": [
@@ -1270,7 +1268,7 @@
                       },
                       "item": {
                         "type": "object",
-                        "nullable":true,
+                        "nullable": true,
                         "properties": {
                           "cat_id": {
                             "type": "string"
@@ -1400,7 +1398,9 @@
       "post": {
         "summary": "Give access to resources",
         "operationId": "post-auth-v1-provider-access",
-        "tags":["access"],
+        "tags": [
+          "access"
+        ],
         "responses": {
           "200": {
             "description": "If the access has been successfully given",

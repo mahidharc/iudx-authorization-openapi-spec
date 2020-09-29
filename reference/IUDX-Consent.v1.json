@@ -5,9 +5,7 @@
     "version": "1.0",
     "description": "API specification for all IUDX consent APIs. These APIs are used for registration for various roles.",
     "contact": {
-      "name": "Mahidhar Chellamani",
-      "url": "https://www.iudx.org.in/",
-      "email": "mahidhar.chellamani@datakaveri.org"
+      "url": "https://www.iudx.org.in/"
     }
   },
   "servers": [
@@ -15,10 +13,10 @@
       "url": "https://consent.iudx.org.in"
     }
   ],
-  "tags":[
+  "tags": [
     {
-      "name":"consent",
-    "description":"Consent APIs"
+      "name": "consent",
+      "description": "Consent APIs"
     }
   ],
   "paths": {
@@ -27,7 +25,9 @@
       "post": {
         "summary": "Provider Registration",
         "operationId": "postv1-provider-registration",
-              "tags":["consent"],
+        "tags": [
+          "consent"
+        ],
         "responses": {
           "200": {
             "description": "The registration is successful, pending approval",
@@ -215,7 +215,9 @@
       "post": {
         "summary": "Consumer/Onboarder/Data Ingester Registration",
         "operationId": "post-v1-registration",
-        "tags":["consent"],
+        "tags": [
+          "consent"
+        ],
         "responses": {
           "200": {
             "description": "Successful registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
