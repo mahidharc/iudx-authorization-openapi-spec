@@ -16,11 +16,27 @@
       "description": "Production Server"
     }
   ],
+  "tags": [
+    {
+      "name": "token",
+      "description": "Token related APIs"
+    },
+    {
+      "name": "access",
+      "description": "Access related APIs"
+    },
+    {
+      "name": "certificate",
+      "description": "Certificate related APIs"
+    }
+  ],
   "paths": {
     "/auth/v1/certificate-info": {
       "post": {
         "summary": "Get user certificate details",
-        "tags": [],
+        "tags": [
+          "certificate"
+        ],
         "operationId": "post-auth-v1-certificate-info",
         "parameters": [],
         "description": "Requires a valid HTTP client certificate. Get and validate certificate details.",
@@ -85,8 +101,252 @@
         "operationId": "post-auth-v1-token",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Token has been successfully generated for requested resources and respective APIs. \n**The token validity is set to 1 week**\n\nThe token structure is as follows:\n`Auth Server URL`/`Email address of token requester`/`Random string`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "token-type": {
+                      "type": "string"
+                    },
+                    "expires-in": {
+                      "type": "integer"
+                    },
+                    "is_token_valid": {
+                      "type": "boolean"
+                    },
+                    "server-token": {
+                      "type": "object",
+                      "properties": {
+                        "<resource-server-name>": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "token": "authorization.iudx.org.in/consumer@datakaveri.org/5d26f8526d75f5ed9407d7a808edac38",
+                      "token-type": "IUDX",
+                      "expires-in": 604800,
+                      "is_token_valid": true,
+                      "server-token": {
+                        "rs.iudx.org.in": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Missing or malformed request body\n- SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error-Message"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "//": {
+                          "type": "string"
+                        },
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "invalid-input": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid request array": {
+                    "value": {
+                      "error": {
+                        "message": "'request' must be a valid JSON array with at least 1 element"
+                      }
+                    }
+                  },
+                  "Missing id field": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "no resource 'id' found in request",
+                        "invalid-input": {
+                          "apis": [
+                            "/ngsi-ld/v1/subscription"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "apis is not a JSON array": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "'apis' must be a valid JSON array",
+                        "invalid-input": {
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/t/*",
+                          "apis": "/ngsi-ld/v1/subscription"
+                        }
+                      }
+                    }
+                  },
+                  "example-4": {
+                    "value": {
+                      "error": {
+                        "message": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
+        },
+        "description": "Request for a token to access protected resources and APIs on those resources",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "request": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "apis": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "request"
+                ]
+              },
+              "examples": {
+                "Requesting token for Data Ingester": {
+                  "value": {
+                    "request": [
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                        "apis": [
+                          "/iudx/v1/adapter"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "Requesting token for Onboarder": {
+                  "value": {
+                    "request": [
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/catalogue.iudx.io/catalogue/crud"
+                      }
+                    ]
+                  }
+                },
+                "Requesting token for Subscription capability APIs": {
+                  "value": {
+                    "request": [
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                        "apis": [
+                          "/ngsi-ld/v1/subscription"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "Requesting token for Temporal capability APIs": {
+                  "value": {
+                    "request": [
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                        "apis": [
+                          "/ngsi-ld/v1/temporal/entities",
+                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "Requesting token for Complex capability APIs": {
+                  "value": {
+                    "request": [
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                        "apis": [
+                          "/ngsi-ld/v1/entities",
+                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                          "/ngsi-ld/v1/entityOperations/query"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "Requesting for multiple resource groups and resource items": {
+                  "value": {
+                    "request": [
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                        "apis": [
+                          "/ngsi-ld/v1/entities",
+                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                          "/ngsi-ld/v1/entityOperations/query"
+                        ]
+                      },
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/item-1",
+                        "apis": [
+                          "/ngsi-ld/v1/entities",
+                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm"
+                        ]
+                      },
+                      {
+                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/item-2",
+                        "apis": [
+                          "/ngsi-ld/v1/subscription"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "- The `request` array consists of objects that specify resource IDs for which access is desired.\n- `id` is the resource ID of the resource group or resource item\n    - **For a token for access to the entire resource group, the resource group ID must be suffixed by '/*'**\n- `apis` is an array of APIs that can be called on the respective resource ID\n\n### Consumers\n\nFor consumers, the APIs are defined by the existing capabilities:\n\n- Subscription capability: ```/ngsi-ld/v1/subscription```\n- Temporal capability:    ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n- Complex capability:    ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n\nFor the APIs with ```<resource-group>```, the API text will include the full resource group ID. For example, if id is \n      \n      iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/resource-group/item-1\nthe entities API for that will be:\n\n    /ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/resource-group\n\n### Data Ingesters\n\nData ingesters specifically have only 1 accessible API:\n```/iudx/v1/adapter```\n\n### Onboarders\n\nOnboarders have no APIs. The `id` field must be in the format:\n```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n    \n    datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud"
         }
       }
     },
@@ -94,6 +354,9 @@
       "post": {
         "summary": "Introspect a token",
         "operationId": "post-auth-v1-token-introspect",
+        "tags": [
+          "token"
+        ],
         "responses": {
           "200": {
             "description": "A successful introspection will return details of the token. ",
@@ -133,7 +396,8 @@
                             }
                           },
                           "body": {
-                            "type": "null"
+                            "type": "object",
+                            "nullable": true
                           }
                         }
                       }
@@ -283,6 +547,9 @@
       "post": {
         "summary": "Revoke a token",
         "operationId": "post-auth-v1-token-revoke",
+        "tags": [
+          "token"
+        ],
         "responses": {
           "200": {
             "description": "The response will contain the number of tokens revoked.",
@@ -330,7 +597,7 @@
                               "description": "The invalid hash"
                             },
                             "num-tokens-revoked": {
-                              "type": "string",
+                              "type": "integer",
                               "description": "number of tokens revoked in array till the invalid token hash"
                             }
                           },
@@ -413,6 +680,9 @@
       "post": {
         "summary": "Revoke all tokens belonging to a certificate",
         "operationId": "post-auth-v1-token-revoke-all",
+        "tags": [
+          "token"
+        ],
         "responses": {
           "200": {
             "description": "The number of tokens revoked for that particular certficate/consumer will be returned",
@@ -546,6 +816,9 @@
       "post": {
         "summary": "Audit tokens",
         "operationId": "post-auth-v1-audit-tokens",
+        "tags": [
+          "token"
+        ],
         "responses": {
           "200": {
             "description": "- The `token-hash` field can be used to revoke the token using the `/auth/v1/token/revoke` API\n- The `certificate-serial-number` and `certificate-fingerprint` fields can be used to revoke all tokens issued to that consumer/certificate using the `/auth/v1/token/revoke-all` API",
@@ -626,7 +899,8 @@
                                   }
                                 },
                                 "body": {
-                                  "type": "null"
+                                  "type": "object",
+                                  "nullable": true
                                 }
                               }
                             }
@@ -639,7 +913,7 @@
                                 "type": "array",
                                 "description": "lat, long \n",
                                 "items": {
-                                  "type": "string"
+                                  "type": "number"
                                 }
                               },
                               "city": {
@@ -657,7 +931,8 @@
                             }
                           },
                           "api-called-from": {
-                            "type": "null"
+                            "type": "object",
+                            "nullable": true
                           }
                         }
                       }

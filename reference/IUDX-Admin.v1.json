@@ -3,18 +3,28 @@
   "info": {
     "title": "IUDX-Admin",
     "version": "1.0",
-    "description": "Admin APIs\n\n**All admin APIs require a valid client certificate issued by IUDX**"
+    "description": "Admin APIs\n\n**All admin APIs require a valid client certificate issued by IUDX**",
+    "contact": {
+      "name": "Mahidhar Chellamani",
+      "url": "https://www.iudx.org.in/",
+      "email": "mahidhar.chellamani@datakaveri.org"
+    }
   },
   "servers": [
     {
       "url": "https://authorization.iudx.org.in"
     }
   ],
+  "tags":[
+    {"name":"admin",
+    "description":"IUDX Admin APIs"}
+    ],
   "paths": {
     "/auth/v1/admin/provider/registrations": {
       "get": {
         "summary": "Get Provider Registrations",
         "operationId": "get-auth-v1-admin-provider-registrations",
+        "tags":["admin"],
         "responses": {
           "200": {
             "description": "OK",
@@ -26,7 +36,7 @@
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "string"
+                        "type": "integer"
                       },
                       "title": {
                         "type": "string"
@@ -205,6 +215,7 @@
       "put": {
         "summary": "Update Provider Registration Status",
         "operationId": "put-auth-v1-admin-provider-registrations-status",
+        "tags":["admin"],
         "responses": {
           "200": {
             "description": "Registration status successfully updated. If status updated to `approved`, the Provider, the signed certificate will be sent to their registered email address.",
@@ -214,7 +225,7 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "integer"
                     },
                     "title": {
                       "type": "string"
@@ -394,6 +405,7 @@
       "post": {
         "summary": "Add an Organization",
         "operationId": "post-auth-v1-admin-organizations",
+        "tags":["admin"],
         "responses": {
           "200": {
             "description": "Organzation successfully registered",
