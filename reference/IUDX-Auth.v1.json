@@ -1270,6 +1270,7 @@
                       },
                       "item": {
                         "type": "object",
+                        "nullable":true,
                         "properties": {
                           "cat_id": {
                             "type": "string"
@@ -1399,6 +1400,7 @@
       "post": {
         "summary": "Give access to resources",
         "operationId": "post-auth-v1-provider-access",
+        "tags":["access"],
         "responses": {
           "200": {
             "description": "If the access has been successfully given",
