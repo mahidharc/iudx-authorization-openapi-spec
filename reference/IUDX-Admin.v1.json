@@ -143,10 +143,10 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/Error-Message"
                     },
                     {
-                      "$ref": "./IUDX-Auth.v1.json#/components/schemas/NGINX-Errors"
+                      "$ref": "#/components/schemas/NGINX-Errors"
                     }
                   ]
                 },
@@ -167,7 +167,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                  "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
                   "Example": {
@@ -279,10 +279,10 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/Error-Message"
                     },
                     {
-                      "$ref": "./IUDX-Auth.v1.json#/components/schemas/NGINX-Errors"
+                      "$ref": "#/components/schemas/NGINX-Errors"
                     }
                   ]
                 },
@@ -310,7 +310,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                  "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
                   "Example": {
@@ -329,7 +329,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                  "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
                   "Example": {
@@ -458,10 +458,10 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/Error-Message"
                     },
                     {
-                      "$ref": "./IUDX-Auth.v1.json#/components/schemas/NGINX-Errors"
+                      "$ref": "#/components/schemas/NGINX-Errors"
                     }
                   ]
                 },
@@ -482,7 +482,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                  "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
                   "Registering same organization ": {
@@ -565,7 +565,61 @@
     }
   },
   "components": {
-    "schemas": {},
+    "schemas": {
+      "Error-Message": {
+        "title": "Error-Message",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "description": "Generic Error Message",
+        "x-examples": {}
+      },
+      "NGINX-Errors": {
+        "title": "NGINX-Errors",
+        "type": "object",
+        "description": "Any certificate error will result in a `400 Bad Request` error. The following errors are possible:\n   - No client certificate sent with request for API that requires a client side certificate\n   - Error in client certificate verification. This can likely be caused by using an expired certificate to call the API\n   - Making an HTTP request to an HTTPS endpoint",
+        "x-examples": {
+          "No client certificate sent": {
+            "error": {
+              "message": "No SSL certificate sent with request"
+            }
+          },
+          "HTTP request to HTTPS endpoint": {
+            "error": {
+              "message": "Invalid Request"
+            }
+          },
+          "Client certificate error": {
+            "error": {
+              "message": "Error occured during certificate verification. (Is your certificate expired?)"
+            }
+          }
+        },
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "enum": [
+                  "No SSL certificate sent with request",
+                  "Invalid request",
+                  "Error occured during certificate verification. (Is your certificate expired?)"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "securitySchemes": {}
   }
 }

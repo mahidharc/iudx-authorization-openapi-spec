@@ -512,7 +512,8 @@
             }
           }
         },
-        "x-examples": {}
+        "x-examples": {},
+        "description": "Generic Error Message"
       },
       "Generic-Success": {
         "title": "Generic-Success",
@@ -521,7 +522,8 @@
           "success": {
             "type": "boolean"
           }
-        }
+        },
+        "description": "Generic Success Message"
       }
     }
   }

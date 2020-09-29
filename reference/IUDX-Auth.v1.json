@@ -67,7 +67,7 @@
             }
           },
           "400": {
-            "description": "[SSL Errors](reference/IUDX-Auth.v1.json/components/schemas/NGINX-Errors)",
+            "description": "SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -185,7 +185,7 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/Error-Message"
                     },
                     {
                       "$ref": "#/components/schemas/NGINX-Errors"
@@ -216,7 +216,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                  "$ref": "#/components/schemas/Error-Message"
                 },
                 "examples": {
                   "Example": {
@@ -447,7 +447,7 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/Error-Message"
                     },
                     {
                       "$ref": "#/components/schemas/NGINX-Errors"
@@ -753,7 +753,7 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/Error-Message"
                     },
                     {
                       "$ref": "#/components/schemas/NGINX-Errors"
@@ -861,6 +861,26 @@
           "HTTP request to HTTPS endpoint": {
             "error": {
               "message": "Invalid Request"
+            }
+          },
+          "Client certificate error": {
+            "error": {
+              "message": "Error occured during certificate verification. (Is your certificate expired?)"
+            }
+          }
+        }
+      },
+      "Error-Message": {
+        "title": "Error-Message",
+        "type": "object",
+        "description": "Generic Error Message",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              }
             }
           }
         }
