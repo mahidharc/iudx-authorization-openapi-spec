@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "IUDX-Consent",
+    "title": "IUDX Consent",
     "version": "1.0",
-    "description": "API specification for all IUDX consent APIs. These APIs are used for registration for various roles.",
+    "description": "API specification for IUDX consent APIs. These APIs are used for registration for various roles, such as Provider, Consumers, Data ingesters and Onboarders.",
     "contact": {
       "url": "https://www.iudx.org.in/"
     }
@@ -15,8 +15,12 @@
   ],
   "tags": [
     {
-      "name": "consent",
-      "description": "Consent APIs"
+      "name": "Registration APIs",
+      "description": "APIs related to registering for different roles"
+    },
+    {
+      "name": "Organization APIs",
+      "description": "APIs related to organizations"
     }
   ],
   "paths": {
@@ -25,9 +29,6 @@
       "post": {
         "summary": "Provider Registration",
         "operationId": "postv1-provider-registration",
-        "tags": [
-          "consent"
-        ],
         "responses": {
           "200": {
             "description": "The registration is successful, pending approval",
@@ -47,7 +48,7 @@
             }
           },
           "400": {
-            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `csr` - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
+            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
             "content": {
               "application/json": {
                 "schema": {
@@ -136,7 +137,7 @@
             }
           }
         },
-        "description": "Register as a Provider",
+        "description": "Register as a Provider. Provider registration requires a valid Certificate Signing Request (CSR) generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac. \n\nOnce a Provider has registered successfully, their registration request is subject to approval by an IUDX admin. If the registration is approved, a signed certificate will be sent to the registered email address. This certificate would be used by the Provider for several operations, such as giving consumers access to their resources, auditing tokens issued for their resources and revoking tokens.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -206,18 +207,18 @@
               }
             }
           },
-          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac"
+          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `csr` is a valid CSR generated using RSA keys."
         },
-        "parameters": []
+        "parameters": [],
+        "tags": [
+          "Registration APIs"
+        ]
       }
     },
     "/v1/registration": {
       "post": {
         "summary": "Consumer/Onboarder/Data Ingester Registration",
         "operationId": "post-v1-registration",
-        "tags": [
-          "consent"
-        ],
         "responses": {
           "200": {
             "description": "Successful registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
@@ -237,7 +238,7 @@
             }
           },
           "400": {
-            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `roles`\n- `csr` - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
+            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `roles`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
             "content": {
               "application/json": {
                 "schema": {
@@ -336,7 +337,7 @@
             }
           }
         },
-        "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider",
+        "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider\n\nIf a user is registering for the first time, then a valid Certificate Signing Request (CSR) is required. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac",
         "requestBody": {
           "content": {
             "application/json": {
@@ -446,14 +447,19 @@
               }
             }
           },
-          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac\n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder or is an approved Provider\n- For a user that has registered as a Provider, but has not been approved, the CSR submitted will be used to generate their certificate\n\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
-        }
+          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder or Provider\n    - (For a user that has registered as a Provider but has not been approved, the CSR submitted during Provider registration will be used to generate their certificate)\n\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
+        },
+        "tags": [
+          "Registration APIs"
+        ]
       }
     },
     "/v1/organizations": {
       "get": {
         "summary": "Get all registered Organizations",
-        "tags": [],
+        "tags": [
+          "Organization APIs"
+        ],
         "operationId": "get-v1-organizations",
         "description": "Get name and organization ID for all registered organizations",
         "responses": {

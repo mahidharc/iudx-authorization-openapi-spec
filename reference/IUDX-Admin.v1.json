@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "IUDX-Admin",
+    "title": "IUDX Admin",
     "version": "1.0",
-    "description": "Admin APIs\n\n**All admin APIs require a valid client certificate issued by IUDX**",
+    "description": "API Specification for IUDX Admin operations. The APIs are used to approve provider registration requests and to register organizations. \n**All admin APIs require a valid client certificate issued by IUDX, and can be called by registered IUDX admins.**",
     "contact": {
       "url": "https://www.iudx.org.in/"
     }
@@ -15,8 +15,13 @@
   ],
   "tags": [
     {
-      "name": "admin",
-      "description": "IUDX Admin APIs"
+
+      "name": "Provider Approval",
+      "description": "APIs related to approving new providers"
+    },
+    {
+      "name": "Organization APIs",
+      "description": "APIs related to organizations"
     }
   ],
   "paths": {
@@ -25,7 +30,7 @@
         "summary": "Get Provider Registrations",
         "operationId": "get-auth-v1-admin-provider-registrations",
         "tags": [
-          "admin"
+          "Provider Approval"
         ],
         "responses": {
           "200": {
@@ -218,7 +223,7 @@
         "summary": "Update Provider Registration Status",
         "operationId": "put-auth-v1-admin-provider-registrations-status",
         "tags": [
-          "admin"
+          "Provider Approval"
         ],
         "responses": {
           "200": {
@@ -378,7 +383,7 @@
             }
           }
         },
-        "description": "**Requires a valid client certificate**\n\nUpdate the status of the Provider registration to `pending` or `approved`. The API takes the user ID (obtained from the GET /auth/v1/provider/registrations API), and the status to update to.",
+        "description": "**Requires a valid client certificate**\n\nUpdate the status of the Provider registration to `pending` or `approved`. The API takes the user ID (obtained from the GET /auth/v1/provider/registrations API), and the status to update to as query parameters.",
         "parameters": [
           {
             "schema": {
@@ -407,14 +412,11 @@
     },
     "/auth/v1/admin/organizations": {
       "post": {
-        "summary": "Add an Organization",
+        "summary": "Register an Organization",
         "operationId": "post-auth-v1-admin-organizations",
-        "tags": [
-          "admin"
-        ],
         "responses": {
           "200": {
-            "description": "Organzation successfully registered",
+            "description": "Organization successfully registered",
             "content": {
               "application/json": {
                 "schema": {
@@ -522,7 +524,7 @@
             }
           }
         },
-        "description": "**Requires a valid client certificate**\n\nAdd an organization",
+        "description": "**Requires a valid client certificate**\n\nRegister an Organization. Providers, Data ingesters and Onboarders require an organization ID during registration, these IDs map to a registered organization. All registered organizations can be viewed using the GET organizations API from the Consent APIs",
         "requestBody": {
           "content": {
             "application/json": {
@@ -578,7 +580,10 @@
             }
           },
           "description": "- `website` must be a valid domain\n- `state` and `country` must be in standard 2-letter format (KA, UP, AP, IN)"
-        }
+        },
+        "tags": [
+          "Organization APIs"
+        ]
       }
     }
   },

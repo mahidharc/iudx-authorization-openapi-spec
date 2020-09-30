@@ -3,7 +3,7 @@
   "info": {
     "title": "IUDX Auth",
     "version": "1.0",
-    "description": "API specification for IUDX Auth operations. All operations require a valid IUDX recognized HTTP client certificate.",
+    "description": "API specification for IUDX consent APIs. These APIs are used for registration for various roles, such as Provider, Consumers, Data ingesters and Onboarders.",
     "contact": {
       "url": "https://www.iudx.org.in/"
     }
@@ -16,31 +16,28 @@
   ],
   "tags": [
     {
-      "name": "token",
-      "description": "Token related APIs"
-    },
-    {
-      "name": "access",
-      "description": "Access related APIs"
-    },
-    {
-      "name": "certificate",
+      "name": "Certificate APIs",
       "description": "Certificate related APIs"
+    },
+    {
+      "name": "Token APIs",
+      "description": "APIs related to operations on tokens"
+    },
+    {
+      "name": "Access APIs",
+      "description": "APIs related to operations on access rules/policies on resources"
     }
   ],
   "paths": {
     "/auth/v1/certificate-info": {
       "post": {
         "summary": "Get user certificate details",
-        "tags": [
-          "certificate"
-        ],
         "operationId": "post-auth-v1-certificate-info",
         "parameters": [],
         "description": "**Requires a valid HTTP client certificate**\n\nGet and validate certificate details.",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Returns certificate details",
             "content": {
               "application/json": {
                 "schema": {
@@ -90,16 +87,16 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "Certificate APIs"
+        ]
       }
     },
     "/auth/v1/token": {
       "post": {
         "summary": "Request for a token",
         "operationId": "post-auth-v1-token",
-        "tags": [
-          "token"
-        ],
         "responses": {
           "200": {
             "description": "Token has been successfully generated for requested resources and respective APIs. \n**The token validity is set to 1 week**\n\nThe token structure is as follows:\n`Auth Server URL`/`Email address of token requester`/`Random string`",
@@ -307,7 +304,7 @@
             }
           }
         },
-        "description": "** Requires a valid class-2/consumer client certificate issued by IUDX **\n\nRequest for a token to access protected resources and APIs on those resources ",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nRequest for a token to access protected resources and APIs on those resources. The issued token is then included as part of the request to the resource server for said resource. Once the resource server validates the token, the protected resource is shared with the user.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -430,17 +427,17 @@
               }
             }
           },
-          "description": "- The `request` array consists of objects that specify resource IDs for which access is desired.\n- `id` is the resource ID of the resource group or resource item\n    - **For a token for access to the entire resource group, the resource group ID must be suffixed by '/*'**\n- `apis` is an array of APIs that can be called on the respective resource ID\n\n### Consumers\n\nFor consumers, the APIs are defined by the existing capabilities:\n\n- Subscription capability: ```/ngsi-ld/v1/subscription```\n- Temporal capability:    ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n- Complex capability:    ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n\nFor the APIs with ```<resource-group>```, the API text will include the full resource group ID. For example, if id is \n      \n      iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/resource-group/item-1\nthe entities API for that will be:\n\n    /ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/resource-group\n\n### Data Ingesters\n\nData ingesters specifically have only 1 accessible API:\n```/iudx/v1/adapter```\n\n### Onboarders\n\nOnboarders have no APIs. The `id` field must be in the format:\n```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n    \n    datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud"
-        }
+          "description": "- The `request` array consists of objects that specify resource IDs for which access is desired.\n- `id` is the resource ID of the resource group or resource item\n    - **For a token for access to the entire resource group, the resource group ID must be suffixed by '/*'**\n- `apis` is an array of APIs that can be called on the respective resource ID\n\n### Consumers\n\nFor consumers, the APIs are defined by the existing capabilities:\n\n- Subscription capability: ```/ngsi-ld/v1/subscription```\n- Temporal capability: ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n- Complex capability: ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n\nFor the APIs with ```<resource-group>```, the API text will include the full resource group ID. For example, if id is \n      \n      iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm/sensor-1\nthe entities API for that will be:\n\n    /ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm\n\n### Data Ingesters\n\nData ingesters specifically have only 1 accessible API:\n```/iudx/v1/adapter```\n\n### Onboarders\n\nOnboarders have no APIs. The `id` field must be in the format:\n```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n    \n    datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud"
+        },
+        "tags": [
+          "Token APIs"
+        ]
       }
     },
     "/auth/v1/token/introspect": {
       "post": {
         "summary": "Introspect a token",
         "operationId": "post-auth-v1-token-introspect",
-        "tags": [
-          "token"
-        ],
         "responses": {
           "200": {
             "description": "A successful introspection will return details of the token. ",
@@ -460,6 +457,7 @@
                     },
                     "request": {
                       "type": "array",
+                      "description": "The resources and APIs for which the token was issued",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -469,6 +467,7 @@
                           },
                           "apis": {
                             "type": "array",
+                            "description": "APIs which can be called on the resource",
                             "items": {
                               "type": "string"
                             }
@@ -605,7 +604,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for\n\n**A resource server can only introspect a token that has been issued for resources that belong to it. **\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
+        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for.\n\n**A resource server can only introspect a token that has been issued for resources that belong to it.**\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -631,16 +630,16 @@
             }
           },
           "description": "The token is sent in the request"
-        }
+        },
+        "tags": [
+          "Token APIs"
+        ]
       }
     },
     "/auth/v1/token/revoke": {
       "post": {
         "summary": "Revoke a token",
         "operationId": "post-auth-v1-token-revoke",
-        "tags": [
-          "token"
-        ],
         "responses": {
           "200": {
             "description": "The response will contain the number of tokens revoked.",
@@ -743,7 +742,7 @@
             }
           }
         },
-        "description": "** Requires a valid class-3/provider client certificate issued by IUDX **\n\nRevoke list of tokens using token hashes obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
+        "description": "**Requires a valid class-3/provider client certificate issued by IUDX**\n\nRevoke list of tokens using token hashes obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -774,16 +773,16 @@
             }
           },
           "description": "The request should contain an array of token hashes. (Each hash must be in lower-case hex representation)"
-        }
+        },
+        "tags": [
+          "Token APIs"
+        ]
       }
     },
     "/auth/v1/token/revoke-all": {
       "post": {
         "summary": "Revoke all tokens belonging to a certificate",
         "operationId": "post-auth-v1-token-revoke-all",
-        "tags": [
-          "token"
-        ],
         "responses": {
           "200": {
             "description": "The number of tokens revoked for that particular certficate/consumer will be returned",
@@ -888,7 +887,7 @@
             }
           }
         },
-        "description": "** Requires a valid class-3/provider client certificate issued by IUDX **\n\nRevoke all tokens issued to a particular consumer based on their certificate. The certificate serial number and fingerprint are obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
+        "description": "**Requires a valid class-3/provider client certificate issued by IUDX**\n\nRevoke all tokens issued to a particular consumer based on their certificate. The certificate serial number and fingerprint are obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -920,16 +919,16 @@
             }
           },
           "description": ""
-        }
+        },
+        "tags": [
+          "Token APIs"
+        ]
       }
     },
     "/auth/v1/audit/tokens": {
       "post": {
         "summary": "Audit tokens",
         "operationId": "post-auth-v1-audit-tokens",
-        "tags": [
-          "token"
-        ],
         "responses": {
           "200": {
             "description": "- The `token-hash` field can be used to revoke the token using the `/auth/v1/token/revoke` API\n- The `certificate-serial-number` and `certificate-fingerprint` fields can be used to revoke all tokens issued to that consumer/certificate using the `/auth/v1/token/revoke-all` API",
@@ -1195,7 +1194,7 @@
             }
           }
         },
-        "description": "** Requires a valid class-3/provider client certificate **\n\nA Provider can use the Audit API to get details of the tokens issued for their resources. ",
+        "description": "**Requires a valid class-3/provider client certificate**\n\nA Provider can use the Audit API to get details of the tokens issued for their resources. ",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1223,13 +1222,18 @@
             }
           },
           "description": "`hours` determines the number of hours for which the audit report is returned"
-        }
+        },
+        "tags": [
+          "Token APIs"
+        ]
       }
     },
     "/auth/v1/provider/access": {
       "get": {
         "summary": "Get all access policies",
-        "tags": [],
+        "tags": [
+          "Access APIs"
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1393,17 +1397,14 @@
           }
         },
         "operationId": "get-auth-v1-provider-access",
-        "description": "** Requires a valid IUDX issued client certificate and user must be registered provider **\n\nGet all access policies set for various users"
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nGet all access policies set for various users."
       },
       "post": {
-        "summary": "Give access to resources",
+        "summary": "Give users access to resources",
         "operationId": "post-auth-v1-provider-access",
-        "tags": [
-          "access"
-        ],
         "responses": {
           "200": {
-            "description": "If the access has been successfully given",
+            "description": "If the access policy has been successfully set",
             "content": {
               "application/json": {
                 "schema": {
@@ -1477,7 +1478,7 @@
             }
           },
           "403": {
-            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- # if rule exists for particular provider AND `user_email` AND `user_role` AND `item/catalogue` AND `capability` (if applicable)",
+            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability` ",
             "content": {
               "application/json": {
                 "schema": {
@@ -1543,7 +1544,7 @@
             }
           }
         },
-        "description": "** Requires a valid IUDX issued client certificate and user must be registered provider **\n\nGive registered consumers, data ingesters and onboarders access to provider's resources\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server",
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nGive registered consumers, data ingesters and onboarders access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1631,8 +1632,11 @@
               }
             }
           },
-          "description": "- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capability` array is necessary. The `capability` array specifies the various APIs the consumer is allowed to call grouped by a specific capability\n  - `subscription` : ```/ngsi-ld/v1/subscription```\n  - `temporal` :    ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n  - `complex` :    ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n- Currently, setting data ingester access implicitly sets permission to access the resource with API `/iudx/v1/adapter`\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_"
-        }
+          "description": "- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capability` array is necessary. The `capability` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n\n"
+        },
+        "tags": [
+          "Access APIs"
+        ]
       }
     }
   },
