@@ -15,6 +15,7 @@
   ],
   "tags": [
     {
+
       "name": "Provider Approval",
       "description": "APIs related to approving new providers"
     },
@@ -415,7 +416,7 @@
         "operationId": "post-auth-v1-admin-organizations",
         "responses": {
           "200": {
-            "description": "Organzation successfully registered",
+            "description": "Organization successfully registered",
             "content": {
               "application/json": {
                 "schema": {
