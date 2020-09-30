@@ -31,7 +31,7 @@
         "operationId": "postv1-provider-registration",
         "responses": {
           "200": {
-            "description": "The registration is successful, pending approval",
+            "description": "The registration is successful, and the registration request is pending approval",
             "content": {
               "application/json": {
                 "schema": {
