@@ -3,7 +3,7 @@
   "info": {
     "title": "IUDX Auth",
     "version": "1.0",
-    "description": "API specification for IUDX Auth APIs. All Auth APIs require a valid IUDX issued client certificate. These APIs are used by Providers and other users to manage access policies and request for tokens ",
+    "description": "API specification for IUDX Auth APIs. These APIs are used by Providers and other users to manage access policies and request for tokens.\n**All Auth APIs require a valid IUDX issued client certificate.**",
     "contact": {
       "url": "https://www.iudx.org.in/"
     }
