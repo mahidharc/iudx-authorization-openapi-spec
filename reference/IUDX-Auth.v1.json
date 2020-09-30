@@ -3,7 +3,7 @@
   "info": {
     "title": "IUDX Auth",
     "version": "1.0",
-    "description": "API specification for IUDX consent APIs. These APIs are used for registration for various roles, such as Provider, Consumers, Data ingesters and Onboarders.",
+    "description": "API specification for IUDX Auth APIs. All Auth APIs require a valid IUDX issued client certificate. These APIs are used by Providers and other users to manage access policies and request for tokens ",
     "contact": {
       "url": "https://www.iudx.org.in/"
     }
@@ -1720,7 +1720,6 @@
         },
         "description": "If an API is called with an incorrect certificate (non IUDX or incorrect class)"
       }
-    },
-    "securitySchemes": {}
+    }
   }
 }
