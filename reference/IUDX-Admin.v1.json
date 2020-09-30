@@ -3,7 +3,7 @@
   "info": {
     "title": "IUDX Admin",
     "version": "1.0",
-    "description": "API Specification for IUDX Admin operations. The APIs are used to approve provider registration requests and to register organizations. \n**All admin APIs require a valid client certificate issued by IUDX, and can be called by registered IUDX admins.**",
+    "description": "API Specification for IUDX Admin operations. The APIs are used to approve provider registration requests and to register organizations. \n**All Admin APIs require a valid client certificate issued by IUDX, and can be called by IUDX admins.**",
     "contact": {
       "url": "https://www.iudx.org.in/"
     }
@@ -15,7 +15,6 @@
   ],
   "tags": [
     {
-
       "name": "Provider Approval",
       "description": "APIs related to approving new providers"
     },
@@ -642,7 +641,6 @@
           }
         }
       }
-    },
-    "securitySchemes": {}
+    }
   }
 }
