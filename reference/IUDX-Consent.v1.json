@@ -225,12 +225,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Generic-Success"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 },
                 "examples": {
-                  "Success": {
+                  "Successful registration for the first time": {
                     "value": {
-                      "success": true
+                      "success": true,
+                      "message": "A certificate has been generated and sent to your email"
+                    }
+                  },
+                  "Successful registration of another role": {
+                    "value": {
+                      "success": true,
+                      "message": "Since you have registered before, please continue to use the certificate that was sent before."
                     }
                   }
                 }
@@ -264,7 +279,7 @@
             }
           },
           "403": {
-            "description": "- An organization with the requested ID does not exist (applicable for Onboarder and Data Ingester)\n- Website of organization and domain of email address does not match (applicable for Onboarder and Data Ingester)\n- Attempting to register for an already registered role",
+            "description": "- An organization with the requested ID does not exist (applicable for Onboarder and Data Ingester)\n- Website of organization and domain of email address does not match (applicable for Onboarder and Data Ingester)\n- If the email has been used for Provider registration\n- Attempting to register for an already registered role",
             "content": {
               "application/json": {
                 "schema": {
@@ -303,6 +318,13 @@
                     "value": {
                       "error": {
                         "message": "Already registered as data ingester"
+                      }
+                    }
+                  },
+                  "If the email has been used in Provider registration": {
+                    "value": {
+                      "error": {
+                        "message": "Email exists"
                       }
                     }
                   }
@@ -447,7 +469,7 @@
               }
             }
           },
-          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder or Provider\n    - (For a user that has registered as a Provider but has not been approved, the CSR submitted during Provider registration will be used to generate their certificate)\n\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
+          "description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
         },
         "tags": [
           "Registration APIs"

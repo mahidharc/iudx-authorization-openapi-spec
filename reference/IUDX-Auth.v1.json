@@ -1696,16 +1696,6 @@
       },
       "Incorrect-Cert-Class": {
         "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string"
-              }
-            }
-          }
-        },
         "x-examples": {
           "Calling /auth/v1/token/introspect API with": {
             "error": {
@@ -1718,7 +1708,18 @@
             }
           }
         },
-        "description": "If an API is called with an incorrect certificate (non IUDX or incorrect class)"
+        "description": "If an API is called with an incorrect certificate (non IUDX or incorrect class)",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "A class-* (or above) certificate is required to call this API"
+              }
+            }
+          }
+        }
       }
     }
   }
