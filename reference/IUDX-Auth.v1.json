@@ -55,13 +55,27 @@
                     },
                     "fingerprint": {
                       "type": "string"
+                    },
+                    "roles": {
+                      "type": "array",
+                      "description": "Roles for which the user has been registered for",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "provider",
+                          "consumer",
+                          "onboarder",
+                          "data ingester"
+                        ]
+                      }
                     }
                   },
                   "required": [
                     "id",
                     "certificate-class",
                     "serial",
-                    "fingerprint"
+                    "fingerprint",
+                    "roles"
                   ]
                 },
                 "examples": {
@@ -70,7 +84,11 @@
                       "id": "test@iisc.ac.in",
                       "certificate-class": 3,
                       "serial": "1b5e3735d350d93918730bb7e467fd1d3350e2b8",
-                      "fingerprint": "b4:5f:51:3d:35:af:cf:38:a9:98:a7:25:07:89:88:67:0e:17:13:cf"
+                      "fingerprint": "b4:5f:51:3d:35:af:cf:38:a9:98:a7:25:07:89:88:67:0e:17:13:cf",
+                      "roles": [
+                        "onboarder",
+                        "data ingester"
+                      ]
                     }
                   }
                 }
