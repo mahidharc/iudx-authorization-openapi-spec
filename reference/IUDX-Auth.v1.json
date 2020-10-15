@@ -1285,7 +1285,7 @@
                       },
                       "capabilities": {
                         "type": "array",
-                        "nullable":true,
+                        "nullable": true,
                         "items": {
                           "type": "string",
                           "enum": [
@@ -1428,7 +1428,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capability`\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
