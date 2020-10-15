@@ -1280,10 +1280,12 @@
                         }
                       },
                       "policy": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "policy text in Aperture"
                       },
-                      "capability": {
+                      "capabilities": {
                         "type": "array",
+                        "nullable":true,
                         "items": {
                           "type": "string",
                           "enum": [
@@ -1571,7 +1573,7 @@
                     "type": "string",
                     "description": "Must be resourcegroup"
                   },
-                  "capability": {
+                  "capabilities": {
                     "type": "array",
                     "minItems": 1,
                     "maxItems": 3,
@@ -1611,7 +1613,7 @@
                     "user_role": "consumer",
                     "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
                     "item_type": "resourcegroup",
-                    "capability": [
+                    "capabilities": [
                       "complex",
                       "subscription",
                       "temporal"
@@ -1624,7 +1626,7 @@
                     "user_role": "consumer",
                     "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-flood-sensor",
                     "item_type": "resourcegroup",
-                    "capability": [
+                    "capabilities": [
                       "subscription"
                     ]
                   }
@@ -1632,7 +1634,7 @@
               }
             }
           },
-          "description": "- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capability` array is necessary. The `capability` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n\n"
+          "description": "- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n\n"
         },
         "tags": [
           "Access APIs"
