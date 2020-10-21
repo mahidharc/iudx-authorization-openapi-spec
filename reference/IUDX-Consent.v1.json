@@ -541,6 +541,128 @@
           }
         }
       }
+    },
+    "/v1/certificate/reissue": {
+      "get": {
+        "summary": "Reissue cert if expired",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK - Email sent with new certificate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Generic-Success"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "- If certificate not expired\n- Invalid code"
+          }
+        },
+        "operationId": "get-v1-certificate-reissue",
+        "description": "Reissue certificate if already expired - need to call code API (?)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/certificate/code": {
+      "get": {
+        "summary": "Get code for certificate update (reissue/update)",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK - Code sent to email"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden - Already asked for code in the last x minutes"
+          }
+        },
+        "operationId": "get-v1-certificate-code",
+        "description": "",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "reissue",
+                      "update"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        }
+      }
+    },
+    "/v1/certificate/update": {
+      "post": {
+        "summary": "Update certificate by submitting new CSR",
+        "operationId": "post-v1-certificate-update",
+        "responses": {
+          "200": {
+            "description": "OK - email sent with new certificate - old certificate is added to CRL list and cannot be used anymore"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden - invalid code or non-existant email"
+          }
+        },
+        "description": "Send new CSR to get a new certificate - need to call /certificate/code ",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "csr": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

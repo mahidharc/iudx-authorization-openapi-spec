@@ -1658,6 +1658,22 @@
           "Access APIs"
         ]
       }
+    },
+    "/auth/v1/certificate-reissue": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK - new cert sent to mail"
+          },
+          "403": {
+            "description": "Forbidden - if certificate not about to expire in x time"
+          }
+        },
+        "operationId": "get-auth-v1-certificate-reissue",
+        "description": "Reissue certificate - **requires a certificate to call**"
+      }
     }
   },
   "components": {
