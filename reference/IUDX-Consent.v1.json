@@ -548,7 +548,7 @@
         "tags": [],
         "responses": {
           "200": {
-            "description": "OK - Email sent with new certificate",
+            "description": "OK - Email sent with new certificate. If old certificate valid :- is added to CRL list and cannot be used anymore",
             "content": {
               "application/json": {
                 "schema": {
@@ -577,15 +577,22 @@
                   },
                   "code": {
                     "type": "string"
+                  },
+                  "csr": {
+                    "type": "string"
                   }
-                }
+                },
+                "required": [
+                  "email",
+                  "code"
+                ]
               }
             }
           }
         }
       }
     },
-    "/v1/certificate/code": {
+    "/v1/otp": {
       "get": {
         "summary": "Get code for certificate update (reissue/update)",
         "tags": [],
@@ -624,46 +631,10 @@
           },
           "description": ""
         }
-      }
+      },
+      "parameters": []
     },
-    "/v1/certificate/update": {
-      "post": {
-        "summary": "Update certificate by submitting new CSR",
-        "operationId": "post-v1-certificate-update",
-        "responses": {
-          "200": {
-            "description": "OK - email sent with new certificate - old certificate is added to CRL list and cannot be used anymore"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden - invalid code or non-existant email"
-          }
-        },
-        "description": "Send new CSR to get a new certificate - need to call /certificate/code ",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string"
-                  },
-                  "csr": {
-                    "type": "string"
-                  },
-                  "code": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    "/v1/certificate/update": {}
   },
   "components": {
     "schemas": {

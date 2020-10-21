@@ -1662,17 +1662,33 @@
     "/auth/v1/certificate-reissue": {
       "get": {
         "summary": "Your GET endpoint",
-        "tags": [],
+        "tags": [
+          "Certificate APIs"
+        ],
         "responses": {
           "200": {
             "description": "OK - new cert sent to mail"
           },
           "403": {
-            "description": "Forbidden - if certificate not about to expire in x time"
+            "description": "Forbidden - if certificate not about to expire in 1 month"
           }
         },
         "operationId": "get-auth-v1-certificate-reissue",
-        "description": "Reissue certificate - **requires a certificate to call**"
+        "description": "Reissue certificate - **requires a certificate to call**",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "session_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
