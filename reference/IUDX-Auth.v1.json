@@ -1657,6 +1657,221 @@
         "tags": [
           "Access APIs"
         ]
+      },
+      "delete": {
+        "summary": "Delete access policies",
+        "operationId": "delete-auth-v1-provider-access",
+        "responses": {
+          "200": {
+            "description": "The policy/policies have been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `capabilities` (if malformed)\n* Duplicate access IDs in request array\n**For all above errors, the offending access ID is returned if applicable**\n* SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "access_id": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid ID": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (id)",
+                        "access_id": -5
+                      }
+                    }
+                  },
+                  "Invalid body": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (body)"
+                      }
+                    }
+                  },
+                  "Duplicate IDs sent": {
+                    "value": {
+                      "error": {
+                        "message": "Duplicate data",
+                        "access_id": 5
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If a user who is not registered as a provider calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid access ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "access_id": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid id",
+                        "access_id": 45
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nDelete multiple access policies set by the provider.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "description": "",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "capabilities": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 3,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "temporal",
+                          "subscription",
+                          "complex"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              },
+              "examples": {
+                "Example": {
+                  "value": [
+                    {
+                      "id": 97
+                    },
+                    {
+                      "id": 5
+                    },
+                    {
+                      "id": 44,
+                      "capabilities": [
+                        "temporal"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "description": "The body is an array of JSON objects, with each object containing `id`, which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint.\n\nIn order to delete specific capabilities for consumer rules, a `capabilities` array can be sent in the object. **If the `capabilities` array is not sent for consumer rules, the whole rule will be deleted**"
+        },
+        "tags": [
+          "Access APIs"
+        ]
       }
     }
   },
