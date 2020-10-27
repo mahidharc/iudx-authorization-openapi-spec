@@ -1685,16 +1685,29 @@
             }
           },
           "400": {
-            "description": "* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n* Duplicates in the request array - _the index of the offending object is also returned_\n* SSL Errors",
+            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `capabilities` (if malformed)\n* Duplicate access IDs in request array\n**For all above errors, the offending access ID is returned if applicable**\n* SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/NGINX-Errors"
                     },
                     {
-                      "$ref": "#/components/schemas/NGINX-Errors"
+                      "type": "object",
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "access_id": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
                 },
@@ -1702,7 +1715,8 @@
                   "Invalid ID": {
                     "value": {
                       "error": {
-                        "message": "Invalid data (id)"
+                        "message": "Invalid data (id)",
+                        "access_id": -5
                       }
                     }
                   },
@@ -1713,10 +1727,11 @@
                       }
                     }
                   },
-                  "Duplicate ID at the object with index 5": {
+                  "Duplicate IDs sent": {
                     "value": {
                       "error": {
-                        "message": "Invalid data (duplicate) 5"
+                        "message": "Duplicate data",
+                        "access_id": 5
                       }
                     }
                   }
@@ -1748,13 +1763,27 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "access_id": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
                 },
                 "examples": {
                   "Example": {
                     "value": {
                       "error": {
-                        "message": "Invalid id"
+                        "message": "Invalid id",
+                        "access_id": 45
                       }
                     }
                   }
@@ -1798,6 +1827,19 @@
                       "type": "integer",
                       "minimum": 1,
                       "maximum": 2147483647
+                    },
+                    "capabilities": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 3,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "temporal",
+                          "subscription",
+                          "complex"
+                        ]
+                      }
                     }
                   },
                   "required": [
@@ -1813,13 +1855,19 @@
                     },
                     {
                       "id": 5
+                    },
+                    {
+                      "id": 44,
+                      "capabilities": [
+                        "temporal"
+                      ]
                     }
                   ]
                 }
               }
             }
           },
-          "description": "The body is an array of JSON objects, with each object containing `id`, which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint."
+          "description": "The body is an array of JSON objects, with each object containing `id`, which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint.\n\nIn order to delete specific capabilities for consumer rules, a `capabilities` array can be sent in the object. **If the `capabilities` array is not sent for consumer rules, the whole rule will be deleted**"
         },
         "tags": [
           "Access APIs"
