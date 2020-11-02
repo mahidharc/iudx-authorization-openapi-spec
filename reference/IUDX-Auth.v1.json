@@ -26,6 +26,9 @@
     {
       "name": "Access APIs",
       "description": "APIs related to operations on access rules/policies on resources"
+    },
+    {
+      "name": "Secure Session APIs"
     }
   ],
   "paths": {
@@ -1873,6 +1876,62 @@
           "Access APIs"
         ]
       }
+    },
+    "/auth/v1/secure-session": {
+      "post": {
+        "summary": "Create Session ID",
+        "operationId": "post-auth-v1-secure-session",
+        "description": "**Requires a valid HTTP client certificate**\n\nCreate a secure session ID by presenting a list of secure APIs to be accessed.",
+        "tags": [
+          "Secure Session APIs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "apis": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                      "$ref": "#/components/schemas/Secure-Session-Request-Object"
+                    }
+                  }
+                },
+                "required": [
+                  "apis"
+                ]
+              },
+              "examples": {}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "retry-id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "retry-time": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "expiry-time": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1927,7 +1986,8 @@
               }
             }
           }
-        }
+        },
+        "x-examples": {}
       },
       "Incorrect-Cert-Class": {
         "type": "object",
@@ -1953,6 +2013,29 @@
                 "example": "A class-* (or above) certificate is required to call this API"
               }
             }
+          }
+        }
+      },
+      "Secure-Session-Request-Object": {
+        "description": "Request Endpoint object to be sent inside an array to work with session APIs",
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "minLength": 1
+          },
+          "endpoint": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "method",
+          "endpoint"
+        ],
+        "x-examples": {
+          "example-1": {
+            "method": "GET",
+            "endpoint": "/auth/v1/provider/access"
           }
         }
       }
