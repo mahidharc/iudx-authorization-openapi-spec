@@ -1446,16 +1446,29 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n- If there is a duplicate rule being set\nFor the above, **the index from 0** of the offending object is also returned in the error message\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "#/components/schemas/Error-Message"
+                      "$ref": "#/components/schemas/NGINX-Errors"
                     },
                     {
-                      "$ref": "#/components/schemas/NGINX-Errors"
+                      "type": "object",
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
                     }
                   ]
                 },
@@ -1463,14 +1476,24 @@
                   "Invalid email": {
                     "value": {
                       "error": {
-                        "message": "Invalid data (email)"
+                        "message": "Invalid data (email)",
+                        "id": 0
                       }
                     }
                   },
                   "Invalid resource id": {
                     "value": {
                       "error": {
-                        "message": "Invalid data (item-id)"
+                        "message": "Invalid data (item-id)",
+                        "id": 4
+                      }
+                    }
+                  },
+                  "Duplicate data": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (duplicate)",
+                        "id": 7
                       }
                     }
                   }
@@ -1498,45 +1521,72 @@
             }
           },
           "403": {
-            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability` ",
+            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability` \nFor the above, **the index from 0** of the offending object is also returned in the error message\n",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "id": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "id"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 },
                 "examples": {
                   "Giving access to unregistered user": {
                     "value": {
                       "error": {
-                        "message": "Invalid Accesser"
+                        "message": "Invalid Accesser",
+                        "id": 0
                       }
                     }
                   },
                   "Resource ID does not belong to the provider": {
                     "value": {
                       "error": {
-                        "message": "Provider does not match resource owner"
+                        "message": "Provider does not match resource owner",
+                        "id": 8
                       }
                     }
                   },
                   "Giving access again for same resource and same data ingester": {
                     "value": {
                       "error": {
-                        "message": "Rule exists"
+                        "message": "Rule exists",
+                        "id": 2
                       }
                     }
                   },
                   "Giving onboard access for same onboarder": {
                     "value": {
                       "error": {
-                        "message": "Rule exists"
+                        "message": "Rule exists",
+                        "id": 1
                       }
                     }
                   },
-                  "Giving access again to consumer for same resource and temporal capability": {
+                  "Giving access again to consumer for same resource and temporal, complex capability": {
                     "value": {
                       "error": {
-                        "message": "Rule exists for temporal"
+                        "message": "Rule exists for temporal,complex",
+                        "id": 0
                       }
                     }
                   }
@@ -1569,90 +1619,116 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "user_email": {
-                    "type": "string",
-                    "format": "email"
-                  },
-                  "user_role": {
-                    "type": "string",
-                    "enum": [
-                      "consumer",
-                      "onboarder",
-                      "data ingester"
-                    ]
-                  },
-                  "item_id": {
-                    "type": "string",
-                    "description": "A valid full resource ID (provider_domain_emai/sha1_of_provider_email)"
-                  },
-                  "item_type": {
-                    "type": "string",
-                    "description": "Must be resourcegroup"
-                  },
-                  "capabilities": {
-                    "type": "array",
-                    "minItems": 1,
-                    "maxItems": 3,
-                    "items": {
+                "type": "array",
+                "description": "",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "user_email": {
                       "type": "string",
+                      "minLength": 1
+                    },
+                    "user_role": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "item_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "item_type": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Must be resourcegroup",
                       "enum": [
-                        "subscription",
-                        "temporal",
-                        "complex"
+                        "resourcegroup"
                       ]
+                    },
+                    "capabilities": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "maxItems": 3,
+                      "description": "Required for consumer rules",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "subscription",
+                          "temporal",
+                          "complex"
+                        ]
+                      }
                     }
-                  }
-                },
-                "required": [
-                  "user_email",
-                  "user_role"
-                ]
+                  },
+                  "required": [
+                    "user_email",
+                    "user_role"
+                  ]
+                }
               },
               "examples": {
                 "Giving onboarder access": {
-                  "value": {
-                    "user_email": "test@datakaveri.org",
-                    "user_role": "onboarder"
-                  }
+                  "value": [
+                    {
+                      "user_email": "test@datakaveri.org",
+                      "user_role": "onboarder"
+                    }
+                  ]
                 },
                 "Giving data ingester access": {
-                  "value": {
-                    "user_email": "test@datakaveri.org",
-                    "user_role": "data ingester",
-                    "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
-                    "item_type": "resourcegroup"
-                  }
+                  "value": [
+                    {
+                      "user_email": "test@datakaveri.org",
+                      "user_role": "data ingester",
+                      "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                      "item_type": "resourcegroup"
+                    }
+                  ]
                 },
-                "Giving consumer access (all capabilities)": {
-                  "value": {
-                    "user_email": "test@datakaveri.org",
-                    "user_role": "consumer",
-                    "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
-                    "item_type": "resourcegroup",
-                    "capabilities": [
-                      "complex",
-                      "subscription",
-                      "temporal"
-                    ]
-                  }
+                "Giving multiple consumers access": {
+                  "value": [
+                    {
+                      "user_email": "test@datakaveri.org",
+                      "user_role": "consumer",
+                      "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                      "item_type": "resourcegroup",
+                      "capabilities": [
+                        "complex",
+                        "subscription",
+                        "temporal"
+                      ]
+                    },
+                    {
+                      "user_email": "admin@datakaveri.org",
+                      "user_role": "consumer",
+                      "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
+                      "item_type": "resourcegroup",
+                      "capabilities": [
+                        "complex",
+                        "subscription"
+                      ]
+                    }
+                  ]
                 },
                 "Giving consumer access (only subscription)": {
-                  "value": {
-                    "user_email": "test@datakaveri.org",
-                    "user_role": "consumer",
-                    "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-flood-sensor",
-                    "item_type": "resourcegroup",
-                    "capabilities": [
-                      "subscription"
-                    ]
-                  }
+                  "value": [
+                    {
+                      "user_email": "test@datakaveri.org",
+                      "user_role": "consumer",
+                      "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-flood-sensor",
+                      "item_type": "resourcegroup",
+                      "capabilities": [
+                        "subscription"
+                      ]
+                    }
+                  ]
                 }
               }
             }
           },
-          "description": "- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n\n"
+          "description": "The body must be an array of objects, with each object being a rule to be set\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n\n"
         },
         "tags": [
           "Access APIs"
