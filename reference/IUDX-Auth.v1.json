@@ -1417,7 +1417,7 @@
           }
         },
         "operationId": "get-auth-v1-provider-access",
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nGet all access policies set for various users."
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGet all access policies set for various users."
       },
       "post": {
         "summary": "Give users access to resources",
@@ -1446,7 +1446,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n- If there is a duplicate rule being set\nFor the above, **the index from 0** of the offending object is also returned in the error message\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `provider-email` header\nThe index (from 0) of the object containing the error (except for `provider-email` header) will be returned in the error response\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -1464,7 +1464,8 @@
                               "type": "string"
                             },
                             "id": {
-                              "type": "integer"
+                              "type": "integer",
+                              "description": "ID of the object containing the error"
                             }
                           }
                         }
@@ -1477,7 +1478,7 @@
                     "value": {
                       "error": {
                         "message": "Invalid data (email)",
-                        "id": 0
+                        "id": 2
                       }
                     }
                   },
@@ -1614,7 +1615,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nGive registered consumers, data ingesters and onboarders access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server",
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1628,11 +1629,18 @@
                   "properties": {
                     "user_email": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                      "format": "email"
                     },
                     "user_role": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                        "enum": [
+                        "consumer",
+                        "onboarder",
+                        "data ingester",
+                        "delegate"
+                      ]
                     },
                     "item_id": {
                       "type": "string",
@@ -1658,8 +1666,16 @@
                           "subscription",
                           "temporal",
                           "complex"
-                        ]
-                      }
+                      ]
+                    }
+                    },
+                    "item_id": {
+                      "type": "string",
+                      "description": "A valid full resource ID (provider_domain_emai/sha1_of_provider_email)"
+                    },
+                    "item_type": {
+                      "type": "string",
+                      "description": "Must be resourcegroup"
                     }
                   },
                   "required": [
@@ -1724,14 +1740,33 @@
                       ]
                     }
                   ]
+                },
+                "Give delegate access": {
+                  "value": [
+                    {
+                      "user_email": "delegate@example.com",
+                      "user_role": "delegate"
+                    }
+                  ]
                 }
               }
             }
           },
-          "description": "The body must be an array of objects, with each object being a rule to be set\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n\n"
+          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**\n"
         },
         "tags": [
           "Access APIs"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "email"
+            },
+            "in": "header",
+            "name": "provider-email",
+            "description": "Email of provider that delegate is setting rule for"
+          }
         ]
       },
       "delete": {
@@ -1887,58 +1922,42 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nDelete multiple access policies set by the provider.",
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nDelete multiple access policies set by the provider or delegates.",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
+                "type": "object",
                 "description": "",
-                "minItems": 1,
-                "uniqueItems": true,
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 2147483647
-                    },
-                    "capabilities": {
-                      "type": "array",
-                      "minItems": 1,
-                      "maxItems": 3,
-                      "items": {
-                        "type": "string",
-                        "enum": [
-                          "temporal",
-                          "subscription",
-                          "complex"
-                        ]
-                      }
-                    }
+                "properties": {
+                  "provider_email": {
+                    "type": "string"
                   },
-                  "required": [
-                    "id"
-                  ]
+                  "request": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {}
+                  }
                 }
               },
               "examples": {
                 "Example": {
-                  "value": [
-                    {
-                      "id": 97
-                    },
-                    {
-                      "id": 5
-                    },
-                    {
-                      "id": 44,
-                      "capabilities": [
-                        "temporal"
-                      ]
-                    }
-                  ]
+                  "value": {
+                    "request": [
+                      {
+                        "id": 97
+                      },
+                      {
+                        "id": 5
+                      },
+                      {
+                        "id": 44,
+                        "capabilities": [
+                          "temporal"
+                        ]
+                      }
+                    ]
+                  }
                 }
               }
             }
