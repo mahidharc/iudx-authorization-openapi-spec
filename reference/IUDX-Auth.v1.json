@@ -1417,7 +1417,7 @@
           }
         },
         "operationId": "get-auth-v1-provider-access",
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nGet all access policies set for various users."
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGet all access policies set for various users."
       },
       "post": {
         "summary": "Give users access to resources",
@@ -1922,7 +1922,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider**\n\nDelete multiple access policies set by the provider.",
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nDelete multiple access policies set by the provider or delegates.",
         "requestBody": {
           "content": {
             "application/json": {
