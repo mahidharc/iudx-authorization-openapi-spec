@@ -1252,6 +1252,17 @@
         "tags": [
           "Access APIs"
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "email"
+            },
+            "in": "header",
+            "name": "provider-email",
+            "description": "Email of provider that delegate is setting rule for"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1377,8 +1388,27 @@
               }
             }
           },
+          "400": {
+            "description": "If the `provider-email` header is malformed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (provider_email)"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401": {
-            "description": "If a user who is not registered as a provider calls the API",
+            "description": "- If a user who is not registered as a provider or delegate calls the API\n- If `provider-email` is not a registered provider\n- If a delegate who is not authorized by the provider in the `provider-email` header calls the API",
             "content": {
               "application/json": {
                 "schema": {
@@ -1417,14 +1447,14 @@
           }
         },
         "operationId": "get-auth-v1-provider-access",
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGet all access policies set for various users."
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGet all access policies set for various users.\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may view policies set by the provider and other delegates. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set."
       },
       "post": {
         "summary": "Give users access to resources",
         "operationId": "post-auth-v1-provider-access",
         "responses": {
           "200": {
-            "description": "If the access policy has been successfully set",
+            "description": "If the access policy/policies have been successfully set",
             "content": {
               "application/json": {
                 "schema": {
@@ -1446,7 +1476,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `provider-email` header\nThe index (from 0) of the object containing the error (except for `provider-email` header) will be returned in the error response\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `provider-email` header\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -1503,7 +1533,7 @@
             }
           },
           "401": {
-            "description": "If a user who is not registered as a provider calls the API",
+            "description": "- If a user who is not registered as a provider or delegate calls the API\n- If `provider-email` is not a registered provider\n- If a delegate who is not authorized by the provider in the `provider-email` header calls the API",
             "content": {
               "application/json": {
                 "schema": {
@@ -1522,7 +1552,7 @@
             }
           },
           "403": {
-            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability` \nFor the above, **the index from 0** of the offending object is also returned in the error message\n",
+            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability`\n- Delegate tries to set a delegate rule\n\n**The index from 0 of the offending object in the request array is also returned in the error message**\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1590,6 +1620,14 @@
                         "id": 0
                       }
                     }
+                  },
+                  "Delegate setting a delegate rule": {
+                    "value": {
+                      "error": {
+                        "message": "Delegate cannot set delegate rule",
+                        "id": 4
+                      }
+                    }
                   }
                 }
               }
@@ -1615,7 +1653,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1635,16 +1673,12 @@
                     "user_role": {
                       "type": "string",
                       "minLength": 1,
-                        "enum": [
+                      "enum": [
                         "consumer",
                         "onboarder",
                         "data ingester",
                         "delegate"
                       ]
-                    },
-                    "item_id": {
-                      "type": "string",
-                      "minLength": 1
                     },
                     "item_type": {
                       "type": "string",
@@ -1666,16 +1700,12 @@
                           "subscription",
                           "temporal",
                           "complex"
-                      ]
-                    }
+                        ]
+                      }
                     },
                     "item_id": {
                       "type": "string",
                       "description": "A valid full resource ID (provider_domain_emai/sha1_of_provider_email)"
-                    },
-                    "item_type": {
-                      "type": "string",
-                      "description": "Must be resourcegroup"
                     }
                   },
                   "required": [
@@ -1752,7 +1782,7 @@
               }
             }
           },
-          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**\n"
+          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
         },
         "tags": [
           "Access APIs"
@@ -1796,7 +1826,7 @@
             }
           },
           "400": {
-            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `capabilities` (if malformed)\n* Duplicate access IDs in request array\n**For all above errors, the offending access ID is returned if applicable**\n* SSL Errors",
+            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `capabilities` (if malformed)\n* Duplicate access IDs in request array\n - `provider-email` header\n\n**For all above errors (except for `provider-email` header) the offending access ID is returned will be returned in the error response**\n* SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -1851,7 +1881,7 @@
             }
           },
           "401": {
-            "description": "If a user who is not registered as a provider calls the API",
+            "description": "- If a user who is not registered as a provider or delegate calls the API\n- If `provider-email` is not a registered provider\n- If a delegate who is not authorized by the provider in the `provider-email` header calls the API",
             "content": {
               "application/json": {
                 "schema": {
@@ -1870,7 +1900,7 @@
             }
           },
           "403": {
-            "description": "Invalid access ID",
+            "description": "- Invalid access ID\n- Delegate tries to delete a delegate rule",
             "content": {
               "application/json": {
                 "schema": {
@@ -1890,11 +1920,19 @@
                   }
                 },
                 "examples": {
-                  "Example": {
+                  "Invalid access ID": {
                     "value": {
                       "error": {
                         "message": "Invalid id",
                         "access_id": 45
+                      }
+                    }
+                  },
+                  "Delegate trying to delete a delegate rule": {
+                    "value": {
+                      "error": {
+                        "message": "Delegate cannot delete delegate rules",
+                        "access_id": 8
                       }
                     }
                   }
@@ -1922,50 +1960,75 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nDelete multiple access policies set by the provider or delegates.",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nDelete multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may delete policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can delete policies and modify existing policies (delete capabilities)\n- **Delegates cannot delete delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
+                "type": "array",
                 "description": "",
-                "properties": {
-                  "provider_email": {
-                    "type": "string"
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "capabilities": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 3,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "subscription",
+                          "temporal",
+                          "complex"
+                        ]
+                      }
+                    }
                   },
-                  "request": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {}
-                  }
+                  "required": [
+                    "id"
+                  ]
                 }
               },
               "examples": {
                 "Example": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": 97
-                      },
-                      {
-                        "id": 5
-                      },
-                      {
-                        "id": 44,
-                        "capabilities": [
-                          "temporal"
-                        ]
-                      }
-                    ]
-                  }
+                  "value": [
+                    {
+                      "id": 97
+                    },
+                    {
+                      "id": 5
+                    },
+                    {
+                      "id": 44,
+                      "capabilities": [
+                        "temporal"
+                      ]
+                    }
+                  ]
                 }
               }
             }
           },
-          "description": "The body is an array of JSON objects, with each object containing `id`, which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint.\n\nIn order to delete specific capabilities for consumer rules, a `capabilities` array can be sent in the object. **If the `capabilities` array is not sent for consumer rules, the whole rule will be deleted**"
+          "description": "The body is an array of JSON objects, with each object containing `id`, which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint. \n\nIn order to delete specific capabilities for consumer rules, a `capabilities` array can be sent in the object. **If the `capabilities` array is not sent for consumer rules, the whole rule will be deleted**\n\n**NOTE** : Rules are deleted only when **all objects in the request array are valid**"
         },
         "tags": [
           "Access APIs"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "email"
+            },
+            "in": "header",
+            "name": "provider-email",
+            "description": "Email of provider that delegate is setting rule for"
+          }
         ]
       }
     }
