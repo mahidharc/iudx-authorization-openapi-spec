@@ -217,7 +217,7 @@
     },
     "/v1/registration": {
       "post": {
-        "summary": "Consumer/Onboarder/Data Ingester Registration",
+        "summary": "Consumer/Onboarder/Data Ingester/Delegate Registration",
         "operationId": "post-v1-registration",
         "responses": {
           "200": {
@@ -253,7 +253,7 @@
             }
           },
           "400": {
-            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `roles`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
+            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n  - If phone number not sent when registering as Delegate\n- `email`\n- `organization`\n- `roles`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
             "content": {
               "application/json": {
                 "schema": {
@@ -279,7 +279,7 @@
             }
           },
           "403": {
-            "description": "- An organization with the requested ID does not exist (applicable for Onboarder and Data Ingester)\n- Website of organization and domain of email address does not match (applicable for Onboarder and Data Ingester)\n- If the email has been used for Provider registration\n- Attempting to register for an already registered role",
+            "description": "- An organization with the requested ID does not exist (applicable for Onboarder, Data Ingester and Delegate)\n- Website of organization and domain of email address does not match (applicable for Onboarder, Data Ingester and Delegate)\n- If the email has been used for Provider registration\n- Attempting to register for an already registered role",
             "content": {
               "application/json": {
                 "schema": {
@@ -359,7 +359,7 @@
             }
           }
         },
-        "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider\n\nIf a user is registering for the first time, then a valid Certificate Signing Request (CSR) is required. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac",
+        "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider\n* A Delegate can create, update and view policies on behalf of a Provider\n\nIf a user is registering for the first time, then a valid Certificate Signing Request (CSR) is required. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac",
         "requestBody": {
           "content": {
             "application/json": {
@@ -468,11 +468,27 @@
                       "consumer"
                     ]
                   }
+                },
+                "Registering for Delegate": {
+                  "value": {
+                    "name": {
+                      "title": "Ms.",
+                      "firstName": "Jane",
+                      "lastName": "Doe"
+                    },
+                    "phone": "9845596322",
+                    "email": "jane.doe@acme.org",
+                    "organization": 7,
+                    "csr": "string",
+                    "roles": [
+                      "delegate"
+                    ]
+                  }
                 }
               }
             }
           },
-          "description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
+          "description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders, Data Ingesters and Delegates, the domain of the email must match the website of the organization\n- **For Delegates, `phone` is mandatory**\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
         },
         "tags": [
           "Registration APIs"
