@@ -387,7 +387,8 @@
                   },
                   "phone": {
                     "type": "string",
-                    "pattern": "^[9876]\\d{9}$"
+                    "pattern": "^[9876]\\d{9}$",
+                    "description": "phone number is mandatory for Delegate"
                   },
                   "email": {
                     "type": "string",
@@ -405,13 +406,14 @@
                     "type": "array",
                     "uniqueItems": true,
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 4,
                     "items": {
                       "type": "string",
                       "enum": [
                         "consumer",
                         "onboarder",
-                        "data ingester"
+                        "data ingester",
+                        "delegate"
                       ]
                     }
                   }
@@ -479,7 +481,7 @@
                     "phone": "9845596322",
                     "email": "jane.doe@acme.org",
                     "organization": 7,
-                    "csr": "string",
+                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
                     "roles": [
                       "delegate"
                     ]
