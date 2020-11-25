@@ -341,6 +341,7 @@
                         },
                         "apis": {
                           "type": "array",
+                          "uniqueItems": true,
                           "items": {
                             "type": "string",
                             "minLength": 1,
@@ -783,6 +784,7 @@
                   "token-hashes": {
                     "type": "array",
                     "minItems": 1,
+                    "description": "Hashes must be lower case hex and exactly 64 characters",
                     "items": {
                       "type": "string",
                       "pattern": "^[0-9a-f]+$",
