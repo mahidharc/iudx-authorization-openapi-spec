@@ -153,33 +153,46 @@
                     ],
                     "properties": {
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                       },
                       "firstName": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                       },
                       "lastName": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                       }
                     }
                   },
                   "organization": {
                     "type": "integer",
-                    "description": "Valid organization ID obtained GET organization API"
+                    "description": "Valid organization ID obtained GET organization API",
+                    "minimum": 1,
+                    "maximum": 2147483647
                   },
                   "phone": {
                     "type": "string",
                     "description": "A valid mobile number",
-                    "pattern": "^[9876]\\d{9}$"
+                    "pattern": "^[9876]\\d{9}$",
+                    "minLength": 10,
+                    "maxLength": 10
                   },
                   "csr": {
                     "type": "string",
-                    "description": "A valid Certificate Signing Request in .PEM format, generated with RSA keys"
+                    "description": "A valid Certificate Signing Request in .PEM format, generated with RSA keys",
+                    "maxLength": 2048
                   },
                   "email": {
                     "type": "string",
                     "description": "",
-                    "format": "email"
+                    "format": "email",
+                    "minLength": 5,
+                    "maxLength": 64
                   }
                 },
                 "required": [
@@ -375,31 +388,45 @@
                     ],
                     "properties": {
                       "title": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                       },
                       "firstName": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                       },
                       "lastName": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                       }
                     }
                   },
                   "phone": {
                     "type": "string",
-                    "pattern": "^[9876]\\d{9}$"
+                    "pattern": "^[9876]\\d{9}$",
+                    "minLength": 10,
+                    "maxLength": 10
                   },
                   "email": {
                     "type": "string",
-                    "format": "email"
+                    "format": "email",
+                    "minLength": 5,
+                    "maxLength": 64
                   },
                   "organization": {
                     "type": "integer",
-                    "description": "Organization ID not required for consumers"
+                    "description": "Organization ID not required for consumers",
+                    "minimum": 1,
+                    "maximum": 2147483647
                   },
                   "csr": {
                     "type": "string",
-                    "description": "CSR is necessary if the user has not registered for another role before"
+                    "description": "CSR is necessary if the user has not registered for another role before",
+                    "maxLength": 2048,
+                    "minLength": 1
                   },
                   "roles": {
                     "type": "array",
