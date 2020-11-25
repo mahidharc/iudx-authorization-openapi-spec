@@ -499,7 +499,7 @@
               }
             }
           },
-          "description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
+          "description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders and Data Ingesters, the domain of the email must match the website of the organization\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for the `roles` array are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`\n - **Duplicates in the ```roles``` array are ignored**"
         },
         "tags": [
           "Registration APIs"
