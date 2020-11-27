@@ -155,17 +155,20 @@
                       "title": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 512
+                        "maxLength": 512,
+                        "pattern": "^[a-zA-Z]+\\.?$"
                       },
                       "firstName": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 512
+                        "maxLength": 512,
+                        "pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
                       },
                       "lastName": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 512
+                        "maxLength": 512,
+                        "pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
                       }
                     }
                   },
@@ -390,17 +393,20 @@
                       "title": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 512
+                        "maxLength": 512,
+                        "pattern": "^[a-zA-Z]+\\.?$"
                       },
                       "firstName": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 512
+                        "maxLength": 512,
+                        "pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
                       },
                       "lastName": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 512
+                        "maxLength": 512,
+                        "pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
                       }
                     }
                   },

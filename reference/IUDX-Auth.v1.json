@@ -933,7 +933,7 @@
                 "properties": {
                   "serial": {
                     "type": "string",
-                    "pattern": "^-?[a-fA-F0-9]{30,40}$",
+                    "pattern": "^-?[a-fA-F0-9]{40}$",
                     "minLength": 1,
                     "maxLength": 512
                   },
