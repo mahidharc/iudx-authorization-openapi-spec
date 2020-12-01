@@ -933,7 +933,7 @@
                 "properties": {
                   "serial": {
                     "type": "string",
-                    "pattern": "^-?[0-9a-f]+$",
+                    "pattern": "^-?[a-fA-F0-9]{40}$",
                     "minLength": 1,
                     "maxLength": 512
                   },
@@ -941,7 +941,8 @@
                     "type": "string",
                     "description": "valid certificate fingerprint delimited by :",
                     "minLength": 1,
-                    "maxLength": 512
+                    "maxLength": 512,
+                    "pattern": "^([a-fA-F0-9]{2}:){19}[a-fA-F0-9]{2}$"
                   }
                 },
                 "required": [
