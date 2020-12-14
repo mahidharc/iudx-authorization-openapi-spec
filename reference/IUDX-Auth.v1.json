@@ -26,6 +26,9 @@
     {
       "name": "Access APIs",
       "description": "APIs related to operations on access rules/policies on resources"
+    },
+    {
+      "name": "Delegate APIs"
     }
   ],
   "paths": {
@@ -2030,6 +2033,181 @@
             "description": "Email of provider that delegate is setting rule for"
           }
         ]
+      }
+    },
+    "/auth/v1/delegate/providers": {
+      "get": {
+        "summary": "Delegate - Get all Providers who have given delegate access",
+        "tags": [
+          "Delegate APIs"
+        ],
+        "responses": {
+          "200": {
+            "description": "The Delegate has been given access by at least one Provider. The details of the Providers will be returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "first_name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "last_name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "email": {
+                        "type": "string",
+                        "minLength": 1,
+                        "format": "email"
+                      },
+                      "organization": {
+                        "type": "object",
+                        "required": [
+                          "name",
+                          "website",
+                          "city",
+                          "state",
+                          "country"
+                        ],
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "website": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "city": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "state": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "country": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "first_name",
+                      "last_name",
+                      "email",
+                      "organization"
+                    ]
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "title": "Mr.",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "email": "john.doe@acme.org",
+                        "organization": {
+                          "name": "ACME",
+                          "website": "acme.org",
+                          "city": "Bengaluru",
+                          "state": "KA",
+                          "country": "IN"
+                        }
+                      },
+                      {
+                        "title": "Ms.",
+                        "first_name": "Jane",
+                        "last_name": "Doe",
+                        "email": "jane.doe@company.in",
+                        "organization": {
+                          "name": "Company",
+                          "website": "company.in",
+                          "city": "Bengaluru",
+                          "state": "KA",
+                          "country": "IN"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If a user who is not registered as a delegate calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "If no Providers have given access to the Delegate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not approved by any providers"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Internal error!"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-v1-delegate-providers",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered delegate**\n\nA registered Delegate can get details of all Providers who have set a delegate rule for said Delegate"
       }
     }
   },
