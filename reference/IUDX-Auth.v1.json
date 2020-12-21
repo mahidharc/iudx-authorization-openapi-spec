@@ -165,7 +165,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed request\n  - If `id` is invalid or no access policy set for it\n  - If `apis` is invalid\n- SSL Errors",
+            "description": "- Missing or malformed request\n  - If `apis` is invalid\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -238,7 +238,7 @@
             }
           },
           "403": {
-            "description": "- If not permitted to access a certain resource, or combination of resource and API\n- Incorrect Certificate used",
+            "description": "- If not permitted to access a certain resource, or combination of resource and API\n- If `id` is invalid or no access policy set for it by the concerned Provider\n- Incorrect Certificate used",
             "content": {
               "application/json": {
                 "schema": {
