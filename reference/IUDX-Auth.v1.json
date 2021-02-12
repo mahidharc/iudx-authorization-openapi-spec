@@ -308,25 +308,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nRequest for a token to access protected resources and APIs on those resources. The issued token is then included as part of the request to the resource server for said resource. Once the resource server validates the token, the protected resource is shared with the user.",
@@ -622,25 +603,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for.\n\n**A resource server can only introspect a token that has been issued for resources that belong to it.**\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
@@ -923,25 +885,6 @@
                     "value": {
                       "error": {
                         "message": "A class-3 (or above) certificate is required to call this API"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
                       }
                     }
                   }
@@ -1241,25 +1184,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "description": "**Requires a valid class-3/provider client certificate**\n\nA Provider can use the Audit API to get details of the tokens issued for their resources. ",
@@ -1445,25 +1369,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "operationId": "get-auth-v1-provider-access",
@@ -1587,25 +1492,6 @@
                     "value": {
                       "error": {
                         "message": "Rule exists for temporal"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
                       }
                     }
                   }
@@ -1842,25 +1728,6 @@
                       "error": {
                         "message": "Invalid id",
                         "access_id": 45
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
                       }
                     }
                   }

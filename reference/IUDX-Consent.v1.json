@@ -116,25 +116,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "description": "Register as a Provider. Provider registration requires a valid Certificate Signing Request (CSR) generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac. \n\nOnce a Provider has registered successfully, their registration request is subject to approval by an IUDX admin. If the registration is approved, a signed certificate will be sent to the registered email address. This certificate would be used by the Provider for several operations, such as giving consumers access to their resources, auditing tokens issued for their resources and revoking tokens.",
