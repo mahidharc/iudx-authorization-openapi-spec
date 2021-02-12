@@ -162,7 +162,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed request\n  - If `apis` is invalid\n- SSL Errors",
+            "description": "- Missing or malformed request\n  - If `apis` is invalid or no `apis` sent for a resource ID that requires it\n  - If `id` is invalid\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -223,10 +223,14 @@
                       }
                     }
                   },
-                  "example-4": {
+                  "No apis requested for particular resource ID": {
                     "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
                       "error": {
-                        "message": "string"
+                        "message": "'apis' is required for this id",
+                        "invalid-input": {
+                          "id": "iisc.ac.in/0808eb81ea0e5773187ae06110f55915a55f5c05/example.com/pune-aqm/*"
+                        }
                       }
                     }
                   }
@@ -235,7 +239,7 @@
             }
           },
           "403": {
-            "description": "- If not permitted to access a certain resource, or combination of resource and API\n- If `id` is invalid or no access policy set for it by the concerned Provider\n- Incorrect Certificate used",
+            "description": "- If not permitted to access a certain resource, or combination of resource and API\n- If no access policy set for `id` by the concerned Provider\n- Incorrect Certificate used",
             "content": {
               "application/json": {
                 "schema": {
@@ -764,17 +768,26 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "Forbidden - If revoke called by a user who is not a Provider (certificate class < 3)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Incorrect-Cert-Class"
+                },
+                "examples": {
+                  "If a consumer calls the API": {
+                    "value": {
+                      "error": {
+                        "message": "A class-3 (or above) certificate is required to call this API"
+                      }
+                    }
+                  }
                 }
               }
             }
           }
         },
-        "description": "**Requires a valid class-3/provider client certificate issued by IUDX**\n\nRevoke list of tokens using token hashes obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
+        "description": "**Requires a valid class-3/provider client certificate issued by IUDX**\n\nRevoke list of tokens using token hashes obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.\n\n**When sending an array of token hashes, all valid tokens before a invalid token hash will be revoked. `num-tokens-revoked` will be returned with the number of tokens revoked till the invalid token hash**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -895,11 +908,20 @@
             }
           },
           "403": {
-            "description": "Forbidden",
+            "description": "Forbidden - If revoke called by a user who is not a Provider (certificate class < 3)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Incorrect-Cert-Class"
+                },
+                "examples": {
+                  "If a consumer calls the API": {
+                    "value": {
+                      "error": {
+                        "message": "A class-3 (or above) certificate is required to call this API"
+                      }
+                    }
+                  }
                 }
               }
             }
