@@ -328,32 +328,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "* Internal Server Error OR\n* Error in certificate generation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Internal error": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  },
-                  "Error in certificate generation": {
-                    "value": {
-                      "error": {
-                        "message": "Certificate Error"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider\n\nIf a user is registering for the first time, then a valid Certificate Signing Request (CSR) is required. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac",
