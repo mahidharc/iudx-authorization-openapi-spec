@@ -344,7 +344,8 @@
                         "id": {
                           "type": "string",
                           "maxLength": 512,
-                          "minLength": 1
+                          "minLength": 1,
+                          "description": "A valid **IUDX ID**"
                         },
                         "apis": {
                           "type": "array",
@@ -465,7 +466,7 @@
               }
             }
           },
-          "description": "- The `request` array consists of objects that specify resource IDs for which access is desired.\n- `id` is the resource ID of the resource group or resource item\n    - **For a token for access to the entire resource group, the resource group ID must be suffixed by '/*'**\n- `apis` is an array of APIs that can be called on the respective resource ID\n\n### Consumers\n\nFor consumers, the APIs are defined by the existing capabilities:\n\n- Subscription capability: ```/ngsi-ld/v1/subscription```\n- Temporal capability: ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n- Complex capability: ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n\nFor the APIs with ```<resource-group>```, the API text will include the full resource group ID. For example, if id is \n      \n      iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm/sensor-1\nthe entities API for that will be:\n\n    /ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm\n\n### Data Ingesters\n\nData ingesters specifically have only 1 accessible API:\n```/iudx/v1/adapter```\n\n### Onboarders\n\n**Onboarders have no valid APIs**. The `id` field must be in the format:\n```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n    \n    datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud"
+          "description": "- The `request` array consists of objects that specify resource IDs for which access is desired.\n- `id` is a **valid IUDX resource ID** of the resource group or resource item\n    - **For a token for access to the entire resource group, the resource group ID must be suffixed by '/*'**\n- `apis` is an array of APIs that can be called on the respective resource ID\n\nThe structure of the ID is `provider-email-domain/provider-email-SHA1/resource-server-domain/resource-group/resource-item` (to specify a resource group, `resource-item` is not needed)\n\n### Consumers\n\nFor consumers, the APIs are defined by the existing capabilities:\n\n- Subscription capability: ```/ngsi-ld/v1/subscription```\n- Temporal capability: ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n- Complex capability: ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n\nFor the APIs with ```<resource-group>```, the API text will include the full resource group ID. For example, if id is \n      \n      iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm/sensor-1\nthe entities API for that will be:\n\n    /ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm\n\n### Data Ingesters\n\nData ingesters specifically have only 1 accessible API:\n```/iudx/v1/adapter```\n\n### Onboarders\n\n**Onboarders have no valid APIs**. The `id` field must be in the format:\n```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n    \n    datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud"
         },
         "tags": [
           "Token APIs"
@@ -651,7 +652,7 @@
                 "properties": {
                   "token": {
                     "type": "string",
-                    "description": "A valid IUDX token (Auth-Server-URL/email-of-issued-to/32-chars-of-random-hex)",
+                    "description": "A **valid IUDX token**",
                     "maxLength": 512
                   }
                 },
@@ -668,7 +669,7 @@
               }
             }
           },
-          "description": "The token is sent in the request"
+          "description": "A valid IUDX token is sent in the request. The structure of the token is `Auth-Server-URL/email-of-issued-to/32-chars-in-hexadecimal`"
         },
         "tags": [
           "Token APIs"
