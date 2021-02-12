@@ -34,7 +34,7 @@
         "summary": "Get user certificate details",
         "operationId": "post-auth-v1-certificate-info",
         "parameters": [],
-        "description": "**Requires a valid HTTP client certificate**\n\nGet and validate certificate details.",
+        "description": "**Requires a valid client certificate issued by IUDX**\n\nGet details of the certificate as well as the roles of the user associated with the certificate. This API can be also used to check whether a certificate is expired, or if there is a mismatch between the private key and certificate.\n\nAny certificate error will result in a `400 Bad Request` error. The following errors are possible:\n- No client certificate sent with request for API that requires a client side certificate\n- Error in client certificate verification. This can likely be caused by using an expired certificate to call the API or if the certificate is not accepted by the AAA server\n- Making an HTTP request to an HTTPS endpoint\n",
         "responses": {
           "200": {
             "description": "Returns certificate details",
@@ -44,17 +44,20 @@
                   "type": "object",
                   "properties": {
                     "id": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The email address of the user"
                     },
                     "certificate-class": {
                       "type": "integer",
                       "description": "The certificate class"
                     },
                     "serial": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The serial of the certificate"
                     },
                     "fingerprint": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "The fingerprint of the certificate"
                     },
                     "roles": {
                       "type": "array",
