@@ -71,6 +71,21 @@
                           "data ingester"
                         ]
                       }
+                    },
+                    "user_name": {
+                      "type": "object",
+                      "description": "The name of the user associated with the certificate",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "first_name": {
+                          "type": "string"
+                        },
+                        "last_name": {
+                          "type": "string"
+                        }
+                      }
                     }
                   },
                   "required": [
@@ -78,7 +93,8 @@
                     "certificate-class",
                     "serial",
                     "fingerprint",
-                    "roles"
+                    "roles",
+                    "user_name"
                   ]
                 },
                 "examples": {
@@ -91,7 +107,12 @@
                       "roles": [
                         "onboarder",
                         "data ingester"
-                      ]
+                      ],
+                      "user_name": {
+                        "title": "Ind.",
+                        "first_name": "Jane",
+                        "last_name": "Doe"
+                      }
                     }
                   }
                 }
@@ -1311,10 +1332,6 @@
                           }
                         }
                       },
-                      "policy": {
-                        "type": "string",
-                        "description": "policy text in Aperture"
-                      },
                       "capabilities": {
                         "type": "array",
                         "nullable": true,
@@ -1343,7 +1360,6 @@
                         "role": "onboarder",
                         "item_type": "catalogue",
                         "item": null,
-                        "policy": "test@datakaveri.org can access catalogue.iudx.io/catalogue/crud for 1 week",
                         "created": "2020-09-23T05:41:59.349Z",
                         "capabilities": null
                       },
@@ -1355,7 +1371,6 @@
                         "item": {
                           "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information"
                         },
-                        "policy": "test2@datakaveri.org can access rs.iudx.io/surat-itms-realtime-information/* for 1 week if api = \"/ngsi-ld/v1/entityOperations/query\" or api = \"/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information\" or api = \"/ngsi-ld/v1/entities\" or api = \"/ngsi-ld/v1/temporal/entities\" or api = \"/ngsi-ld/v1/subscription\"",
                         "created": "2020-09-29T10:36:40.704Z",
                         "capabilities": [
                           "complex",
@@ -1371,7 +1386,6 @@
                         "item": {
                           "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information"
                         },
-                        "policy": "foobar@datakaveri.org can access rs.iudx.io/surat-itms-realtime-information/* for 1 week if api = \"/iudx/v1/adapter\"",
                         "created": "2020-09-29T10:36:34.581Z",
                         "capabilities": null
                       },
@@ -1381,7 +1395,6 @@
                         "role": "onboarder",
                         "item_type": "catalogue",
                         "item": null,
-                        "policy": "onboarder@datakaveri.org can access catalogue.iudx.io/catalogue/crud for 1 week",
                         "created": "2020-09-29T10:36:45.543Z",
                         "capabilities": null
                       }
