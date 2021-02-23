@@ -29,6 +29,9 @@
     },
     {
       "name": "Delegate APIs"
+    },
+    {
+      "name": "Session id APIs"
     }
   ],
   "paths": {
@@ -1294,6 +1297,14 @@
             "in": "header",
             "name": "provider-email",
             "description": "Email of provider that delegate is setting rule for"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "session-id",
+            "description": "the session-id that the user received on the registered phone number"
           }
         ],
         "responses": {
@@ -1451,6 +1462,34 @@
               }
             }
           },
+          "403": {
+            "description": "if the header 'session-id' is:\n  - Not present\n  - Invalid\n  - null or empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
           "500": {
             "description": "Internal Server Error",
             "content": {
@@ -1577,7 +1616,7 @@
             }
           },
           "403": {
-            "description": "- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability`\n- Delegate tries to set a delegate rule\n\n**The index from 0 of the offending object in the request array is also returned in the error message**\n",
+            "description": "- If the header 'session-id' is missing/empty/invalid\n- If user to be given access is not registered for the particular `user_role`\n- If resource ID/`item_id` does not belong to provider\n- If rule exists for particular provider **AND** `user_email` **AND** `user_role` **AND** `item/catalogue` **AND** (if applicable) `capability`\n- Delegate tries to set a delegate rule\n\n**The index from 0 of the offending object in the request array is also returned in the error message**\n",
             "content": {
               "application/json": {
                 "schema": {
@@ -1651,6 +1690,20 @@
                       "error": {
                         "message": "Delegate cannot set delegate rule",
                         "id": 4
+                      }
+                    }
+                  },
+                  "empty/missing Session-id": {
+                    "value": {
+                      "error": {
+                        "message": "SessionID not present"
+                      }
+                    }
+                  },
+                  "Invalid session-id": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid SessionID"
                       }
                     }
                   }
@@ -1821,6 +1874,14 @@
             "in": "header",
             "name": "provider-email",
             "description": "Email of provider that delegate is setting rule for"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "session-id",
+            "description": "the session-id that the user received on the registered phone number"
           }
         ]
       },
@@ -1925,7 +1986,7 @@
             }
           },
           "403": {
-            "description": "- Invalid access ID\n- Delegate tries to delete a delegate rule",
+            "description": "- If the header 'session-id' is missing/empty/invalid\n- Invalid access ID\n- Delegate tries to delete a delegate rule",
             "content": {
               "application/json": {
                 "schema": {
@@ -1958,6 +2019,28 @@
                       "error": {
                         "message": "Delegate cannot delete delegate rules",
                         "access_id": 8
+                      }
+                    }
+                  },
+                  "example-3": {
+                    "value": {
+                      "error": {
+                        "message": "string",
+                        "access_id": 0
+                      }
+                    }
+                  },
+                  "session id invalid": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid SessionID"
+                      }
+                    }
+                  },
+                  "session id missiong/empty": {
+                    "value": {
+                      "error": {
+                        "message": "SessionID not present"
                       }
                     }
                   }
@@ -2053,6 +2136,12 @@
             "in": "header",
             "name": "provider-email",
             "description": "Email of provider that delegate is setting rule for"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header"
           }
         ]
       }
@@ -2230,6 +2319,156 @@
         },
         "operationId": "get-auth-v1-delegate-providers",
         "description": "**Requires a valid IUDX issued client certificate and user must be a registered delegate**\n\nA registered Delegate can get details of all Providers who have set a delegate rule for said Delegate"
+      }
+    },
+    "/auth/v1/get-session-id": {
+      "post": {
+        "summary": "",
+        "operationId": "post-auth-v1-get-session-id",
+        "responses": {
+          "200": {
+            "description": "Success in case all validations pass, the sms is sent successfully, and the details are stored in the DB. the confirmation of the otp being sent and the validity of the sessionId is returned.\nThe sessionId is also sent to the phone number of the user, the user must add it to the headers of request to the particular secure endpoint/method combination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "Validity": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "message",
+                    "Validity"
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true,
+                      "message": "Session id sent to mobile no",
+                      "Validity": "2021-02-24T05:30:24.641Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request in case the request is not in the expected format or the method-endpoint combination is not a secured endpoint or the particular method-endpoint combination is inaccessible to the userrole of the user trying to call the get-session-id endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "\"apis missing\"": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (apis)"
+                      }
+                    }
+                  },
+                  "missing method/endpoint": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (apis)"
+                      }
+                    }
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "description": "",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "tags": [
+          "Session id APIs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "apis": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "description": "JSON array object containing multiple requests\n",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "endpoint": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "endpoint"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "apis"
+                ]
+              },
+              "examples": {
+                "Multiple Endpoint request": {
+                  "value": {
+                    "apis": [
+                      {
+                        "method": "string",
+                        "endpoint": "string"
+                      },
+                      {
+                        "method": "string1",
+                        "endpoint": "string1"
+                      }
+                    ]
+                  }
+                },
+                "single endpoint request": {
+                  "value": {
+                    "apis": [
+                      {
+                        "method": "string",
+                        "endpoint": "string"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "An object 'apis' which contains an array of objects containing keywords 'endpoint' (describing the endpoint the user wants session id to be valid for) and 'method' (describing what method the endpoint will be hit with)."
+        },
+        "description": "Requires a valid IUDX issued client certificate and user must be a registered user whose role must have access to the secured-endpoints/methods combinations that they are trying to get a session-id for."
       }
     }
   },
