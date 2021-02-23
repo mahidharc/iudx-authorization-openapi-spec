@@ -1486,6 +1486,22 @@
                   "required": [
                     "error"
                   ]
+                },
+                "examples": {
+                  "Invalid session-id": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid SessionID"
+                      }
+                    }
+                  },
+                  "session-id null or empty": {
+                    "value": {
+                      "error": {
+                        "message": "SessionID not present"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -1511,7 +1527,7 @@
           }
         },
         "operationId": "get-auth-v1-provider-access",
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGet all access policies set for various users.\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may view policies set by the provider and other delegates. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set."
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\n**This is a secured endpoint and the user will need a valid session-id to access the same. The session-id can be obtained through the 'get-session-id' api and must be included in the header of the request**\n\nGet all access policies set for various users.\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may view policies set by the provider and other delegates. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set."
       },
       "post": {
         "summary": "Give users access to resources",
@@ -1731,7 +1747,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\n**This is a secured endpoint and the user will need a valid session-id to access the same. The session-id can be obtained through the 'get-session-id' api and must be included in the header of the request**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2068,7 +2084,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nDelete multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may delete policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can delete policies and modify existing policies (delete capabilities)\n- **Delegates cannot delete delegate policies**",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\n**This is a secured endpoint and the user will need a valid session-id to access the same. The session-id can be obtained through the 'get-session-id' api and must be included in the header of the request**\n\nDelete multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may delete policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can delete policies and modify existing policies (delete capabilities)\n- **Delegates cannot delete delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2141,7 +2157,9 @@
             "schema": {
               "type": "string"
             },
-            "in": "header"
+            "in": "header",
+            "name": "session-id",
+            "description": "the session-id that the user received on the registered phone number"
           }
         ]
       }
@@ -2323,7 +2341,7 @@
     },
     "/auth/v1/get-session-id": {
       "post": {
-        "summary": "",
+        "summary": "Get-session-id enables users to get a session-id to access secured-endpoints",
         "operationId": "post-auth-v1-get-session-id",
         "responses": {
           "200": {
@@ -2443,12 +2461,12 @@
                   "value": {
                     "apis": [
                       {
-                        "method": "string",
-                        "endpoint": "string"
+                        "method": "get",
+                        "endpoint": "/auth/v1/provider/access"
                       },
                       {
-                        "method": "string1",
-                        "endpoint": "string1"
+                        "method": "post",
+                        "endpoint": "/auth/v1/provider/access"
                       }
                     ]
                   }
@@ -2457,8 +2475,8 @@
                   "value": {
                     "apis": [
                       {
-                        "method": "string",
-                        "endpoint": "string"
+                        "method": "get",
+                        "endpoint": "/auth/v1/provider/access"
                       }
                     ]
                   }
