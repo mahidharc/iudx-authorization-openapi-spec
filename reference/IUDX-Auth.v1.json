@@ -483,7 +483,7 @@
         "operationId": "get-auth-v1-token",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "`Status` in the `request` object can have 4 states:\n\n- **active** - if user has access to the resource\n- **deleted** - if user has deleted said resource from the token\n- **revoked** - if the provider has revoked consumer access to the resource\n- **expired** - if the policy for the resource has expired, therefore user cannot access it anymore",
             "content": {
               "application/json": {
                 "schema": {
@@ -504,7 +504,8 @@
                         "enum": [
                           "active",
                           "deleted"
-                        ]
+                        ],
+                        "description": "If the token is active or has been deleted by user"
                       },
                       "expiry": {
                         "type": "string",
@@ -533,7 +534,8 @@
                                 "expired",
                                 "deleted",
                                 "revoked"
-                              ]
+                              ],
+                              "description": "status of access to resource"
                             },
                             "cat_id": {
                               "type": "string",
@@ -549,6 +551,7 @@
                             },
                             "apis": {
                               "type": "array",
+                              "description": "available APIs to the user",
                               "items": {}
                             }
                           },
