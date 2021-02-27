@@ -587,6 +587,19 @@
                         "request": [
                           {
                             "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
+                            "created_at": "2021-02-26T06:37:08.836Z",
+                            "updated_at": "2021-02-26T06:37:08.836Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          },
+                          {
+                            "status": "deleted",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
                             "created_at": "2021-02-26T06:37:08.876Z",
                             "updated_at": "2021-02-26T06:37:08.876Z",
@@ -607,6 +620,19 @@
                         "created_at": "2021-02-26T06:58:36.386Z",
                         "updated_at": "2021-02-26T06:58:36.386Z",
                         "request": [
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
+                            "created_at": "2021-02-26T06:58:36.399Z",
+                            "updated_at": "2021-02-26T06:58:36.399Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          },
                           {
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
