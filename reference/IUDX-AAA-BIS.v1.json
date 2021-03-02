@@ -1,0 +1,282 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IUDX-AAA-BIS",
+    "version": "1.0",
+    "contact": {
+      "url": "https://ww.iudx.org.in/"
+    },
+    "description": "BIS Specification Draft APIs"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User Profile"
+    }
+  ],
+  "paths": {
+    "/user/profile": {
+      "get": {
+        "summary": "Read User Profile",
+        "tags": [
+          "User Profile"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "$ref": "#/components/schemas/UserProfile"
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-user-profile",
+        "description": "Get the user profile of an authenticated user"
+      },
+      "post": {
+        "summary": "Create User Profile",
+        "operationId": "post-user-profile",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "$ref": "#/components/schemas/UserProfile"
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "description": "Create profile of an authenticated user as part of registration process",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/UserProfile"
+                  }
+                }
+              },
+              "examples": {}
+            }
+          },
+          "description": ""
+        },
+        "tags": [
+          "User Profile"
+        ]
+      },
+      "put": {
+        "summary": "Update User Profile",
+        "operationId": "put-user-profile",
+        "description": "Modify user profile by an authenticated user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "$ref": "#/components/schemas/UserProfile"
+                  }
+                }
+              },
+              "examples": {}
+            }
+          },
+          "description": ""
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "$ref": "#/components/schemas/UserProfile"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {}
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "User Profile"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ResponseType": {
+        "type": "string",
+        "enum": [
+          "urn:iudx:aaa:Success",
+          "urn:iudx:aaa:MissingInformation",
+          "urn:iudx:aaa:InvalidInput",
+          "urn:iudx:aaa:InvalidRole",
+          "urn:iudx:aaa:AlreadyExists",
+          "urn:iudx:aaa:MissingToken",
+          "urn:iudx:aaa:InvalidToken",
+          "urn:iudx:aaa:InvalidScope"
+        ]
+      },
+      "UserProfile": {
+        "title": "UserProfile",
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "pattern": "^[9876]\\d{9}$"
+          },
+          "name": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "enum": [
+                  "Mr.",
+                  "Ms.",
+                  "Mrs.",
+                  "Dr."
+                ]
+              },
+              "first_name": {
+                "type": "string",
+                "maxLength": 30
+              },
+              "last_name": {
+                "type": "string",
+                "maxLength": 30
+              }
+            }
+          }
+        }
+      },
+      "ErrorObject": {
+        "title": "ErrorObject",
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/ResponseType"
+          },
+          "title": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {},
+    "responses": {}
+  }
+}
