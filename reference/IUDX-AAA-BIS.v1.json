@@ -113,7 +113,7 @@
                   }
                 },
                 "examples": {
-                  "example-1": {
+                  "Success": {
                     "value": {
                       "type": "urn:iudx:aaa:Success",
                       "details": {
@@ -235,7 +235,10 @@
                         "title": "Mr.",
                         "first_name": "Foo",
                         "last_name": "Bar"
-                      }
+                      },
+                      "roles": [
+                        "provider"
+                      ]
                     }
                   }
                 }
@@ -263,7 +266,24 @@
                   }
                 }
               },
-              "examples": {}
+              "examples": {
+                "Update User": {
+                  "value": {
+                    "data": {
+                      "email": "user@example.com",
+                      "phone": "9876543210",
+                      "name": {
+                        "title": "Mr.",
+                        "first_name": "Foo",
+                        "last_name": "Bar"
+                      },
+                      "roles": [
+                        "provider"
+                      ]
+                    }
+                  }
+                }
+              }
             }
           },
           "description": ""
@@ -283,6 +303,25 @@
                       "$ref": "#/components/schemas/UserProfile"
                     }
                   }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": {
+                        "email": "user@example.com",
+                        "phone": "9876543210",
+                        "name": {
+                          "title": "Mr.",
+                          "first_name": "Foo",
+                          "last_name": "Bar"
+                        },
+                        "roles": [
+                          "provider"
+                        ]
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -293,6 +332,29 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: email, phone"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: email"
+                    }
+                  },
+                  "Invalid Role": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidRole",
+                      "title": "Bad Request",
+                      "details": "Invalid role: nonexistent_role"
+                    }
+                  }
                 }
               }
             }
