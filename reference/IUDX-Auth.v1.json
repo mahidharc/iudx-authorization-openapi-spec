@@ -32,6 +32,9 @@
     },
     {
       "name": "Session id APIs"
+    },
+    {
+      "name": "NewTokenAPIs"
     }
   ],
   "paths": {
@@ -2488,6 +2491,351 @@
         },
         "description": "Requires a valid IUDX issued client certificate and user must be a registered user whose role must have access to the secured-endpoints/methods combinations that they are trying to get a session-id for."
       }
+    },
+    "/auth/v23/token": {
+      "get": {
+        "summary": "Get all tokens that you have issued",
+        "operationId": "get-auth-v23-token",
+        "responses": {
+          "200": {
+            "description": "`Status` in the `request` object can have 4 states:\n\n- **active** - if user has access to the resource\n- **deleted** - if user has deleted said resource from the token\n- **revoked** - if the provider has revoked consumer access to the resource\n- **expired** - if the policy for the resource has expired, therefore user cannot access it anymore",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "uuid": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "status": {
+                        "type": "string",
+                        "minLength": 1,
+                        "enum": [
+                          "active",
+                          "deleted"
+                        ],
+                        "description": "If the token is active or has been deleted by user"
+                      },
+                      "expiry": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "updated_at": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "request": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 1,
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "minLength": 1,
+                              "enum": [
+                                "active",
+                                "expired",
+                                "deleted",
+                                "revoked"
+                              ],
+                              "description": "status of access to resource"
+                            },
+                            "created_at": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "updated_at": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "apis": {
+                              "type": "array",
+                              "description": "available APIs to the user",
+                              "minItems": 0,
+                              "items": {}
+                            },
+                            "cat_id": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "created_at",
+                            "updated_at",
+                            "apis",
+                            "cat_id"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "uuid",
+                      "status",
+                      "expiry",
+                      "created_at",
+                      "updated_at",
+                      "request"
+                    ]
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "uuid": "f3b67255-9315-4fb2-a83c-5dfbf3ea0c0e",
+                        "status": "active",
+                        "expiry": "2021-03-05T06:37:08.836Z",
+                        "created_at": "2021-02-26T06:37:08.836Z",
+                        "updated_at": "2021-02-26T06:37:08.836Z",
+                        "request": [
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
+                            "created_at": "2021-02-26T06:37:08.836Z",
+                            "updated_at": "2021-02-26T06:37:08.836Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          },
+                          {
+                            "status": "deleted",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
+                            "created_at": "2021-02-26T06:37:08.876Z",
+                            "updated_at": "2021-02-26T06:37:08.876Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "uuid": "3cc80744-878b-405e-bb1e-54cd42d9fca7",
+                        "status": "active",
+                        "expiry": "2021-03-05T06:58:36.386Z",
+                        "created_at": "2021-02-26T06:58:36.386Z",
+                        "updated_at": "2021-02-26T06:58:36.386Z",
+                        "request": [
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
+                            "created_at": "2021-02-26T06:58:36.399Z",
+                            "updated_at": "2021-02-26T06:58:36.399Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          },
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
+                            "created_at": "2021-02-26T06:58:36.402Z",
+                            "updated_at": "2021-02-26T06:58:36.402Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "uuid": "4350228e-539d-4715-898a-66edf6cd2b19",
+                        "status": "active",
+                        "expiry": "2021-03-05T07:05:49.397Z",
+                        "created_at": "2021-02-26T07:05:49.397Z",
+                        "updated_at": "2021-02-26T07:05:49.397Z",
+                        "request": [
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/catalogue.iudx.io/catalogue/crud",
+                            "created_at": "2021-02-26T07:05:49.401Z",
+                            "updated_at": "2021-02-26T07:05:49.401Z",
+                            "apis": []
+                          }
+                        ]
+                      },
+                      {
+                        "uuid": "0cbf0dd2-4e67-424b-9667-61eacd3f6833",
+                        "status": "active",
+                        "expiry": "2021-03-06T10:32:14.398Z",
+                        "created_at": "2021-02-27T10:32:14.398Z",
+                        "updated_at": "2021-02-27T10:32:14.398Z",
+                        "request": [
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
+                            "created_at": "2021-02-27T10:32:14.403Z",
+                            "updated_at": "2021-02-27T10:32:14.403Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          },
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
+                            "created_at": "2021-02-27T10:32:14.407Z",
+                            "updated_at": "2021-02-27T10:32:14.407Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "uuid": "9e75ba61-f38c-4031-aef1-12fba16f640d",
+                        "status": "active",
+                        "expiry": "2021-03-06T10:34:20.627Z",
+                        "created_at": "2021-02-27T10:34:20.627Z",
+                        "updated_at": "2021-02-27T10:34:20.627Z",
+                        "request": [
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
+                            "created_at": "2021-02-27T10:34:20.667Z",
+                            "updated_at": "2021-02-27T10:34:20.667Z",
+                            "apis": [
+                              "/ngsi-ld/v1/subscription",
+                              "/ngsi-ld/v1/entityOperations/query",
+                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                              "/ngsi-ld/v1/entities",
+                              "/ngsi-ld/v1/temporal/entities"
+                            ]
+                          },
+                          {
+                            "status": "active",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
+                            "created_at": "2021-02-27T10:34:20.672Z",
+                            "updated_at": "2021-02-27T10:34:20.672Z",
+                            "apis": [
+                              "/iudx/v1/adapter"
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "description": "Get all tokens + resources and status of resources and also the APIs associated with the resources",
+        "tags": [
+          "NewTokenAPIs"
+        ]
+      },
+      "post": {
+        "summary": "Request for a token",
+        "operationId": "post-auth-v23-token",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "expiry": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "expiry time in UTC"
+                    }
+                  },
+                  "required": [
+                    "token",
+                    "expiry"
+                  ]
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "token": "auth.iudx.org.in/jane.doe@datakaveri.org/7d70524fdb53988c2b3411686256bf5d/38bd720c-fcaf-4ae7-9b1c-28d2a30ba1f9",
+                      "expiry": "2021-03-10T12:33:07.740Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Get a token **OR** using an expired token, get a new toke with all the same resources as the expired one",
+        "tags": [
+          "NewTokenAPIs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "request": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "existing_token": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "Request": {
+                  "value": {
+                    "request": [
+                      "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                      "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-buses/item-1",
+                      "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-streelight/item-2"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "`request` is an array with resources for which access is desired.\n`existing_token` is a valid expired token belonging to the user.\n**Either `request` or `existing_token` must form part of the request body, not both**"
+        }
+      },
+      "parameters": []
     }
   },
   "components": {
