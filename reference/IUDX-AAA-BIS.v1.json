@@ -4,13 +4,14 @@
     "title": "IUDX-AAA-BIS",
     "version": "1.0",
     "contact": {
-      "url": "https://ww.iudx.org.in/"
+      "url": "https://www.iudx.org.in"
     },
     "description": "BIS Specification Draft APIs"
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "https://authorization.iudx.org.in",
+      "description": "Production Server"
     }
   ],
   "tags": [
@@ -19,7 +20,7 @@
     }
   ],
   "paths": {
-    "/user/profile": {
+    "/auth/v1/user/profile": {
       "get": {
         "summary": "Read User Profile",
         "tags": [
@@ -395,7 +396,8 @@
         "tags": [
           "User Profile"
         ]
-      }
+      },
+      "parameters": []
     }
   },
   "components": {
