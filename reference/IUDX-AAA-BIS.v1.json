@@ -41,7 +41,25 @@
                     }
                   }
                 },
-                "examples": {}
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": {
+                        "email": "user@example.com",
+                        "phone": "9876543210",
+                        "name": {
+                          "title": "Mr.",
+                          "first_name": "Foo",
+                          "last_name": "Bar"
+                        },
+                        "roles": [
+                          "provider"
+                        ]
+                      }
+                    }
+                  }
+                }
               }
             }
           },
@@ -51,6 +69,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
                 }
               }
             }
@@ -78,7 +112,25 @@
                     }
                   }
                 },
-                "examples": {}
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": {
+                        "email": "user@example.com",
+                        "phone": "9876543210",
+                        "name": {
+                          "title": "Mr.",
+                          "first_name": "Foo",
+                          "last_name": "Bar"
+                        },
+                        "roles": [
+                          "provider"
+                        ]
+                      }
+                    }
+                  }
+                }
               }
             }
           },
@@ -89,7 +141,29 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorObject"
                 },
-                "examples": {}
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: email, phone"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: email"
+                    }
+                  },
+                  "Invalid Role": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidRole",
+                      "title": "Bad Request",
+                      "details": "Invalid role: nonexistent_role"
+                    }
+                  }
+                }
               }
             }
           },
@@ -99,6 +173,22 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
                 }
               }
             }
@@ -110,7 +200,15 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorObject"
                 },
-                "examples": {}
+                "examples": {
+                  "Already Exists": {
+                    "value": {
+                      "type": "urn:iudx:aaa:AlreadyExists",
+                      "title": "Conflict",
+                      "details": "User with given email already exists"
+                    }
+                  }
+                }
               }
             }
           }
@@ -127,7 +225,21 @@
                   }
                 }
               },
-              "examples": {}
+              "examples": {
+                "Create User": {
+                  "value": {
+                    "data": {
+                      "email": "user@example.com",
+                      "phone": "9876543210",
+                      "name": {
+                        "title": "Mr.",
+                        "first_name": "Foo",
+                        "last_name": "Bar"
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
           "description": ""
@@ -192,7 +304,22 @@
                 "schema": {
                   "$ref": "#/components/schemas/ErrorObject"
                 },
-                "examples": {}
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
               },
               "application/xml": {
                 "schema": {
@@ -227,6 +354,7 @@
       "UserProfile": {
         "title": "UserProfile",
         "type": "object",
+        "description": "",
         "properties": {
           "email": {
             "type": "string",
@@ -234,7 +362,8 @@
           },
           "phone": {
             "type": "string",
-            "pattern": "^[9876]\\d{9}$"
+            "pattern": "^[9876]\\d{9}$",
+            "example": "9876543210"
           },
           "name": {
             "type": "object",
@@ -250,12 +379,27 @@
               },
               "first_name": {
                 "type": "string",
-                "maxLength": 30
+                "maxLength": 30,
+                "example": "Foo"
               },
               "last_name": {
                 "type": "string",
-                "maxLength": 30
+                "maxLength": 30,
+                "example": "Bar"
               }
+            }
+          },
+          "roles": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "provider",
+                "consumer",
+                "onboarder",
+                "ingester"
+              ]
             }
           }
         }
