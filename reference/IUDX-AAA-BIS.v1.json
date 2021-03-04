@@ -17,6 +17,9 @@
   "tags": [
     {
       "name": "User Profile"
+    },
+    {
+      "name": "Policy"
     }
   ],
   "paths": {
@@ -398,6 +401,515 @@
         ]
       },
       "parameters": []
+    },
+    "/auth/v1/policies": {
+      "get": {
+        "summary": "Read policies",
+        "tags": [
+          "Policy"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PolicyObject"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": [
+                        {
+                          "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                          "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
+                          "created_by": "ee824cad-d7a6-4f48-87dc-e8461a9201c4",
+                          "entity_id": "catalogue_id",
+                          "scopes": [
+                            "complex"
+                          ],
+                          "constraints": {
+                            "expiry_time": "2019-08-24T14:15:22Z"
+                          },
+                          "entity_type": "resourcegroup",
+                          "role": "consumer"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-v1-policies",
+        "description": "Get all related policies of an authenticated user (provider or consumer)"
+      },
+      "post": {
+        "summary": "Create Policies",
+        "operationId": "post-auth-v1-policies",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PolicyObject"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": [
+                        {
+                          "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                          "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
+                          "created_by": "ee824cad-d7a6-4f48-87dc-e8461a9201c4",
+                          "entity_id": "catalogue_id",
+                          "scopes": [
+                            "complex"
+                          ],
+                          "constraints": {
+                            "expiry_time": "2019-08-24T14:15:22Z"
+                          },
+                          "entity_type": "resourcegroup",
+                          "role": "consumer"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: entity_id"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: entity_id"
+                    }
+                  },
+                  "Invalid Scope": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidScope",
+                      "title": "Bad Request",
+                      "details": "Invalid scope: nonexistent_scope"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Already Exists": {
+                    "value": {
+                      "type": "urn:iudx:aaa:AlreadyExists",
+                      "title": "Conflict",
+                      "details": "Policy already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Create new policies by an authenticated provider",
+        "tags": [
+          "Policy"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PolicyObject"
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "Create policies": {
+                  "value": {
+                    "data": [
+                      {
+                        "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
+                        "entity_id": "catalogue_id",
+                        "scopes": [
+                          "complex"
+                        ],
+                        "constraints": {
+                          "expiry_time": "2019-08-24T14:15:22Z"
+                        },
+                        "entity_type": "resourcegroup",
+                        "role": "consumer"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Policies",
+        "operationId": "put-auth-v1-policies",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PolicyObject"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": [
+                        {
+                          "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                          "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
+                          "created_by": "ee824cad-d7a6-4f48-87dc-e8461a9201c4",
+                          "entity_id": "catalogue_id",
+                          "scopes": [
+                            "complex"
+                          ],
+                          "constraints": {
+                            "expiry_time": "2019-08-24T14:15:22Z"
+                          },
+                          "entity_type": "resourcegroup",
+                          "role": "consumer"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: entity_id"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: entity_id"
+                    }
+                  },
+                  "Invalid Scope": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidScope",
+                      "title": "Bad Request",
+                      "details": "Invalid scope: nonexistent_scope"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Modify policies by an authenticated and authorized provider",
+        "tags": [
+          "Policy"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/PolicyObject"
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "Update policies": {
+                  "value": {
+                    "data": [
+                      {
+                        "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                        "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
+                        "entity_id": "catalogue_id",
+                        "scopes": [
+                          "complex"
+                        ],
+                        "entity_type": "resourcegroup",
+                        "role": "consumer"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Policies",
+        "operationId": "delete-auth-v1-policies",
+        "description": "Delete policies by an authenticated and authorised provider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyObject"
+              },
+              "examples": {
+                "Delete policies/scopes": {
+                  "value": {
+                    "data": [
+                      {
+                        "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                        "scopes": [
+                          "complex"
+                        ]
+                      },
+                      {
+                        "id": "ee824cad-d7a6-4f48-87dc-e8461a9201c4"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Policy"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    }
+                  }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: policy_id"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: scopes"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -482,6 +994,74 @@
             "type": "string"
           }
         }
+      },
+      "PolicyObject": {
+        "title": "PolicyObject",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_by": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "entity_id": {
+            "type": "string",
+            "example": "catalogue_id"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "complex",
+                "temporal",
+                "subscription"
+              ]
+            }
+          },
+          "constraints": {
+            "type": "object",
+            "properties": {
+              "expiry_time": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "resourcegroup",
+              "resource"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "consumer",
+              "onboarder",
+              "delegate",
+              "ingester"
+            ]
+          }
+        },
+        "required": [
+          "user_id",
+          "entity_id",
+          "scopes",
+          "entity_type",
+          "role"
+        ]
       }
     },
     "securitySchemes": {},
