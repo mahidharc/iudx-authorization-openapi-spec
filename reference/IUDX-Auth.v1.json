@@ -1489,22 +1489,6 @@
                   "required": [
                     "error"
                   ]
-                },
-                "examples": {
-                  "Invalid session-id": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid SessionID"
-                      }
-                    }
-                  },
-                  "session-id null or empty": {
-                    "value": {
-                      "error": {
-                        "message": "SessionID not present"
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -1530,7 +1514,7 @@
           }
         },
         "operationId": "get-auth-v1-provider-access",
-        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\n**This is a secured endpoint and the user will need a valid session-id to access the same. The session-id can be obtained through the 'get-session-id' api and must be included in the header of the request**\n\nGet all access policies set for various users.\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may view policies set by the provider and other delegates. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set."
+        "description": "**Requires a valid IUDX issued client certificate and user must be registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGet all access policies set for various users.\n\n### Provider delegates\n\nOnce a delegate has been assigned, a delegate may view policies set by the provider and other delegates. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set."
       },
       "post": {
         "summary": "Give users access to resources",
@@ -1750,7 +1734,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\n**This is a secured endpoint and the user will need a valid session-id to access the same. The session-id can be obtained through the 'get-session-id' api and must be included in the header of the request**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nGive registered consumers, data ingesters, onboarders and delegates access to provider's resources by setting access policies.\n\n- Consumers can be given access to call specific APIs on resources\n- Onboarders can be given access to onboard resources to the catalogue on behalf of the provider\n- Data ingesters can be given access to push the provider's data to the resource server\n- Delegates can create rules on behalf of the provider\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may set policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can create new policies and modify existing policies (adding capabilities)\n- **Delegates cannot set delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2087,7 +2071,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\n**This is a secured endpoint and the user will need a valid session-id to access the same. The session-id can be obtained through the 'get-session-id' api and must be included in the header of the request**\n\nDelete multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may delete policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can delete policies and modify existing policies (delete capabilities)\n- **Delegates cannot delete delegate policies**",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nDelete multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may delete policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can delete policies and modify existing policies (delete capabilities)\n- **Delegates cannot delete delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2160,9 +2144,7 @@
             "schema": {
               "type": "string"
             },
-            "in": "header",
-            "name": "session-id",
-            "description": "the session-id that the user received on the registered phone number"
+            "in": "header"
           }
         ]
       }
@@ -2344,7 +2326,7 @@
     },
     "/auth/v1/get-session-id": {
       "post": {
-        "summary": "Get-session-id enables users to get a session-id to access secured-endpoints",
+        "summary": "",
         "operationId": "post-auth-v1-get-session-id",
         "responses": {
           "200": {
@@ -2464,12 +2446,12 @@
                   "value": {
                     "apis": [
                       {
-                        "method": "get",
-                        "endpoint": "/auth/v1/provider/access"
+                        "method": "string",
+                        "endpoint": "string"
                       },
                       {
-                        "method": "post",
-                        "endpoint": "/auth/v1/provider/access"
+                        "method": "string1",
+                        "endpoint": "string1"
                       }
                     ]
                   }
@@ -2478,8 +2460,8 @@
                   "value": {
                     "apis": [
                       {
-                        "method": "get",
-                        "endpoint": "/auth/v1/provider/access"
+                        "method": "string",
+                        "endpoint": "string"
                       }
                     ]
                   }
@@ -2836,6 +2818,139 @@
         }
       },
       "parameters": []
+    },
+    "/auth/v23/token/introspect": {
+      "post": {
+        "summary": "Introspect token",
+        "operationId": "post-auth-v23-token-introspect",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "consumer": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "expiry": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "request": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "apis": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "consumer",
+                    "expiry",
+                    "request"
+                  ]
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "consumer": "jane.doe@datakaveri.org",
+                      "expiry": "2021-03-11T08:40:10.136Z",
+                      "request": [
+                        {
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/test/*",
+                          "apis": [
+                            "/ngsi-ld/v1/subscription"
+                          ]
+                        },
+                        {
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/test/*",
+                          "apis": [
+                            "/iudx/v1/adapter"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Invalid/malformed token\n- No token in body"
+          },
+          "403": {
+            "description": "- Expired/deleted token\n- Non existent token\n- Resource server not permitted to introspect the token\n- If access to resources associated with token are expired/revoked\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Expired/deleted token OR non existent token OR Resource server not permitted to introspect the token": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid 'token'"
+                      }
+                    }
+                  },
+                  "If access to resources associated with token are expired/revoked": {
+                    "value": {
+                      "error": {
+                        "message": "Token has no access to resources"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Introspect a token by a resource server",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "token": "auth.iudx.org.in/jane.doe@datakaveri.org/b2c8cb96c665a3f9de1a5d7a768e326b/720a4d55-a377-464c-bc8f-e0984eaba192"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "NewTokenAPIs"
+        ]
+      }
     }
   },
   "components": {
