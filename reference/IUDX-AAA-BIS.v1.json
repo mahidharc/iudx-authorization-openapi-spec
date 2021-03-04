@@ -1054,14 +1054,7 @@
               "ingester"
             ]
           }
-        },
-        "required": [
-          "user_id",
-          "entity_id",
-          "scopes",
-          "entity_type",
-          "role"
-        ]
+        }
       }
     },
     "securitySchemes": {},
