@@ -2817,7 +2817,86 @@
           "description": "`request` is an array with resources for which access is desired.\n`existing_token` is a valid expired token belonging to the user.\n**Either `request` or `existing_token` must form part of the request body, not both**"
         }
       },
-      "parameters": []
+      "parameters": [],
+      "delete": {
+        "summary": "Delete tokens issued by you",
+        "operationId": "delete-auth-v23-token",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Generic-Success"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "If malformed UUIDs or tokens-UUIDs that are already expired/deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Invalid uuids",
+                        "invalid-input": [
+                          "44f3bf25-63eb-4ab8-84c3-ca1882ed02ef",
+                          "5910eb19-5b8a-432b-9865-dca4cbf69b78"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Delete all tokens issued by you if not expired \nOnce tokens are deleted, they cannot be used for existing-token in POST /token API\nSend array of UUIDs (from GET /token) to delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "",
+                "type": "object",
+                "properties": {
+                  "tokens": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    }
+                  }
+                },
+                "required": [
+                  "tokens"
+                ]
+              },
+              "examples": {
+                "Example": {
+                  "value": {
+                    "tokens": [
+                      "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "/auth/v23/token/introspect": {
       "post": {
@@ -2950,6 +3029,95 @@
         "tags": [
           "NewTokenAPIs"
         ]
+      }
+    },
+    "/auth/v23/consumer/resources": {
+      "get": {
+        "summary": "Allow consumers and data ingesters to see resources they have access to",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cat_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "apis": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "cat_id",
+                      "apis"
+                    ]
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                        "apis": [
+                          "/ngsi-ld/v1/subscription",
+                          "/ngsi-ld/v1/entityOperations/query",
+                          "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                          "/ngsi-ld/v1/entities",
+                          "/ngsi-ld/v1/temporal/entities"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                        "apis": [
+                          "/iudx/v1/adapter"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
+                        "apis": [
+                          "/iudx/v1/upload",
+                          "/iudx/v1/delete"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
+                        "apis": [
+                          "/iudx/v1/download"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/test",
+                        "apis": [
+                          "/iudx/v1/upload",
+                          "/iudx/v1/delete"
+                        ],
+                        "type": "resourcegroup"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-v23-consumer-resources",
+        "description": "Allow consumers and data ingesters to see resources they have access to along with APIs\n- Onboarder catalogue access is not shown"
       }
     }
   },
