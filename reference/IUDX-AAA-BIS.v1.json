@@ -435,7 +435,6 @@
                         {
                           "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
                           "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
-                          "created_by": "ee824cad-d7a6-4f48-87dc-e8461a9201c4",
                           "entity_id": "catalogue_id",
                           "scopes": [
                             "complex"
@@ -513,7 +512,6 @@
                         {
                           "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
                           "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
-                          "created_by": "ee824cad-d7a6-4f48-87dc-e8461a9201c4",
                           "entity_id": "catalogue_id",
                           "scopes": [
                             "complex"
@@ -682,7 +680,6 @@
                         {
                           "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
                           "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
-                          "created_by": "ee824cad-d7a6-4f48-87dc-e8461a9201c4",
                           "entity_id": "catalogue_id",
                           "scopes": [
                             "complex"
@@ -779,7 +776,7 @@
                 }
               },
               "examples": {
-                "Update policies": {
+                "Update policy": {
                   "value": {
                     "data": [
                       {
@@ -789,6 +786,9 @@
                         "scopes": [
                           "complex"
                         ],
+                        "constraints": {
+                          "expiry_time": "2019-08-24T14:15:22Z"
+                        },
                         "entity_type": "resourcegroup",
                         "role": "consumer"
                       }
@@ -868,14 +868,14 @@
                     "value": {
                       "type": "urn:iudx:aaa:MissingInformation",
                       "title": "Bad Request",
-                      "details": "Missing information: policy_id"
+                      "details": "Missing information: empty scopes array"
                     }
                   },
                   "Invalid Input": {
                     "value": {
                       "type": "urn:iudx:aaa:InvalidInput",
                       "title": "Bad Request",
-                      "details": "Invalid input: scopes"
+                      "details": "Invalid input: invalid policy ID"
                     }
                   }
                 }
@@ -1008,11 +1008,6 @@
           "user_id": {
             "type": "string",
             "format": "uuid"
-          },
-          "created_by": {
-            "type": "string",
-            "format": "uuid",
-            "readOnly": true
           },
           "entity_id": {
             "type": "string",
