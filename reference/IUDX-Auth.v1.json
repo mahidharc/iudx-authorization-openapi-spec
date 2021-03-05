@@ -2895,7 +2895,10 @@
               }
             }
           }
-        }
+        },
+        "tags": [
+          "NewTokenAPIs"
+        ]
       }
     },
     "/auth/v23/token/introspect": {
@@ -3034,7 +3037,9 @@
     "/auth/v23/consumer/resources": {
       "get": {
         "summary": "Allow consumers and data ingesters to see resources they have access to",
-        "tags": [],
+        "tags": [
+          "NewTokenAPIs"
+        ],
         "responses": {
           "200": {
             "description": "OK",
