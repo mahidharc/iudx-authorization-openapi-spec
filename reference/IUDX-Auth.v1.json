@@ -2735,7 +2735,7 @@
             "headers": {}
           }
         },
-        "description": "Get all tokens + resources and status of resources and also the APIs associated with the resources",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet all tokens + resources and status of resources and also the APIs associated with the resources",
         "tags": [
           "NewTokenAPIs"
         ]
@@ -2779,7 +2779,7 @@
             }
           }
         },
-        "description": "Get a token **OR** using an expired token, get a new toke with all the same resources as the expired one",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet a token **OR** using an expired token issued by you, get a new token with all the same resources as the expired one",
         "tags": [
           "NewTokenAPIs"
         ],
@@ -2864,7 +2864,7 @@
             }
           }
         },
-        "description": "Delete all tokens issued by you if not expired \nOnce tokens are deleted, they cannot be used for existing-token in POST /token API\nSend array of UUIDs (from GET /token) to delete",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nDelete all tokens issued by you if not expired \nOnce tokens are deleted, they cannot be used for existing-token in POST /token API\nSend array of UUIDs (from GET /token) to delete",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3007,7 +3007,7 @@
             }
           }
         },
-        "description": "Introspect a token by a resource server",
+        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nIntrospect a token by a resource server",
         "requestBody": {
           "content": {
             "application/json": {
@@ -3122,7 +3122,7 @@
           }
         },
         "operationId": "get-auth-v23-consumer-resources",
-        "description": "Allow consumers and data ingesters to see resources they have access to along with APIs\n- Onboarder catalogue access is not shown"
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n- Onboarder catalogue access is **not** shown currently"
       }
     }
   },
