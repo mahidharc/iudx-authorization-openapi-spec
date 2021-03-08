@@ -939,13 +939,435 @@
                     }
                   }
                 },
-                "examples": {}
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": [
+                        {
+                          "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                          "expiry": "2019-08-24T14:15:22Z",
+                          "access_token": "jwt",
+                          "refresh_token": "120c200e-32b3-497f-b267-07b30cc24052",
+                          "server_uri": "http://example.com",
+                          "resources": [
+                            "catalogue_id"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
               }
             }
           }
         },
         "operationId": "get-auth-v1-tokens",
-        "description": "Get all existing tokens of an authenticated consumer"
+        "description": "Get all tokens of an authenticated consumer"
+      },
+      "post": {
+        "summary": "Crete Token",
+        "operationId": "post-auth-v1-tokens",
+        "tags": [
+          "Tokens"
+        ],
+        "description": "Create token by specifying resources belonging to the same resource server, or providing a previous refresh token by an authenticated consumer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "oneOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "resource_ids": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "example": "catalogue_id"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "properties": {
+                          "refresh_token": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    ],
+                    "type": "object"
+                  }
+                }
+              },
+              "examples": {
+                "Create token": {
+                  "value": {
+                    "data": {
+                      "resource_ids": [
+                        "catalogue_id"
+                      ]
+                    }
+                  }
+                },
+                "Refresh Token": {
+                  "value": {
+                    "data": {
+                      "refresh_token": "120c200e-32b3-497f-b267-07b30cc24052"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "$ref": "#/components/schemas/TokenObject"
+                    }
+                  }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": {
+                        "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                        "expiry": "2019-08-24T14:15:22Z",
+                        "access_token": "jwt",
+                        "refresh_token": "120c200e-32b3-497f-b267-07b30cc24052",
+                        "server_uri": "http://example.com",
+                        "resources": [
+                          "catalogue_id"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: empty array for resource IDs"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: resource IDs not from same resource server"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Tokens",
+        "operationId": "put-auth-v1-tokens",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TokenObject"
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "details": [
+                        {
+                          "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                          "expiry": "2019-08-24T14:15:22Z",
+                          "access_token": "jwt",
+                          "refresh_token": "120c200e-32b3-497f-b267-07b30cc24052",
+                          "server_uri": "http://example.com",
+                          "resources": [
+                            "catalogue_id"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Information": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingInformation",
+                      "title": "Bad Request",
+                      "details": "Missing information: empty array for resource IDs"
+                    }
+                  },
+                  "Invalid Input": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidInput",
+                      "title": "Bad Request",
+                      "details": "Invalid input: resource IDs not from same resource server"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tokens"
+        ],
+        "description": "Update existing tokens resources with new resource list by authenticated consumer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/TokenObject"
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "Update token": {
+                  "value": {
+                    "data": [
+                      {
+                        "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                        "resources": [
+                          "catalogue_id"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Tokens",
+        "operationId": "delete-auth-v1-tokens",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    }
+                  }
+                },
+                "examples": {
+                  "Success": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorObject"
+                },
+                "examples": {
+                  "Missing Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:MissingToken",
+                      "title": "Unauthorized",
+                      "details": "Authorization Code missing from request headers"
+                    }
+                  },
+                  "Invalid Token": {
+                    "value": {
+                      "type": "urn:iudx:aaa:InvalidToken",
+                      "title": "Unauthorized",
+                      "details": "Invalid token: token expired"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tokens"
+        ],
+        "description": "Revoke existing tokens by an authenticated consumer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "token_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "uuid"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "Delete tokens": {
+                  "value": {
+                    "data": {
+                      "token_ids": [
+                        "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
