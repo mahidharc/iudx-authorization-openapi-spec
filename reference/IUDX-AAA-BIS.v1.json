@@ -20,6 +20,9 @@
     },
     {
       "name": "Policy"
+    },
+    {
+      "name": "Tokens"
     }
   ],
   "paths": {
@@ -910,6 +913,40 @@
           }
         }
       }
+    },
+    "/auth/v1/tokens": {
+      "get": {
+        "summary": "Read Tokens",
+        "tags": [
+          "Tokens"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/ResponseType"
+                    },
+                    "details": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TokenObject"
+                      }
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-v1-tokens",
+        "description": "Get all existing tokens of an authenticated consumer"
+      }
     }
   },
   "components": {
@@ -1048,6 +1085,44 @@
               "delegate",
               "ingester"
             ]
+          }
+        }
+      },
+      "TokenObject": {
+        "title": "TokenObject",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "access_token": {
+            "type": "string",
+            "example": "jwt",
+            "readOnly": true
+          },
+          "refresh_token": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "server_uri": {
+            "type": "string",
+            "format": "uri",
+            "readOnly": true
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "catalogue_id"
+            }
           }
         }
       }
