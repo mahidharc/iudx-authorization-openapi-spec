@@ -2899,6 +2899,46 @@
         "tags": [
           "NewTokenAPIs"
         ]
+      },
+      "put": {
+        "summary": "Add or remove resources to a token",
+        "operationId": "put-auth-v23-token",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Add or remove resources to a token\n- The list of resources sent along with the request for a particular token is the list of resources that will be set for that token\n- **All other resources for said token will be deleted**",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "request": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string"
+                        },
+                        "resources": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {}
+            }
+          },
+          "description": "`resources` cannot be empty i.e. there must be at least one resource to be added"
+        }
       }
     },
     "/auth/v23/token/introspect": {
