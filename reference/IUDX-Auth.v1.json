@@ -1543,7 +1543,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `provider-email` header\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `expiry`\n  - `provider-email` header\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -1592,6 +1592,14 @@
                       "error": {
                         "message": "Invalid data (duplicate)",
                         "id": 7
+                      }
+                    }
+                  },
+                  "Invalid expiry": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (expiry)",
+                        "id": 2
                       }
                     }
                   }
@@ -1859,11 +1867,25 @@
                       "user_role": "delegate"
                     }
                   ]
+                },
+                "Setting expiry time with consumer policy": {
+                  "value": [
+                    {
+                      "user_email": "test@datakaveri.org",
+                      "user_role": "consumer",
+                      "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-flood-sensor",
+                      "item_type": "resourcegroup",
+                      "capabilities": [
+                        "subscription"
+                      ],
+                      "expiry": "2021-09-03 04:17:36"
+                    }
+                  ]
                 }
               }
             }
           },
-          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
+          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n-`expiry` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the YYYY-DD-MM HH:MM:SS format. if `expiry` is not sent a default time of 1 year is set\n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
         },
         "tags": [
           "Access APIs"
@@ -2318,7 +2340,7 @@
             }
           }
         },
-        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nUpdate multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may update policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can update policies \n- **Delegates cannot delete delegate policies**",
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nUpdate multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may update policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can update policies \n- **Delegates cannot update delegate policies**",
         "requestBody": {
           "content": {
             "application/json": {
