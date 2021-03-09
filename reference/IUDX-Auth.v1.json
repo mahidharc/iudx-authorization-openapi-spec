@@ -2144,7 +2144,239 @@
             "schema": {
               "type": "string"
             },
-            "in": "header"
+            "in": "header",
+            "description": "the session-id that the user received on the registered phone number",
+            "name": "session-id"
+          }
+        ]
+      },
+      "put": {
+        "summary": "Update policy time",
+        "operationId": "put-auth-v1-provider-access",
+        "responses": {
+          "200": {
+            "description": "The policies have been successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `expiry` (if malformed)\n\n**For all above errors the offending access ID is returned will be returned in the error response**\n* SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "access_id": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "access_id"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                },
+                "examples": {
+                  "Invalid id": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (id)",
+                        "access_id": -5
+                      }
+                    }
+                  },
+                  "example-2": {
+                    "value": {
+                      "error": {
+                        "message": "string",
+                        "access_id": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "- If a user who is not registered as a provider or delegate calls the API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": [
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "- If the header 'session-id' is missing/empty/invalid\n- Invalid access ID\n- Delegate tries to update a delegate rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "access_id": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "access_id"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                },
+                "examples": {
+                  "Invalid id": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid id",
+                        "access_id": 45
+                      }
+                    }
+                  },
+                  "delegate updating delegate rule": {
+                    "value": {
+                      "error": {
+                        "message": "Delegate cannot update delegate rules",
+                        "access_id": 8
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nUpdate multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may update policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can update policies \n- **Delegates cannot delete delegate policies**",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "description": "",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "expiry": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Expiry time in UTC (YYYY-DD-MM HH:MM:SS)"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              },
+              "examples": {
+                "example-1": {
+                  "value": [
+                    {
+                      "id": 97
+                    },
+                    {
+                      "id": 5,
+                      "expiry": "2021-09-03 04:17:36"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "description": "The body is an array of JSON objects, with each object containing `id` (a mandotary field), which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint and `expiry` (optional field) which determines the new expiry time of the policy.Expiry has to be a string in the UTC format (YYYY-DD-MM HH:MM:SS). If expiry is not present with the id field, default value of one year is set for the policy with matching id.\n\nPolicies can only be updated(renewed) only when they have already expired. \n\n\n**NOTE** : Rules are updated only when **all objects in the request array are valid**"
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "session-id",
+            "description": "the session-id that the user received on the registered phone number"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "provider-email",
+            "description": "Email of provider that delegate is setting rule for"
           }
         ]
       }
@@ -2398,9 +2630,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         },
         "tags": [
