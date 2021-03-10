@@ -1330,7 +1330,7 @@
     "/auth/v1/token": {
       "get": {
         "summary": "Get all tokens that you have issued",
-        "operationId": "get-auth-v23-token",
+        "operationId": "get-auth-v1-token",
         "responses": {
           "200": {
             "description": "**The `uuid` of the token is used in the PUT and DELETE APIs**\n\n`Status` in the `request` object can have 4 states:\n\n- **active** - if user has access to the resource\n- **deleted** - if user has deleted said resource from the token\n- **revoked** - if the provider has revoked consumer access to the resource\n- **expired** - if the policy for the resource has expired, therefore user cannot access it anymore",
@@ -1595,7 +1595,7 @@
       },
       "post": {
         "summary": "Request for a token",
-        "operationId": "post-auth-v23-token",
+        "operationId": "post-auth-v1-token",
         "responses": {
           "200": {
             "description": "OK",
@@ -1673,7 +1673,7 @@
       "parameters": [],
       "delete": {
         "summary": "Delete tokens issued by you",
-        "operationId": "delete-auth-v23-token",
+        "operationId": "delete-auth-v1-token",
         "responses": {
           "200": {
             "description": "OK",
@@ -1755,7 +1755,7 @@
       },
       "put": {
         "summary": "Add or remove resources to a token",
-        "operationId": "put-auth-v23-token",
+        "operationId": "put-auth-v1-token",
         "responses": {
           "200": {
             "description": "OK\nArray of objects returned with each object representing the token that has been affected\n- `active_resources` are all the resources currently active for the token\n- `deleted_resources` are all resources that have **now** been deleted",
@@ -1864,7 +1864,7 @@
     "/auth/v1/token/introspect": {
       "post": {
         "summary": "Introspect token",
-        "operationId": "post-auth-v23-token-introspect",
+        "operationId": "post-auth-v1-token-introspect",
         "responses": {
           "200": {
             "description": "OK",
@@ -2163,7 +2163,7 @@
             }
           }
         },
-        "operationId": "get-auth-v23-consumer-resources",
+        "operationId": "get-auth-v1-consumer-resources",
         "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n\n- Onboarder catalogue access is **not** shown currently",
         "tags": [
           "Consumer APIs"
