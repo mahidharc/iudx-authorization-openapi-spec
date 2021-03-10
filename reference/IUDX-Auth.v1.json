@@ -32,9 +32,6 @@
     },
     {
       "name": "Session id APIs"
-    },
-    {
-      "name": "NewTokenAPIs"
     }
   ],
   "paths": {
@@ -1857,7 +1854,7 @@
               }
             }
           },
-          "description": "`request` is an array of objects, with each object containing `token` UUID and `resources` array to be set as active\n`resources` cannot be empty i.e. there must be at least one resource to be added"
+          "description": "`request` is an array of objects, with each object containing `token` UUID and `resources` array to be set as active\n\n`resources` cannot be empty i.e. there must be at least one resource to be added"
         },
         "tags": [
           "Token APIs"
@@ -1993,7 +1990,7 @@
           }
         },
         "tags": [
-          "NewTokenAPIs"
+          "Token APIs"
         ]
       },
       "parameters": []
