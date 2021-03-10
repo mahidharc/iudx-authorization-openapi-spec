@@ -141,1150 +141,6 @@
         ]
       }
     },
-    "/auth/v1/token": {
-      "post": {
-        "summary": "Request for a token",
-        "operationId": "post-auth-v1-token",
-        "responses": {
-          "200": {
-            "description": "Token has been successfully generated for requested resources and respective APIs. \n**The token validity is set to 1 week**\n\nThe token structure is as follows:\n`Auth Server URL`/`Email address of token requester`/`Random string`",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "token": {
-                      "type": "string"
-                    },
-                    "token-type": {
-                      "type": "string"
-                    },
-                    "expires-in": {
-                      "type": "integer"
-                    },
-                    "is_token_valid": {
-                      "type": "boolean"
-                    },
-                    "server-token": {
-                      "type": "object",
-                      "properties": {
-                        "<resource-server-name>": {
-                          "type": "boolean"
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "token": "authorization.iudx.org.in/consumer@datakaveri.org/5d26f8526d75f5ed9407d7a808edac38",
-                      "token-type": "IUDX",
-                      "expires-in": 604800,
-                      "is_token_valid": true,
-                      "server-token": {
-                        "rs.iudx.org.in": true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "- Missing or malformed request\n  - If `apis` is invalid\n- SSL Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error-Message"
-                    },
-                    {
-                      "$ref": "#/components/schemas/NGINX-Errors"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "//": {
-                          "type": "string"
-                        },
-                        "error": {
-                          "type": "object",
-                          "properties": {
-                            "message": {
-                              "type": "string"
-                            },
-                            "invalid-input": {
-                              "type": "object"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                },
-                "examples": {
-                  "Invalid request array": {
-                    "value": {
-                      "error": {
-                        "message": "'request' must be a valid JSON array with at least 1 element"
-                      }
-                    }
-                  },
-                  "If no access policy set for the resource or an invalid id": {
-                    "value": {
-                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
-                      "error": {
-                        "message": "Invalid 'id'; no access control policies have been set for this 'id' by the data provider",
-                        "invalidinput": "iisc.ac.in/85a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/t/*"
-                      }
-                    }
-                  },
-                  "apis is invalid": {
-                    "value": {
-                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
-                      "error": {
-                        "message": "'apis' must be a valid JSON array",
-                        "invalid-input": {
-                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/t/*",
-                          "apis": "/ngsi-ld/v1/subscription"
-                        }
-                      }
-                    }
-                  },
-                  "example-4": {
-                    "value": {
-                      "error": {
-                        "message": "string"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "- If not permitted to access a certain resource, or combination of resource and API\n- If `id` is invalid or no access policy set for it by the concerned Provider\n- Incorrect Certificate used",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "//": {
-                          "type": "string"
-                        },
-                        "error": {
-                          "type": "object",
-                          "properties": {
-                            "message": {
-                              "type": "string"
-                            },
-                            "invalid-input": {
-                              "type": "object",
-                              "description": "The request object that is not accessible"
-                            }
-                          }
-                        }
-                      }
-                    },
-                    {
-                      "$ref": "#/components/schemas/Incorrect-Cert-Class"
-                    }
-                  ]
-                },
-                "examples": {
-                  "Unauthorized to access resource with subcription API": {
-                    "value": {
-                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
-                      "error": {
-                        "message": "Unauthorized",
-                        "invalid-input": {
-                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/2/old",
-                          "api": "/ngsi-ld/v1/subscription",
-                          "method": "*"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "If user has issued too many tokens in a time frame",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Too many requests"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nRequest for a token to access protected resources and APIs on those resources. The issued token is then included as part of the request to the resource server for said resource. Once the resource server validates the token, the protected resource is shared with the user.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "request": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "apis": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "required": [
-                        "id"
-                      ]
-                    }
-                  }
-                },
-                "required": [
-                  "request"
-                ]
-              },
-              "examples": {
-                "Requesting token for Data Ingester": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
-                        "apis": [
-                          "/iudx/v1/adapter"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "Requesting token for Onboarder": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/catalogue.iudx.io/catalogue/crud"
-                      }
-                    ]
-                  }
-                },
-                "Requesting token for Subscription capability APIs": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
-                        "apis": [
-                          "/ngsi-ld/v1/subscription"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "Requesting token for Temporal capability APIs": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
-                        "apis": [
-                          "/ngsi-ld/v1/temporal/entities",
-                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "Requesting token for Complex capability APIs": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
-                        "apis": [
-                          "/ngsi-ld/v1/entities",
-                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
-                          "/ngsi-ld/v1/entityOperations/query"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "Requesting for multiple resource groups and resource items": {
-                  "value": {
-                    "request": [
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
-                        "apis": [
-                          "/ngsi-ld/v1/entities",
-                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
-                          "/ngsi-ld/v1/entityOperations/query"
-                        ]
-                      },
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/item-1",
-                        "apis": [
-                          "/ngsi-ld/v1/entities",
-                          "/ngsi-ld/v1/entities/datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm"
-                        ]
-                      },
-                      {
-                        "id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/item-2",
-                        "apis": [
-                          "/ngsi-ld/v1/subscription"
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "description": "- The `request` array consists of objects that specify resource IDs for which access is desired.\n- `id` is the resource ID of the resource group or resource item\n    - **For a token for access to the entire resource group, the resource group ID must be suffixed by '/*'**\n- `apis` is an array of APIs that can be called on the respective resource ID\n\n### Consumers\n\nFor consumers, the APIs are defined by the existing capabilities:\n\n- Subscription capability: ```/ngsi-ld/v1/subscription```\n- Temporal capability: ```/ngsi-ld/v1/temporal/entities``` ```/ngsi-ld/v1/entities/<resource-group>```\n- Complex capability: ```/ngsi-ld/v1/entityOperations/query``` ```/ngsi-ld/v1/entities/<resource-group>``` ```/ngsi-ld/v1/entities``` \n\nFor the APIs with ```<resource-group>```, the API text will include the full resource group ID. For example, if id is \n      \n      iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm/sensor-1\nthe entities API for that will be:\n\n    /ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/pune-aqm\n\n### Data Ingesters\n\nData ingesters specifically have only 1 accessible API:\n```/iudx/v1/adapter```\n\n### Onboarders\n\nOnboarders have no APIs. The `id` field must be in the format:\n```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n    \n    datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud"
-        },
-        "tags": [
-          "Token APIs"
-        ]
-      }
-    },
-    "/auth/v1/token/introspect": {
-      "post": {
-        "summary": "Introspect a token",
-        "operationId": "post-auth-v1-token-introspect",
-        "responses": {
-          "200": {
-            "description": "A successful introspection will return details of the token. ",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "consumer": {
-                      "type": "string",
-                      "description": "Email of consumer who requested the token"
-                    },
-                    "expiry": {
-                      "type": "string",
-                      "description": "Time of expiry of token",
-                      "format": "date-time"
-                    },
-                    "request": {
-                      "type": "array",
-                      "description": "The resources and APIs for which the token was issued",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "description": "The resource ID"
-                          },
-                          "apis": {
-                            "type": "array",
-                            "description": "APIs which can be called on the resource",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "methods": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "body": {
-                            "type": "object",
-                            "nullable": true
-                          }
-                        }
-                      }
-                    },
-                    "consumer-class-certificate": {
-                      "type": "integer",
-                      "description": "Class of the certificate that requested the token"
-                    }
-                  }
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "consumer": "test@iisc.ac.in",
-                      "expiry": "2020-09-27T10:36:36.893Z",
-                      "request": [
-                        {
-                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/group-1/*",
-                          "apis": [
-                            "/ngsi-ld/v1/subscription"
-                          ],
-                          "body": null,
-                          "methods": [
-                            "*"
-                          ]
-                        },
-                        {
-                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/group-1/two",
-                          "apis": [
-                            "/ngsi-ld/v1/entities"
-                          ],
-                          "body": null,
-                          "methods": [
-                            "*"
-                          ]
-                        }
-                      ],
-                      "consumer-certificate-class": 2
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "- If `token` is missing or is a malformed token\n- SSL Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error-Message"
-                    },
-                    {
-                      "$ref": "#/components/schemas/NGINX-Errors"
-                    }
-                  ]
-                },
-                "examples": {
-                  "Missing token field": {
-                    "value": {
-                      "error": {
-                        "message": "No 'token' found in the body"
-                      }
-                    }
-                  },
-                  "Malformed token": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid 'token'"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "- If the token:\n  - does not exist\n  - is expired\n  - has been revoked\n- Incorrect Certificate used",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error-Message"
-                    },
-                    {
-                      "$ref": "#/components/schemas/Incorrect-Cert-Class"
-                    }
-                  ]
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid 'token'"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nResource servers can introspect tokens to get the resource IDs, APIs etc. that the token has been issued for.\n\n**A resource server can only introspect a token that has been issued for resources that belong to it.**\n\nFor example, a resource ID __*datakaveri.org/73e2..aab4/rs.iudx.org.in/pune-aqm/resource1*__ refers to a resource hosted in the resource server __*rs.iudx.org.in*__. A token issued for this resource can be instrospected by the server __*rs.iudx.org.in*__. However, if a server __*rs.iudx.io*__ obtains the token and performs Introspect, an *Invalid token* error will be returned.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string",
-                    "description": "A valid IUDX token"
-                  }
-                },
-                "required": [
-                  "token"
-                ]
-              },
-              "examples": {
-                "Example": {
-                  "value": {
-                    "token": "authorization.iudx.org.in/test@iisc.ac.in/704b949bdb7a7217c124c62821df6b62"
-                  }
-                }
-              }
-            }
-          },
-          "description": "The token is sent in the request"
-        },
-        "tags": [
-          "Token APIs"
-        ]
-      }
-    },
-    "/auth/v1/token/revoke": {
-      "post": {
-        "summary": "Revoke a token",
-        "operationId": "post-auth-v1-token-revoke",
-        "responses": {
-          "200": {
-            "description": "The response will contain the number of tokens revoked.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "num-tokens-revoked": {
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  },
-                  "required": [
-                    "num-tokens-revoked"
-                  ]
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "num-tokens-revoked": 70
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "- If `token-hashes` is missing\n- If `token-hashes` is not a valid JSON array\n- If a token hash is invalid, does not exist or has already been revoked \n    - **All valid tokens before the invalid token hash will be revoked. `num-tokens-revoked` will be returned with the number of tokens revoked till the invalid token hash**\n- SSL Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "error": {
-                          "type": "object",
-                          "properties": {
-                            "message": {
-                              "type": "string"
-                            },
-                            "invalid-input": {
-                              "type": "string",
-                              "description": "The invalid hash"
-                            },
-                            "num-tokens-revoked": {
-                              "type": "integer",
-                              "description": "number of tokens revoked in array till the invalid token hash"
-                            }
-                          },
-                          "required": [
-                            "message"
-                          ]
-                        }
-                      }
-                    },
-                    {
-                      "$ref": "#/components/schemas/NGINX-Errors"
-                    }
-                  ]
-                },
-                "examples": {
-                  "If token-hashes missing": {
-                    "value": {
-                      "error": {
-                        "message": "No 'tokens' or 'token-hashes' found"
-                      }
-                    }
-                  },
-                  "If token-hashes is invalid JSON array": {
-                    "value": {
-                      "error": {
-                        "message": "'token-hashes' must be a valid JSON array"
-                      }
-                    }
-                  },
-                  "If a token hash is invalid, does not exist or is already revoked": {
-                    "value": {
-                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
-                      "error": {
-                        "message": "Invalid 'token hash'",
-                        "invalid-input": "837788ad6d1b351f7b8382c6c9f8032f71f3f2d059b7f27b32d15d9685cf16f0",
-                        "num-tokens-revoked": 9
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Incorrect-Cert-Class"
-                }
-              }
-            }
-          }
-        },
-        "description": "**Requires a valid class-3/provider client certificate issued by IUDX**\n\nRevoke list of tokens using token hashes obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.\n\n**When sending an array of token hashes, all valid tokens before a invalid token hash will be revoked. `num-tokens-revoked` will be returned with the number of tokens revoked till the invalid token hash**",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "token-hashes": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                      "type": "string",
-                      "pattern": "^[0-9a-f]+$",
-                      "minLength": 64,
-                      "maxLength": 64
-                    }
-                  }
-                },
-                "required": [
-                  "token-hashes"
-                ]
-              },
-              "examples": {
-                "Example": {
-                  "value": {
-                    "token-hashes": [
-                      "ba097163a905f6cf32cfdb2092fa3ec12073e87b8b1b3cc42f5e029ba7980eb7",
-                      "837788ad6d1b351f7b8382c6c9f8032f71f3f2d059b7f27b32d15d9685cf16f0"
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "description": "The request should contain an array of token hashes. (Each hash must be in lower-case hex representation)"
-        },
-        "tags": [
-          "Token APIs"
-        ]
-      }
-    },
-    "/auth/v1/token/revoke-all": {
-      "post": {
-        "summary": "Revoke all tokens belonging to a certificate",
-        "operationId": "post-auth-v1-token-revoke-all",
-        "responses": {
-          "200": {
-            "description": "The number of tokens revoked for that particular certficate/consumer will be returned",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "num-tokens-revoked": {
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  },
-                  "required": [
-                    "num-tokens-revoked"
-                  ]
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "num-tokens-revoked": 70
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "- If `serial`, `fingerprint` is missing or invalid\n- SSL Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error-Message"
-                    },
-                    {
-                      "$ref": "#/components/schemas/NGINX-Errors"
-                    }
-                  ]
-                },
-                "examples": {
-                  "Missing serial": {
-                    "value": {
-                      "error": {
-                        "message": "No 'serial' found in the body"
-                      }
-                    }
-                  },
-                  "Missing fingerprint": {
-                    "value": {
-                      "error": {
-                        "message": "No 'fingerprint' found in the body"
-                      }
-                    }
-                  },
-                  "Invalid serial": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid 'serial'"
-                      }
-                    }
-                  },
-                  "Invalid fingerprint": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid 'fingerprint"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Incorrect-Cert-Class"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "**Requires a valid class-3/provider client certificate issued by IUDX**\n\nRevoke all tokens issued to a particular consumer based on their certificate. The certificate serial number and fingerprint are obtained from audit API. The revoked tokens cannot be introspected and are thus invalid.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "serial": {
-                    "type": "string",
-                    "pattern": "^-?[a-fA-F0-9]{40}$",
-                    "minLength": 1,
-                    "maxLength": 512
-                  },
-                  "fingerprint": {
-                    "type": "string",
-                    "description": "valid certificate fingerprint delimited by :",
-                    "pattern": "^([a-fA-F0-9]{2}:){19}[a-fA-F0-9]{2}$",
-                    "minLength": 1,
-                    "maxLength": 512
-                  }
-                },
-                "required": [
-                  "serial",
-                  "fingerprint"
-                ]
-              },
-              "examples": {
-                "Example": {
-                  "value": {
-                    "serial": "5379c47881b51bb65c3a01da22dc175e6ec03e04",
-                    "fingerprint": "a0:75:1b:72:7c:77:86:04:47:ce:25:fb:e1:ad:0c:29:db:87:16:71"
-                  }
-                }
-              }
-            }
-          },
-          "description": ""
-        },
-        "tags": [
-          "Token APIs"
-        ]
-      }
-    },
-    "/auth/v1/audit/tokens": {
-      "post": {
-        "summary": "Audit tokens",
-        "operationId": "post-auth-v1-audit-tokens",
-        "responses": {
-          "200": {
-            "description": "- The `token-hash` field can be used to revoke the token using the `/auth/v1/token/revoke` API\n- The `certificate-serial-number` and `certificate-fingerprint` fields can be used to revoke all tokens issued to that consumer/certificate using the `/auth/v1/token/revoke-all` API",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "as-consumer": {
-                      "type": "array",
-                      "items": {}
-                    },
-                    "as-provider": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "consumer": {
-                            "type": "string",
-                            "description": "email address of consumer"
-                          },
-                          "token-hash": {
-                            "type": "string",
-                            "description": "SHA-256 of token"
-                          },
-                          "token-issued-at": {
-                            "type": "string",
-                            "description": "Time when token was issued",
-                            "format": "date-time"
-                          },
-                          "expiry": {
-                            "type": "string",
-                            "description": "Time when token will expire",
-                            "format": "date-time"
-                          },
-                          "introspected": {
-                            "type": "boolean",
-                            "description": "If the token was introspected"
-                          },
-                          "revoked": {
-                            "type": "boolean",
-                            "description": "If the token has been revoked"
-                          },
-                          "expired": {
-                            "type": "boolean",
-                            "description": "If the token has expired"
-                          },
-                          "certificate-serial-number": {
-                            "type": "string",
-                            "description": "Serial number of certificate of consumer"
-                          },
-                          "certificate-fingerprint": {
-                            "type": "string",
-                            "description": "Fingerprint of certificate of consumer"
-                          },
-                          "request": {
-                            "type": "array",
-                            "description": "Array of requests for the token",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string",
-                                  "description": "The resource ID"
-                                },
-                                "methods": {
-                                  "type": "array",
-                                  "description": "Accepted methods for the resource ID",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "apis": {
-                                  "type": "array",
-                                  "description": "Accepted APIs for the resource ID",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "body": {
-                                  "type": "object",
-                                  "nullable": true
-                                }
-                              }
-                            }
-                          },
-                          "geoip": {
-                            "type": "object",
-                            "description": "Geo properties of token obtained from IP address from which token was requested (GeoIP)",
-                            "properties": {
-                              "ll": {
-                                "type": "array",
-                                "description": "lat, long \n",
-                                "items": {
-                                  "type": "number"
-                                }
-                              },
-                              "city": {
-                                "type": "string"
-                              },
-                              "region": {
-                                "type": "string"
-                              },
-                              "country": {
-                                "type": "string"
-                              },
-                              "timezone": {
-                                "type": "string"
-                              }
-                            }
-                          },
-                          "api-called-from": {
-                            "type": "object",
-                            "nullable": true
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "as-consumer": [
-                        null
-                      ],
-                      "as-provider": [
-                        {
-                          "consumer": "bryan.robert@datakaveri.org",
-                          "token-hash": "4d13b4e1142ea2453cc257f1114c0bce9acd84e599ceed545df707405991d285",
-                          "token-issued-at": "2020-09-19T12:11:00.168Z",
-                          "introspected": true,
-                          "revoked": false,
-                          "expiry": "2020-09-19T13:11:00.168Z",
-                          "expired": true,
-                          "certificate-serial-number": "5379c47881b51bb65c3a01da22dc175e6ec03e04",
-                          "certificate-fingerprint": "a0:75:1b:72:7c:77:86:04:47:ce:25:fb:e1:ad:0c:29:db:87:16:71",
-                          "request": [
-                            {
-                              "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/1/*",
-                              "apis": [
-                                "/ngsi-ld/v1/subscription"
-                              ],
-                              "body": null,
-                              "methods": [
-                                "*"
-                              ]
-                            }
-                          ],
-                          "geoip": {
-                            "ll": [
-                              16.5136,
-                              80.6297
-                            ],
-                            "city": "Vijayawada",
-                            "region": "AP",
-                            "country": "IN",
-                            "timezone": "Asia/Kolkata"
-                          },
-                          "api-called-from": null
-                        },
-                        {
-                          "consumer": "aman.asif@datakaveri.org",
-                          "token-hash": "8f652451e78b68ec02e84b00abdd7ae980b5278f5b9f4ca2a88302026a5ce7c7",
-                          "token-issued-at": "2020-09-17T08:29:35.012Z",
-                          "introspected": false,
-                          "revoked": false,
-                          "expiry": "2020-09-17T09:29:35.012Z",
-                          "expired": true,
-                          "certificate-serial-number": "6252129ece3e5e8b5ce1238bba4ef324d6142a17",
-                          "certificate-fingerprint": "bb:31:09:aa:46:e0:a1:24:dc:07:a8:87:7f:30:1b:da:f7:29:8f:07",
-                          "request": [
-                            {
-                              "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.com/biggroup-3/item-1",
-                              "apis": [
-                                "/ngsi-ld/v1/temporal/entities"
-                              ],
-                              "body": null,
-                              "methods": [
-                                "*"
-                              ]
-                            }
-                          ],
-                          "geoip": {
-                            "ll": [
-                              11.248,
-                              75.7804
-                            ],
-                            "city": "Kozhikode",
-                            "region": "KL",
-                            "country": "IN",
-                            "timezone": "Asia/Kolkata"
-                          },
-                          "api-called-from": null
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "- If the `hours` field is missing or invalid\n- SSL Errors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error-Message"
-                    },
-                    {
-                      "$ref": "#/components/schemas/NGINX-Errors"
-                    }
-                  ]
-                },
-                "examples": {
-                  "hours missing": {
-                    "value": {
-                      "error": {
-                        "message": "No 'hours' found in the body"
-                      }
-                    }
-                  },
-                  "hours invalid": {
-                    "value": {
-                      "error": {
-                        "message": "'hours' must be a positive number"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Incorrect Certificate used",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Incorrect-Cert-Class"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "**Requires a valid class-3/provider client certificate**\n\nA Provider can use the Audit API to get details of the tokens issued for their resources. ",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "hours": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 43800,
-                    "description": "Number of hours for which the audit-report has to be generated"
-                  }
-                },
-                "required": [
-                  "hours"
-                ]
-              },
-              "examples": {
-                "Example": {
-                  "value": {
-                    "hours": 5
-                  }
-                }
-              }
-            }
-          },
-          "description": "`hours` determines the number of hours for which the audit report is returned"
-        },
-        "tags": [
-          "Token APIs"
-        ]
-      }
-    },
     "/auth/v1/provider/access": {
       "get": {
         "summary": "Get all access policies",
@@ -2474,13 +1330,13 @@
         "description": "Requires a valid IUDX issued client certificate and user must be a registered user whose role must have access to the secured-endpoints/methods combinations that they are trying to get a session-id for."
       }
     },
-    "/auth/v23/token": {
+    "/auth/v1/token": {
       "get": {
         "summary": "Get all tokens that you have issued",
         "operationId": "get-auth-v23-token",
         "responses": {
           "200": {
-            "description": "`Status` in the `request` object can have 4 states:\n\n- **active** - if user has access to the resource\n- **deleted** - if user has deleted said resource from the token\n- **revoked** - if the provider has revoked consumer access to the resource\n- **expired** - if the policy for the resource has expired, therefore user cannot access it anymore",
+            "description": "**The `uuid` of the token is used in the PUT and DELETE APIs**\n\n`Status` in the `request` object can have 4 states:\n\n- **active** - if user has access to the resource\n- **deleted** - if user has deleted said resource from the token\n- **revoked** - if the provider has revoked consumer access to the resource\n- **expired** - if the policy for the resource has expired, therefore user cannot access it anymore",
             "content": {
               "application/json": {
                 "schema": {
@@ -2737,7 +1593,7 @@
         },
         "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet all tokens + resources and status of resources and also the APIs associated with the resources",
         "tags": [
-          "NewTokenAPIs"
+          "Token APIs"
         ]
       },
       "post": {
@@ -2779,10 +1635,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet a token **OR** using an expired token issued by you, get a new token with all the same resources as the expired one",
-        "tags": [
-          "NewTokenAPIs"
-        ],
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet a token **OR** using an expired token issued by you, get a new token with all the same resources as the expired one.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2815,7 +1668,10 @@
             }
           },
           "description": "`request` is an array with resources for which access is desired.\n`existing_token` is a valid expired token belonging to the user.\n**Either `request` or `existing_token` must form part of the request body, not both**"
-        }
+        },
+        "tags": [
+          "Token APIs"
+        ]
       },
       "parameters": [],
       "delete": {
@@ -2897,7 +1753,7 @@
           }
         },
         "tags": [
-          "NewTokenAPIs"
+          "Token APIs"
         ]
       },
       "put": {
@@ -2905,10 +1761,60 @@
         "operationId": "put-auth-v23-token",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK\nArray of objects returned with each object representing the token that has been affected\n- `active_resources` are all the resources currently active for the token\n- `deleted_resources` are all resources that have **now** been deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "active_resources": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "deleted_resources": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "token",
+                      "active_resources",
+                      "deleted_resources"
+                    ]
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "token": "a1997488-6c50-4ce2-b3e2-0812f72e59fc",
+                        "active_resources": [
+                          "datakaveri.org/f8dc5bbb151968101ad4596819a248d3e0ea20c0/rs.iudx.io/pune-env-flood/*",
+                          "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*"
+                        ],
+                        "deleted_resources": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
-        "description": "Add or remove resources to a token\n- The list of resources sent along with the request for a particular token is the list of resources that will be set for that token\n- **All other resources for said token will be deleted**",
+        "description": "Add or remove resources on tokens\n- The list of resources sent along with the request for a particular token **is the list of resources that will be set for that token**\n- **All other resources for said token will be deleted**",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2934,14 +1840,31 @@
                   }
                 }
               },
-              "examples": {}
+              "examples": {
+                "Example": {
+                  "value": {
+                    "request": [
+                      {
+                        "token": "a1997488-6c50-4ce2-b3e2-0812f72e59fc",
+                        "resources": [
+                          "datakaveri.org/f8dc5bbb151968101ad4596819a248d3e0ea20c0/rs.iudx.io/pune-env-flood/*",
+                          "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
             }
           },
-          "description": "`resources` cannot be empty i.e. there must be at least one resource to be added"
-        }
+          "description": "`request` is an array of objects, with each object containing `token` UUID and `resources` array to be set as active\n`resources` cannot be empty i.e. there must be at least one resource to be added"
+        },
+        "tags": [
+          "Token APIs"
+        ]
       }
     },
-    "/auth/v23/token/introspect": {
+    "/auth/v1/token/introspect": {
       "post": {
         "summary": "Introspect token",
         "operationId": "post-auth-v23-token-introspect",
@@ -3072,14 +1995,12 @@
         "tags": [
           "NewTokenAPIs"
         ]
-      }
+      },
+      "parameters": []
     },
-    "/auth/v23/consumer/resources": {
+    "/auth/v1/consumer/resources": {
       "get": {
         "summary": "Allow consumers and data ingesters to see resources they have access to",
-        "tags": [
-          "NewTokenAPIs"
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -3159,11 +2080,99 @@
                 }
               }
             }
+          },
+          "": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "cat_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "apis": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "type": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "cat_id",
+                      "apis",
+                      "type"
+                    ]
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": [
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                        "apis": [
+                          "/ngsi-ld/v1/subscription",
+                          "/ngsi-ld/v1/entityOperations/query",
+                          "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                          "/ngsi-ld/v1/entities",
+                          "/ngsi-ld/v1/temporal/entities"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
+                        "apis": [
+                          "/iudx/v1/adapter"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
+                        "apis": [
+                          "/iudx/v1/upload",
+                          "/iudx/v1/delete"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
+                        "apis": [
+                          "/iudx/v1/download"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/test",
+                        "apis": [
+                          "/iudx/v1/upload",
+                          "/iudx/v1/delete"
+                        ],
+                        "type": "resourcegroup"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         },
         "operationId": "get-auth-v23-consumer-resources",
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n- Onboarder catalogue access is **not** shown currently"
-      }
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n\n- Onboarder catalogue access is **not** shown currently",
+        "tags": [
+          "Consumer APIs"
+        ]
+      },
+      "parameters": []
     }
   },
   "components": {
