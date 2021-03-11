@@ -32,6 +32,9 @@
     },
     {
       "name": "Session id APIs"
+    },
+    {
+      "name": "Consumer APIs"
     }
   ],
   "paths": {
@@ -481,6 +484,9 @@
                   "properties": {
                     "error": {
                       "type": "object",
+                      "required": [
+                        "message"
+                      ],
                       "properties": {
                         "message": {
                           "type": "string",
@@ -489,11 +495,7 @@
                         "id": {
                           "type": "number"
                         }
-                      },
-                      "required": [
-                        "message",
-                        "id"
-                      ]
+                      }
                     }
                   },
                   "required": [
@@ -992,12 +994,6 @@
             "in": "header",
             "name": "provider-email",
             "description": "Email of provider that delegate is setting rule for"
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "header"
           }
         ]
       }
@@ -1395,12 +1391,6 @@
                               "type": "string",
                               "minLength": 1
                             },
-                            "apis": {
-                              "type": "array",
-                              "description": "available APIs to the user",
-                              "minItems": 0,
-                              "items": {}
-                            },
                             "cat_id": {
                               "type": "string"
                             }
@@ -1409,7 +1399,6 @@
                             "status",
                             "created_at",
                             "updated_at",
-                            "apis",
                             "cat_id"
                           ]
                         }
@@ -1439,27 +1428,13 @@
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
                             "created_at": "2021-02-26T06:37:08.836Z",
-                            "updated_at": "2021-02-26T06:37:08.836Z",
-                            "apis": [
-                              "/ngsi-ld/v1/subscription",
-                              "/ngsi-ld/v1/entityOperations/query",
-                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
-                              "/ngsi-ld/v1/entities",
-                              "/ngsi-ld/v1/temporal/entities"
-                            ]
+                            "updated_at": "2021-02-26T06:37:08.836Z"
                           },
                           {
                             "status": "deleted",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
                             "created_at": "2021-02-26T06:37:08.876Z",
-                            "updated_at": "2021-02-26T06:37:08.876Z",
-                            "apis": [
-                              "/ngsi-ld/v1/subscription",
-                              "/ngsi-ld/v1/entityOperations/query",
-                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
-                              "/ngsi-ld/v1/entities",
-                              "/ngsi-ld/v1/temporal/entities"
-                            ]
+                            "updated_at": "2021-02-26T06:37:08.876Z"
                           }
                         ]
                       },
@@ -1474,27 +1449,13 @@
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
                             "created_at": "2021-02-26T06:58:36.399Z",
-                            "updated_at": "2021-02-26T06:58:36.399Z",
-                            "apis": [
-                              "/ngsi-ld/v1/subscription",
-                              "/ngsi-ld/v1/entityOperations/query",
-                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
-                              "/ngsi-ld/v1/entities",
-                              "/ngsi-ld/v1/temporal/entities"
-                            ]
+                            "updated_at": "2021-02-26T06:58:36.399Z"
                           },
                           {
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
                             "created_at": "2021-02-26T06:58:36.402Z",
-                            "updated_at": "2021-02-26T06:58:36.402Z",
-                            "apis": [
-                              "/ngsi-ld/v1/subscription",
-                              "/ngsi-ld/v1/entityOperations/query",
-                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
-                              "/ngsi-ld/v1/entities",
-                              "/ngsi-ld/v1/temporal/entities"
-                            ]
+                            "updated_at": "2021-02-26T06:58:36.402Z"
                           }
                         ]
                       },
@@ -1509,8 +1470,7 @@
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/catalogue.iudx.io/catalogue/crud",
                             "created_at": "2021-02-26T07:05:49.401Z",
-                            "updated_at": "2021-02-26T07:05:49.401Z",
-                            "apis": []
+                            "updated_at": "2021-02-26T07:05:49.401Z"
                           }
                         ]
                       },
@@ -1538,14 +1498,7 @@
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
                             "created_at": "2021-02-27T10:32:14.407Z",
-                            "updated_at": "2021-02-27T10:32:14.407Z",
-                            "apis": [
-                              "/ngsi-ld/v1/subscription",
-                              "/ngsi-ld/v1/entityOperations/query",
-                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                              "/ngsi-ld/v1/entities",
-                              "/ngsi-ld/v1/temporal/entities"
-                            ]
+                            "updated_at": "2021-02-27T10:32:14.407Z"
                           }
                         ]
                       },
@@ -1560,23 +1513,13 @@
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
                             "created_at": "2021-02-27T10:34:20.667Z",
-                            "updated_at": "2021-02-27T10:34:20.667Z",
-                            "apis": [
-                              "/ngsi-ld/v1/subscription",
-                              "/ngsi-ld/v1/entityOperations/query",
-                              "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                              "/ngsi-ld/v1/entities",
-                              "/ngsi-ld/v1/temporal/entities"
-                            ]
+                            "updated_at": "2021-02-27T10:34:20.667Z"
                           },
                           {
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
                             "created_at": "2021-02-27T10:34:20.672Z",
-                            "updated_at": "2021-02-27T10:34:20.672Z",
-                            "apis": [
-                              "/iudx/v1/adapter"
-                            ]
+                            "updated_at": "2021-02-27T10:34:20.672Z"
                           }
                         ]
                       }
@@ -1664,7 +1607,7 @@
               }
             }
           },
-          "description": "`request` is an array with resources for which access is desired.\n`existing_token` is a valid expired token belonging to the user.\n**Either `request` or `existing_token` must form part of the request body, not both**"
+          "description": "`request` is an array with resources for which access is desired.\nThe resources can be resource items or resource groups\n`existing_token` is a valid expired token belonging to the user.\n**Either `request` or `existing_token` must form part of the request body, not both**"
         },
         "tags": [
           "Token APIs"
@@ -1997,7 +1940,8 @@
     },
     "/auth/v1/consumer/resources": {
       "get": {
-        "summary": "Allow consumers and data ingesters to see resources they have access to",
+        "summary": "Allow consumers to see resources they have access to",
+        "operationId": "get-auth-v1-consumer-resource",
         "responses": {
           "200": {
             "description": "OK",
@@ -2015,8 +1959,9 @@
                         "type": "string",
                         "minLength": 1
                       },
-                      "apis": {
+                      "capabilities": {
                         "type": "array",
+                        "description": "The valid capabilities for the resource",
                         "items": {
                           "type": "string"
                         }
@@ -2024,7 +1969,7 @@
                     },
                     "required": [
                       "cat_id",
-                      "apis"
+                      "capabilities"
                     ]
                   }
                 },
@@ -2032,43 +1977,72 @@
                   "Example": {
                     "value": [
                       {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                        "apis": [
-                          "/ngsi-ld/v1/subscription",
-                          "/ngsi-ld/v1/entityOperations/query",
-                          "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                          "/ngsi-ld/v1/entities",
-                          "/ngsi-ld/v1/temporal/entities"
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information",
+                        "capabilities": [
+                          "complex",
+                          "subscription",
+                          "temporal"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-info",
+                        "capabilities": [
+                          "complex",
+                          "subscription",
+                          "temporal"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms",
+                        "capabilities": [
+                          "complex",
+                          "subscription",
+                          "temporal"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-",
+                        "capabilities": [
+                          "complex",
+                          "subscription",
+                          "temporal"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/integration-test",
+                        "capabilities": [
+                          "complex",
+                          "subscription",
+                          "temporal"
+                        ],
+                        "type": "resourcegroup"
+                      },
+                      {
+                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group",
+                        "capabilities": [
+                          "subscription",
+                          "complex",
+                          "temporal"
                         ],
                         "type": "resourcegroup"
                       },
                       {
                         "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                        "apis": [
-                          "/iudx/v1/adapter"
+                        "capabilities": [
+                          "subscription",
+                          "complex",
+                          "temporal"
                         ],
                         "type": "resourcegroup"
                       },
                       {
                         "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
-                        "apis": [
-                          "/iudx/v1/upload",
-                          "/iudx/v1/delete"
-                        ],
-                        "type": "resourcegroup"
-                      },
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
-                        "apis": [
-                          "/iudx/v1/download"
-                        ],
-                        "type": "resourcegroup"
-                      },
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/test",
-                        "apis": [
-                          "/iudx/v1/upload",
-                          "/iudx/v1/delete"
+                        "capabilities": [
+                          "download"
                         ],
                         "type": "resourcegroup"
                       }
@@ -2163,8 +2137,7 @@
             }
           }
         },
-        "operationId": "get-auth-v1-consumer-resources",
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n\n- Onboarder catalogue access is **not** shown currently",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n\n- Onboarder and data ingester access is **not** shown currently",
         "tags": [
           "Consumer APIs"
         ]
