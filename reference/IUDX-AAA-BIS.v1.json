@@ -98,7 +98,12 @@
           }
         },
         "operationId": "get-user-profile",
-        "description": "Get the user profile of an authenticated user"
+        "description": "Get the user profile of an authenticated user",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       },
       "post": {
         "summary": "Create User Profile",
@@ -256,6 +261,11 @@
         },
         "tags": [
           "User Profile"
+        ],
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
         ]
       },
       "put": {
@@ -401,6 +411,11 @@
         },
         "tags": [
           "User Profile"
+        ],
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
         ]
       },
       "parameters": []
@@ -483,7 +498,12 @@
           }
         },
         "operationId": "get-auth-v1-policies",
-        "description": "Get all related policies of an authenticated user (provider or consumer)"
+        "description": "Get all related policies of an authenticated user (provider or consumer)",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       },
       "post": {
         "summary": "Create Policies",
@@ -651,7 +671,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       },
       "put": {
         "summary": "Update Policies",
@@ -801,7 +826,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       },
       "delete": {
         "summary": "Delete Policies",
@@ -911,7 +941,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       }
     },
     "/auth/v1/tokens": {
@@ -989,7 +1024,12 @@
           }
         },
         "operationId": "get-auth-v1-tokens",
-        "description": "Get all tokens of an authenticated consumer"
+        "description": "Get all tokens of an authenticated consumer",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       },
       "post": {
         "summary": "Crete Token",
@@ -997,7 +1037,7 @@
         "tags": [
           "Tokens"
         ],
-        "description": "Create token by specifying resources belonging to the same resource server, or providing a previous refresh token by an authenticated consumer",
+        "description": "Create token by specifying resources belonging to the same resource server, or providing a previous refresh token by an authenticated consumer or by using an client ID + secret combination",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1142,7 +1182,19 @@
               }
             }
           }
-        }
+        },
+        "parameters": [],
+        "security": [
+          {
+            "OIDC Authentication": []
+          },
+          {
+            "Client ID": []
+          },
+          {
+            "Client Secret": []
+          }
+        ]
       },
       "put": {
         "summary": "Update Tokens",
@@ -1275,7 +1327,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       },
       "delete": {
         "summary": "Delete Tokens",
@@ -1367,7 +1424,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
       }
     }
   },
@@ -1549,7 +1611,21 @@
         }
       }
     },
-    "securitySchemes": {},
+    "securitySchemes": {
+      "OIDC Authentication": {
+        "type": "openIdConnect"
+      },
+      "Client ID": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "client_id"
+      },
+      "Client Secret": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "client_secret"
+      }
+    },
     "responses": {}
   }
 }
