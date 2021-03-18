@@ -2435,6 +2435,14 @@
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "The type of resource",
+                        "enum": [
+                          "resourcegroup"
+                        ],
+                        "readOnly": true
                       }
                     },
                     "required": [
@@ -2517,6 +2525,25 @@
                         "type": "resourcegroup"
                       }
                     ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If the user calling the API is not a registered consumer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
                   }
                 }
               }
@@ -2607,7 +2634,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nAllow consumers and data ingesters to see resources they have access to along with APIs\n\n- Onboarder and data ingester access is **not** shown currently",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer**\n\nAllow consumers to see resources that they have been given access to along with capabilities\n\n**NOTE: Onboarder and data ingester access is not shown currently**\n\n## Capabilities\n\nCapabilities map keywords to a set of APIs. Valid capabilities for consumers depends on the resource server containing the resource.\n\nFor **rs.iudx.org.in**, capabilities are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*, *`/ngsi-ld/v1/temporal/entities`* \n\nFor **file.iudx.org.in**, capabilities are:\n- `download` : *`/iudx/v1/download`*",
         "tags": [
           "Consumer APIs"
         ]
