@@ -1537,11 +1537,11 @@
         ]
       },
       "post": {
-        "summary": "Request for a token",
+        "summary": "Request for a token/Reissue expired token",
         "operationId": "post-auth-v1-token",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The user has access to all requested resources and the token is generated successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -1566,8 +1566,162 @@
                 "examples": {
                   "Example": {
                     "value": {
-                      "token": "auth.iudx.org.in/jane.doe@datakaveri.org/7d70524fdb53988c2b3411686256bf5d/38bd720c-fcaf-4ae7-9b1c-28d2a30ba1f9",
+                      "token": "authorization.iudx.org.in/jane.doe@datakaveri.org/7d70524fdb53988c2b3411686256bf5d/38bd720c-fcaf-4ae7-9b1c-28d2a30ba1f9",
                       "expiry": "2021-03-10T12:33:07.740Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Empty body\n- If both `existing_token` and `request` is sent\n- If `request` is malformed\n  - If resource IDs are invalid/malformed\n  - If duplicate resource IDs present\n  - If resources from different resource servers are present\n- If UUID sent for `existing_token` is invalid/malformed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "required": [
+                        "message"
+                      ],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "invalid-input": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "//": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                },
+                "examples": {
+                  "Invalid resource ID": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "resource ID contains unsafe characters",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/test*"
+                      }
+                    }
+                  },
+                  "Duplicate IDs": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Duplicate resource",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/test"
+                      }
+                    }
+                  },
+                  "Resources from different resource servers": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "All resources must belong to same resource server",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.org.com/test"
+                      }
+                    }
+                  },
+                  "Invalid UUID for existing_token": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid 'existing_token' uuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If the user calling the API is not a registered consumer/onboarder/data ingester",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "- If the user is unauthorized to access a particular resource\n- If no policies have been set for a particular resource\n- If the `existing_token` does not exist or is not expired\n- If the `existing_token` no longer has access to any resources (resources deleted/access revoked by provider/access expired)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "//": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "invalid-input": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "existing_token not expired": {
+                    "value": {
+                      "error": {
+                        "message": "'existing_token' not expired"
+                      }
+                    }
+                  },
+                  "existing_token does not exist": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid 'existing_token'"
+                      }
+                    }
+                  },
+                  "No policies for a resource": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Invalid 'id'; no access control policies have been set for this 'id' by the data provider",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group7"
+                      }
+                    }
+                  },
+                  "Unauthorized": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Unauthorized",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/test"
+                      }
+                    }
+                  },
+                  "existing_token has no access to resources": {
+                    "value": {
+                      "error": {
+                        "message": "Token has no access to resources"
+                      }
                     }
                   }
                 }
@@ -1575,7 +1729,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet a token **OR** using an expired token issued by you, get a new token with all the same resources as the expired one.",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nGet a token **OR** using an expired token, get a new token with all the same resources as the expired one.\n\nIf the user has access to the resources, a token will be generated with a validity of **1 week**. The token structure is as follows:\n\n```<Authorization server URL>/<email of the requesting user>/<32 chars of random characters in hex>/<uuid>```\n\nThe UUID of the token serves as the ID of the token. The `PUT /token` and `DELETE /token` APIs make use of the UUID to identify the token.\n\n### Token Validity\n\nAs mentioned earlier, a token is valid for 1 week. However, note that **policies also have an expiry that is set by the Provider, or the Provider may delete the policy associated with the resource**. Hence, a token may be valid, but the resources associated with the token would no longer be accessible. You may use the `GET /token` API to determine the status of the resources associated with the token.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1595,19 +1749,24 @@
                 }
               },
               "examples": {
-                "Request": {
+                "Token Request": {
                   "value": {
                     "request": [
-                      "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm/*",
+                      "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-aqm",
                       "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-buses/item-1",
                       "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/rs.iudx.org.in/pune-streelight/item-2"
                     ]
+                  }
+                },
+                "Existing token request": {
+                  "value": {
+                    "existing_token": "424e3ec9-7b09-4362-a22c-67bbc61d00b9"
                   }
                 }
               }
             }
           },
-          "description": "`request` is an array with resources for which access is desired.\nThe resources can be resource items or resource groups\n`existing_token` is a valid expired token belonging to the user.\n**Either `request` or `existing_token` must form part of the request body, not both**"
+          "description": "- `request` is an array with resources ID for which access is desired.\n  - The resources can be resource item IDs or resource group IDs\n  - **All resources must belong to the same resource server**\n- `existing_token` is a valid expired token UUID belonging to the user.\n\n**Either `request` or `existing_token` must form part of the request body, not both**"
         },
         "tags": [
           "Token APIs"
