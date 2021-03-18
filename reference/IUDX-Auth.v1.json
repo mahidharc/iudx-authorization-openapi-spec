@@ -1289,7 +1289,6 @@
             "in": "header",
             "name": "provider-email",
             "description": "Email of provider that delegate is setting rule for"
-
           }
         ]
       }
@@ -1618,11 +1617,11 @@
     },
     "/auth/v1/token": {
       "get": {
-        "summary": "Get all tokens that you have issued",
+        "summary": "View details of issued tokens",
         "operationId": "get-auth-v1-token",
         "responses": {
           "200": {
-            "description": "**The `uuid` of the token is used in the PUT and DELETE APIs**\n\n`Status` in the `request` object can have 4 states:\n\n- **active** - if user has access to the resource\n- **deleted** - if user has deleted said resource from the token\n- **revoked** - if the provider has revoked consumer access to the resource\n- **expired** - if the policy for the resource has expired, therefore user cannot access it anymore",
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -1822,9 +1821,28 @@
               }
             },
             "headers": {}
+          },
+          "401": {
+            "description": "If the user calling the API is not a registered consumer/onboarder/data ingester",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nGet all tokens + resources and status of resources and also the APIs associated with the resources",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nView issued tokens, status of tokens and associated resources along with the status of resources. \n\nThe token can have 2 states:\n- `active`\n- `expired`\n\n**Deleted tokens are not included in the response**\n\nThe `uuid` field is used in the `DELETE /token` and `PUT /token` APIs to delete and update tokens respectively.\n\n## Resource status\n`status` in the `request` object refers to the status of the resource. It can can have 4 states:\n\n- `active` - if user has access to the resource\n- `deleted` - if user has deleted said resource from the token\n- `revoked` - if the provider has revoked consumer access to the resource\n- `expired` - if the policy for the resource has expired\n\nResources in the `revoked`, `deleted` and `expired` are not accessible to the user.",
         "tags": [
           "Token APIs"
         ]
@@ -2233,7 +2251,6 @@
                 }
               },
               "examples": {
-
                 "Example": {
                   "value": {
                     "request": [
