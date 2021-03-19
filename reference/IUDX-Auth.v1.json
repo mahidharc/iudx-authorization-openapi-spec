@@ -28,13 +28,16 @@
       "description": "APIs related to operations on access rules/policies on resources"
     },
     {
-      "name": "Delegate APIs"
+      "name": "Delegate APIs",
+      "description": "APIs related to delegates"
     },
     {
-      "name": "Session id APIs"
+      "name": "Session ID APIs",
+      "description": "APIs related to session IDs"
     },
     {
-      "name": "Consumer APIs"
+      "name": "Consumer APIs",
+      "description": "APIs related to consumers"
     }
   ],
   "paths": {
@@ -215,11 +218,7 @@
                       "expiry": {
                         "type": "string",
                         "minLength": 1,
-                        "description": "optional field \"YYYY-DD-MM hh:mm:ss\" in UTC \n"
-                      },
-                      "status": {
-                        "type": "string",
-                        "minLength": 1
+                        "description": "The expiry of the policy in UTC"
                       },
                       "item_type": {
                         "type": "string",
@@ -227,25 +226,28 @@
                       },
                       "item": {
                         "type": "object",
-                        "required": [
-                          "cat_id"
-                        ],
-                        "properties": {
-                          "cat_id": {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        }
-                      },
-                      "created": {
-                        "type": "string",
-                        "minLength": 1
+                        "nullable": true
                       },
                       "capabilities": {
                         "type": "array",
+                        "nullable": true,
                         "items": {
-                          "type": "object"
+                          "type": "string",
+                          "enum": [
+                            "temporal",
+                            "complex",
+                            "subscription",
+                            "download"
+                          ]
                         }
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "The status of the policy - can be active or expired",
+                        "enum": [
+                          "active",
+                          "expired"
+                        ]
                       }
                     },
                     "required": [
@@ -253,11 +255,9 @@
                       "email",
                       "role",
                       "user_name",
-                      "status",
                       "item_type",
                       "item",
-                      "created",
-                      "capabilities"
+                      "status"
                     ]
                   }
                 },
@@ -265,51 +265,76 @@
                   "Example": {
                     "value": [
                       {
-                        "id": 4,
-                        "email": "test@datakaveri.org",
+                        "id": 1122,
+                        "email": "onboarder@datakaveri.org",
                         "role": "onboarder",
+                        "user_name": {
+                          "title": "Ms.",
+                          "first_name": "Onboarder",
+                          "last_name": "DK"
+                        },
+                        "expiry": "2022-07-02T09:13:44.798Z",
+                        "status": "active",
                         "item_type": "catalogue",
                         "item": null,
-                        "created": "2020-09-23T05:41:59.349Z",
                         "capabilities": null
                       },
                       {
-                        "id": 430,
-                        "email": "test2@datakaveri.org",
+                        "id": 1473,
+                        "email": "xyz.abc@iisc.ac.in",
                         "role": "consumer",
-                        "expiry": "2025-12-12T01:00:00.000Z",
+                        "user_name": {
+                          "title": "Ms.",
+                          "first_name": "XYZ",
+                          "last_name": "ABC"
+                        },
+                        "expiry": "2022-03-02T07:59:44.798Z",
                         "status": "active",
                         "item_type": "resourcegroup",
                         "item": {
-                          "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information"
+                          "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/A4107799732"
                         },
-                        "created": "2020-09-29T10:36:40.704Z",
+                        "created": "2020-12-10T06:28:37.543Z",
                         "capabilities": [
-                          "complex",
                           "temporal",
+                          "complex",
                           "subscription"
                         ]
                       },
                       {
-                        "id": 429,
-                        "email": "foobar@datakaveri.org",
+                        "id": 1712,
+                        "email": "jane.doe@datakaveri.org",
+                        "role": "consumer",
+                        "user_name": {
+                          "title": "ms",
+                          "first_name": "Jane",
+                          "last_name": "Doe"
+                        },
+                        "expiry": "2022-03-02T08:05:49.466Z",
+                        "status": "active",
+                        "item_type": "resourcegroup",
+                        "item": {
+                          "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/surat-itms-realtime-information"
+                        },
+                        "capabilities": [
+                          "download"
+                        ]
+                      },
+                      {
+                        "id": 3510,
+                        "email": "jane.doe@datakaveri.org",
                         "role": "data ingester",
+                        "user_name": {
+                          "title": "ms",
+                          "first_name": "Jane",
+                          "last_name": "Doe"
+                        },
+                        "expiry": "2022-03-02T07:59:44.798Z",
+                        "status": "active",
                         "item_type": "resourcegroup",
                         "item": {
                           "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/surat-itms-realtime-information"
                         },
-                        "created": "2020-09-29T10:36:34.581Z",
-                        "capabilities": null
-                      },
-                      {
-                        "id": 431,
-                        "email": "onboarder@datakaveri.org",
-                        "role": "onboarder",
-                        "item_type": "catalogue",
-                        "item": null,
-                        "expiry": "2025-12-12T01:00:00.000Z",
-                        "status": "active",
-                        "created": "2020-09-29T10:36:45.543Z",
                         "capabilities": null
                       }
                     ]
@@ -678,13 +703,19 @@
                         "enum": [
                           "subscription",
                           "temporal",
-                          "complex"
+                          "complex",
+                          "download"
                         ]
                       }
                     },
                     "item_id": {
                       "type": "string",
                       "description": "A valid full resource ID (provider_domain_emai/sha1_of_provider_email)"
+                    },
+                    "expiry_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "expiry time for policy"
                     }
                   },
                   "required": [
@@ -771,11 +802,24 @@
                       "expiry_time": "2021-03-18T09:00:00Z"
                     }
                   ]
+                },
+                "Give consumer download access": {
+                  "value": [
+                    {
+                      "user_email": "user@example.com",
+                      "user_role": "consumer",
+                      "item_type": "resourcegroup",
+                      "capabilities": [
+                        "download"
+                      ],
+                      "item_id": "datakaveri.org/0808eb81ea0e5773187ae06110f55915a55f5c05/file.iudx.org.in/pune-flood-data"
+                    }
+                  ]
                 }
               }
             }
           },
-          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n-`expiry_time` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the ISO_8601 format. If 'expiry_time' is not sent a default time of 1 year is set\n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
+          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- `expiry_time` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the ISO_8601 format. If 'expiry_time' is not sent **a default time of 1 year is set**.\n\n### Onboarder and Delegate access\nFor giving access to onboarder and delegate, `item_id` and `item_type` are not required\n\n### Data Ingester access\nSetting data ingester access gives access to the specified resource group. The allowed APIs depends on the resource server that hosts the resource:\n- For **rs.iudx.org.in** : *`/iudx/v1/adapter`*\n- For **file.iudx.org.in** : *`/iudx/v1/upload`*, *`/iudx/v1/delete`*\n\n### Consumer access\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. Capabilities depend on the resource server that hosts the resource.\n\nThe valid capabilities for **rs.iudx.org.in** and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\nThe valid capabilities for **file.iudx.org.in** and the APIs they map to are:\n- `download` : *`/iudx/v1/download`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
         },
         "tags": [
           "Access APIs"
@@ -1251,17 +1295,17 @@
                     "expiry_time": {
                       "type": "string",
                       "minLength": 1,
-                      "description": "DateTime in ISO_8601 format in UTC time"
+                      "description": "DateTime in ISO_8601 format in UTC time",
+                      "format": "date-time"
                     }
                   },
                   "required": [
-                    "id",
-                    "expiry_time"
+                    "id"
                   ]
                 }
               },
               "examples": {
-                "success": {
+                "Example": {
                   "value": [
                     {
                       "id": 1738,
@@ -1272,8 +1316,7 @@
                 "Multiple request": {
                   "value": [
                     {
-                      "id": 4321,
-                      "expiry_time": "2021-03-18T09:00:00Z"
+                      "id": 4321
                     },
                     {
                       "id": 1234,
@@ -1284,7 +1327,7 @@
               }
             }
           },
-          "description": "\nThe body is an array of JSON objects, with each object containing :\n-`id` (a mandotary field), which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint and,\n-`expiry_time` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the ISO_8601 format. If the value of `expiry_time` is not sent, a default of 1 year is set\n\n\n**Policies can only be updated(renewed) only when they have already expired.**\n\n\n**NOTE** : Rules are updated only when **all objects in the request array are valid**"
+          "description": "\nThe body is an array of JSON objects, with each object containing :\n-`id` (a mandotary field), which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint and,\n- `expiry_time` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the ISO_8601 format. If the value of `expiry_time` is not sent, **a default of 1 year is set**.\n\n**Policies can only be updated(renewed) only when they have already expired.**\n\n**NOTE** : Rules are updated only when **all objects in the request array are valid**"
         },
         "parameters": [
           {
@@ -1483,7 +1526,7 @@
     },
     "/auth/v1/get-session-id": {
       "post": {
-        "summary": "",
+        "summary": "Get session ID to access secure endpoints",
         "operationId": "post-auth-v1-get-session-id",
         "responses": {
           "200": {
@@ -1557,9 +1600,6 @@
             }
           }
         },
-        "tags": [
-          "Session id APIs"
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1623,9 +1663,12 @@
               }
             }
           },
-          "description": "An object 'apis' which contains an array of objects containing keywords 'endpoint' (describing the endpoint the user wants session id to be valid for) and 'method' (describing what method the endpoint will be hit with)."
+          "description": "An object `apis` which contains an array of objects containing keywords `endpoint` (describing the endpoint the user wants session id to be valid for) and `method` (describing what method the endpoint will be hit with)."
         },
-        "description": "Requires a valid IUDX issued client certificate and user must be a registered user whose role must have access to the secured-endpoints/methods combinations that they are trying to get a session-id for."
+        "description": "**Requires a valid IUDX issued client certificate and user must be a registered user whose role must have access to the secured-endpoints/methods combinations that they are trying to get a session-id for**\n\nGet session ID to access secure endpoints. The session ID would be sent to the user's registered mobile number. Secure endpoints would require the `session-id` header.",
+        "tags": [
+          "Session ID APIs"
+        ]
       }
     },
     "/auth/v1/token": {
@@ -1660,19 +1703,13 @@
                       },
                       "expiry": {
                         "type": "string",
-                        "minLength": 1
-                      },
-                      "created_at": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "updated_at": {
-                        "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "description": "expiry of the token in UTC",
+                        "format": "date-time"
                       },
                       "request": {
                         "type": "array",
-                        "uniqueItems": true,
+                        "uniqueItems": false,
                         "minItems": 1,
                         "items": {
                           "type": "object",
@@ -1688,22 +1725,12 @@
                               ],
                               "description": "status of access to resource"
                             },
-                            "created_at": {
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "updated_at": {
-                              "type": "string",
-                              "minLength": 1
-                            },
                             "cat_id": {
                               "type": "string"
                             }
                           },
                           "required": [
                             "status",
-                            "created_at",
-                            "updated_at",
                             "cat_id"
                           ]
                         }
@@ -1713,8 +1740,6 @@
                       "uuid",
                       "status",
                       "expiry",
-                      "created_at",
-                      "updated_at",
                       "request"
                     ]
                   }
@@ -1726,20 +1751,14 @@
                         "uuid": "f3b67255-9315-4fb2-a83c-5dfbf3ea0c0e",
                         "status": "active",
                         "expiry": "2021-03-05T06:37:08.836Z",
-                        "created_at": "2021-02-26T06:37:08.836Z",
-                        "updated_at": "2021-02-26T06:37:08.836Z",
                         "request": [
                           {
                             "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
-                            "created_at": "2021-02-26T06:37:08.836Z",
-                            "updated_at": "2021-02-26T06:37:08.836Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*"
                           },
                           {
                             "status": "deleted",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
-                            "created_at": "2021-02-26T06:37:08.876Z",
-                            "updated_at": "2021-02-26T06:37:08.876Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one"
                           }
                         ]
                       },
@@ -1747,20 +1766,14 @@
                         "uuid": "3cc80744-878b-405e-bb1e-54cd42d9fca7",
                         "status": "active",
                         "expiry": "2021-03-05T06:58:36.386Z",
-                        "created_at": "2021-02-26T06:58:36.386Z",
-                        "updated_at": "2021-02-26T06:58:36.386Z",
                         "request": [
                           {
                             "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
-                            "created_at": "2021-02-26T06:58:36.399Z",
-                            "updated_at": "2021-02-26T06:58:36.399Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*"
                           },
                           {
                             "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one",
-                            "created_at": "2021-02-26T06:58:36.402Z",
-                            "updated_at": "2021-02-26T06:58:36.402Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/hello/one"
                           }
                         ]
                       },
@@ -1768,14 +1781,10 @@
                         "uuid": "4350228e-539d-4715-898a-66edf6cd2b19",
                         "status": "active",
                         "expiry": "2021-03-05T07:05:49.397Z",
-                        "created_at": "2021-02-26T07:05:49.397Z",
-                        "updated_at": "2021-02-26T07:05:49.397Z",
                         "request": [
                           {
-                            "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/catalogue.iudx.io/catalogue/crud",
-                            "created_at": "2021-02-26T07:05:49.401Z",
-                            "updated_at": "2021-02-26T07:05:49.401Z"
+                            "status": "revoked",
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/catalogue.iudx.io/catalogue/crud"
                           }
                         ]
                       },
@@ -1783,14 +1792,10 @@
                         "uuid": "0cbf0dd2-4e67-424b-9667-61eacd3f6833",
                         "status": "active",
                         "expiry": "2021-03-06T10:32:14.398Z",
-                        "created_at": "2021-02-27T10:32:14.398Z",
-                        "updated_at": "2021-02-27T10:32:14.398Z",
                         "request": [
                           {
                             "status": "active",
                             "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group/*",
-                            "created_at": "2021-02-27T10:32:14.403Z",
-                            "updated_at": "2021-02-27T10:32:14.403Z",
                             "apis": [
                               "/ngsi-ld/v1/subscription",
                               "/ngsi-ld/v1/entityOperations/query",
@@ -1801,9 +1806,7 @@
                           },
                           {
                             "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
-                            "created_at": "2021-02-27T10:32:14.407Z",
-                            "updated_at": "2021-02-27T10:32:14.407Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*"
                           }
                         ]
                       },
@@ -1811,20 +1814,14 @@
                         "uuid": "9e75ba61-f38c-4031-aef1-12fba16f640d",
                         "status": "active",
                         "expiry": "2021-03-06T10:34:20.627Z",
-                        "created_at": "2021-02-27T10:34:20.627Z",
-                        "updated_at": "2021-02-27T10:34:20.627Z",
                         "request": [
                           {
                             "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
-                            "created_at": "2021-02-27T10:34:20.667Z",
-                            "updated_at": "2021-02-27T10:34:20.667Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*"
                           },
                           {
                             "status": "active",
-                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*",
-                            "created_at": "2021-02-27T10:34:20.672Z",
-                            "updated_at": "2021-02-27T10:34:20.672Z"
+                            "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1/*"
                           }
                         ]
                       }
@@ -1865,7 +1862,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nView issued tokens, status of tokens and associated resources along with the status of resources. \n\nThe token can have 2 states:\n- `active`\n- `expired`\n\n**Deleted tokens are not included in the response**\n\nThe `uuid` field is used in the `DELETE /token` and `PUT /token` APIs to delete and update tokens respectively.\n\n## Resource status\n`status` in the `request` object refers to the status of the resource. It can can have 4 states:\n\n- `active` - if user has access to the resource\n- `deleted` - if user has deleted said resource from the token\n- `revoked` - if the provider has revoked consumer access to the resource\n- `expired` - if the policy for the resource has expired\n\nResources in the `revoked`, `deleted` and `expired` are not accessible to the user.",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nView issued tokens, status of tokens and associated resources along with the status of resources. \n\nA token can have 2 states:\n- `active`\n- `expired`\n\n**Deleted tokens are not included in the response**\n\nThe `uuid` field is used in the `DELETE /token` and `PUT /token` APIs to delete and update tokens respectively.\n\n## Resource status\n`status` in the `request` object refers to the status of the resource. It can can have 4 states:\n\n- `active` - if user has access to the resource\n- `deleted` - if user has deleted said resource from the token\n- `revoked` - if the provider has revoked consumer access to the resource\n- `expired` - if the policy for the resource has expired\n\nResources in the `revoked`, `deleted` and `expired` are not accessible to the user.",
         "tags": [
           "Token APIs"
         ]
@@ -2310,7 +2307,16 @@
                               "type": "string"
                             },
                             "invalid-input": {
-                              "type": "string"
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {}
+                                },
+                                {
+                                  "type": "string",
+                                  "properties": {}
+                                }
+                              ]
                             }
                           }
                         }
@@ -2795,90 +2801,6 @@
                         "message": "Not allowed"
                       }
                     }
-                  }
-                }
-              }
-            }
-          },
-          "": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "description": "",
-                  "minItems": 1,
-                  "uniqueItems": true,
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "cat_id": {
-                        "type": "string",
-                        "minLength": 1
-                      },
-                      "apis": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "type": {
-                        "type": "string",
-                        "minLength": 1
-                      }
-                    },
-                    "required": [
-                      "cat_id",
-                      "apis",
-                      "type"
-                    ]
-                  }
-                },
-                "examples": {
-                  "Example": {
-                    "value": [
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                        "apis": [
-                          "/ngsi-ld/v1/subscription",
-                          "/ngsi-ld/v1/entityOperations/query",
-                          "/ngsi-ld/v1/entities/iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                          "/ngsi-ld/v1/entities",
-                          "/ngsi-ld/v1/temporal/entities"
-                        ],
-                        "type": "resourcegroup"
-                      },
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group-1",
-                        "apis": [
-                          "/iudx/v1/adapter"
-                        ],
-                        "type": "resourcegroup"
-                      },
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
-                        "apis": [
-                          "/iudx/v1/upload",
-                          "/iudx/v1/delete"
-                        ],
-                        "type": "resourcegroup"
-                      },
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/res-group-1",
-                        "apis": [
-                          "/iudx/v1/download"
-                        ],
-                        "type": "resourcegroup"
-                      },
-                      {
-                        "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/file.iudx.io/test",
-                        "apis": [
-                          "/iudx/v1/upload",
-                          "/iudx/v1/delete"
-                        ],
-                        "type": "resourcegroup"
-                      }
-                    ]
                   }
                 }
               }
