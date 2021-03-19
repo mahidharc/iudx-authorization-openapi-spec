@@ -294,7 +294,6 @@
                         "item": {
                           "cat_id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/A4107799732"
                         },
-                        "created": "2020-12-10T06:28:37.543Z",
                         "capabilities": [
                           "temporal",
                           "complex",
