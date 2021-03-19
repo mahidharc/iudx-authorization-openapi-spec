@@ -434,7 +434,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `expiryTime`\n  - `provider-email` header\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `expiry_time`\n  - `provider-email` header\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -768,14 +768,14 @@
                       "capabilities": [
                         "subscription"
                       ],
-                      "expiryTime": "2021-09-03 04:17:36"
+                      "expiry_time": "2021-03-18T09:00:00Z"
                     }
                   ]
                 }
               }
             }
           },
-          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n-`expiryTime` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the YYYY-DD-MM HH:MM:SS format. if `expiry` is not sent a default time of 1 year is set\n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
+          "description": "The request body is an array of objects, with each object being a rule to be set.\n\n- The `item_id` field must be a valid resource ID (_provider.email.domain_/_sha1.of.provider.email_/_resource.server_/_resource.group_)\n- Currently, access can be given per resource group only, so the `item_type` field must be _resourcegroup_\n- Setting data ingester access implicitly sets a policy to access the resource with API `/iudx/v1/adapter`\n- For giving access to onboarder and delegate, `item_id` and `item_type` are not required\n- For giving access to consumers, the `capabilities` array is necessary. The `capabilities` array specifies the various APIs the consumer is allowed to call grouped by a specific capability. \n-`expiry_time` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the ISO_8601 format. If 'expiry_time' is not sent a default time of 1 year is set\n\nThe valid capabilities, and the APIs they map to are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*\n\n**NOTE** : Rules are set only when **all objects in the request array are valid**"
         },
         "tags": [
           "Access APIs"
@@ -1063,7 +1063,7 @@
         ]
       },
       "put": {
-        "summary": "Update policy time",
+        "summary": "Update policy expiry time",
         "operationId": "put-auth-v1-provider-access",
         "responses": {
           "200": {
@@ -1093,7 +1093,7 @@
             }
           },
           "400": {
-            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `expiry` (if malformed)\n\n**For all above errors the offending access ID is returned will be returned in the error response**\n* SSL Errors",
+            "description": "\n* Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `id` (if missing or malformed)\n  - `expiry_time` (if malformed)\n\n**For all above errors the offending access ID is returned will be returned in the error response**\n* SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
@@ -1130,7 +1130,7 @@
                       }
                     }
                   },
-                  "example-2": {
+                  "Invalid time": {
                     "value": {
                       "error": {
                         "message": "Invalid data (expiry)",
@@ -1231,6 +1231,27 @@
           }
         },
         "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nUpdate multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may update policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can update policies \n- **Delegates cannot update delegate policies**",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "session-id",
+            "description": "the session-id that the user received on the registered phone number"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "provider-email",
+            "description": "Email of provider that delegate is setting rule for"
+          }
+        ],
+        "tags": [
+          "Access APIs"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1241,37 +1262,47 @@
                 "uniqueItems": true,
                 "items": {
                   "type": "object",
-                  "required": [
-                    "id",
-                    "expiryTime"
-                  ],
                   "properties": {
                     "id": {
                       "type": "number"
                     },
-                    "expiryTime": {
+                    "expiry_time": {
                       "type": "string",
-                      "minLength": 1
+                      "minLength": 1,
+                      "description": "DateTime in ISO_8601 format in UTC time"
                     }
-                  }
+                  },
+                  "required": [
+                    "id",
+                    "expiry_time"
+                  ]
                 }
               },
               "examples": {
-                "Valid request": {
+                "success": {
                   "value": [
                     {
-                      "id": 97
+                      "id": 1738,
+                      "expiry_time": "2021-03-18T09:00:00Z"
+                    }
+                  ]
+                },
+                "Multiple request": {
+                  "value": [
+                    {
+                      "id": 4321,
+                      "expiry_time": "2021-03-18T09:00:00Z"
                     },
                     {
-                      "id": 5,
-                      "expiryTime": "2021-09-03 04:17:36"
+                      "id": 1234,
+                      "expiry_time": "2021-03-18T09:00:00Z"
                     }
                   ]
                 }
               }
             }
           },
-          "description": "The body is an array of JSON objects, with each object containing `id` (a mandatory field), which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint and `expiry` (optional field) which determines the new expiry time of the policy.Expiry has to be a string in the UTC format (YYYY-DD-MM HH:MM:SS). If expiry is not present with the id field, default value of one year is set for the policy with matching id.\n\nPolicies can only be updated(renewed) only when they have already expired. \n\n\n**NOTE** : Rules are updated only when **all objects in the request array are valid**"
+          "description": "\nThe body is an array of JSON objects, with each object containing :\n-`id` (a mandotary field), which is the ID of the particular access policy. The IDs can be obtained from the `GET /auth/v1/provider/access` endpoint and,\n-`expiry_time` is an optional field that specifies the expiry of the policy. It is to be sent in UTC in the ISO_8601 format. If the value of `expiry_time` is not sent, a default of 1 year is set\n\n\n**Policies can only be updated(renewed) only when they have already expired.**\n\n\n**NOTE** : Rules are updated only when **all objects in the request array are valid**"
         },
         "parameters": [
           {
