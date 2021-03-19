@@ -1822,6 +1822,16 @@
             },
             "headers": {}
           },
+          "400": {
+            "description": "SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NGINX-Errors"
+                }
+              }
+            }
+          },
           "401": {
             "description": "If the user calling the API is not a registered consumer/onboarder/data ingester",
             "content": {
@@ -1886,32 +1896,39 @@
             }
           },
           "400": {
-            "description": "- Empty body\n- If both `existing_token` and `request` is sent\n- If `request` is malformed\n  - If resource IDs are invalid/malformed\n  - If duplicate resource IDs present\n  - If resources from different resource servers are present\n- If UUID sent for `existing_token` is invalid/malformed",
+            "description": "- Empty body\n- If both `existing_token` and `request` is sent\n- If `request` is malformed\n  - If resource IDs are invalid/malformed\n  - If duplicate resource IDs present\n  - If resources from different resource servers are present\n- If UUID sent for `existing_token` is invalid/malformed\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
+                  "anyOf": [
+                    {
                       "type": "object",
-                      "required": [
-                        "message"
-                      ],
                       "properties": {
-                        "message": {
+                        "//": {
                           "type": "string"
                         },
-                        "invalid-input": {
-                          "type": "string"
+                        "error": {
+                          "type": "object",
+                          "required": [
+                            "message"
+                          ],
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "invalid-input": {
+                              "type": "string"
+                            }
+                          }
                         }
-                      }
+                      },
+                      "required": [
+                        "error"
+                      ]
                     },
-                    "//": {
-                      "type": "string"
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
                     }
-                  },
-                  "required": [
-                    "error"
                   ]
                 },
                 "examples": {
@@ -2085,11 +2102,11 @@
       },
       "parameters": [],
       "delete": {
-        "summary": "Delete tokens issued by you",
+        "summary": "Delete tokens",
         "operationId": "delete-auth-v1-token",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The sent tokens have been deleted successfully ",
             "content": {
               "application/json": {
                 "schema": {
@@ -2106,14 +2123,21 @@
             }
           },
           "400": {
-            "description": "If malformed UUIDs or tokens-UUIDs that are already expired/deleted",
+            "description": "- if token UUIDs are invalid/malformed\n- if UUIDs are of tokens that are non-existent, expired or already deleted\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error-Message"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Error-Message"
+                    }
+                  ]
                 },
                 "examples": {
-                  "Example": {
+                  "UUIDs of tokens that are expired/already deleted/non-existent": {
                     "value": {
                       "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
                       "error": {
@@ -2124,13 +2148,43 @@
                         ]
                       }
                     }
+                  },
+                  "Invalid UUID": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Invalid data (uuid)",
+                        "invalid-input": [
+                          "5910eb19-5b8a-432b-9865-xca4cbf69b78"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If the user calling the API is not a registered consumer/onboarder/data ingester",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
                   }
                 }
               }
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX**\n\nDelete all tokens issued by you if not expired \nOnce tokens are deleted, they cannot be used for existing-token in POST /token API\nSend array of UUIDs (from GET /token) to delete",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nDelete a list of tokens. **Expired tokens cannot be deleted.** Once tokens are deleted, they cannot be introspected and are hence invalid. Deleted tokens also cannot be used for the `existing-token` option in the `POST /token` API.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2160,18 +2214,19 @@
                 }
               }
             }
-          }
+          },
+          "description": "The request is an object with `tokens`, an array of token UUIDs"
         },
         "tags": [
           "Token APIs"
         ]
       },
       "put": {
-        "summary": "Add or remove resources to a token",
+        "summary": "Update resources associated with tokens",
         "operationId": "put-auth-v1-token",
         "responses": {
           "200": {
-            "description": "OK\nArray of objects returned with each object representing the token that has been affected\n- `active_resources` are all the resources currently active for the token\n- `deleted_resources` are all resources that have **now** been deleted",
+            "description": "An array of objects is returned with each object representing the token that has been affected\n- `active_resources` are all the resources currently active for the token\n- `deleted_resources` are all resources that have **now** been deleted",
             "content": {
               "application/json": {
                 "schema": {
@@ -2222,9 +2277,148 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "- if `request` is invalid or malformed\n- if the `token` UUID is malformed or is duplicated\n- if the `resources` array is invalid or malformed\n- if there are duplicated or invalid resources in `resources` array\n- if there are non-existent, deleted or expired token UUIDs\n- if new resources do not belong to same resource server\n- SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "//": {
+                          "type": "string"
+                        },
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            },
+                            "invalid-input": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid resource ID": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "resource ID contains unsafe characters",
+                        "invalid-input": "datakaveri.org/f8dc5bbb151968101ad4596819a248d3e0ea20c0/rs.iudx.io/pune-env-flood/*"
+                      }
+                    }
+                  },
+                  "Different resource server in request": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "All resources must belong to same resource server",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.org.in/res-group"
+                      }
+                    }
+                  },
+                  "Non existent/expired/deleted token UUIDs": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Invalid uuids",
+                        "invalid-input": [
+                          "fa404de7-89e6-41ed-b880-d90c80734af7",
+                          "5bc4c89f-37df-4873-b70f-b16b5bef7119"
+                        ]
+                      }
+                    }
+                  },
+                  "Duplicate resources": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Duplicate resource",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/res-group"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "If the user calling the API is not a registered consumer/onboarder/data ingester",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./IUDX-Consent.v1.json#/components/schemas/Error-Message"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "error": {
+                        "message": "Not allowed"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "- if requesting for an unauthorised resource\n- if no policies have been set for a particular resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "//": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        },
+                        "invalid-input": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "No policies set for resource": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Invalid 'id'; no access control policies have been set for this 'id' by the data provider",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/test"
+                      }
+                    }
+                  },
+                  "Unauthorized to access the resource": {
+                    "value": {
+                      "//": "Unsafe characters (if any) in 'invalid-input' field have been replaced with '*'",
+                      "error": {
+                        "message": "Unauthorized",
+                        "invalid-input": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/test"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         },
-        "description": "Add or remove resources on tokens\n- The list of resources sent along with the request for a particular token **is the list of resources that will be set for that token**\n- **All other resources for said token will be deleted**",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nUpdate resources associated with a token. The list of resources sent along with the request for a particular token **is the list of resources that will be set as active for that token. All other resources for said token will be deleted.**\n\n- To add resources to a token, the existing resources of the token must be sent along with the additional resources. The new resources must belong to the same resource server as the existing resources.\n- To delete existing resources, those resources must not be sent as part of the request\n\n**NOTE**: When adding resources, if access to existing resources has been revoked by provider or has expired (resource status `revoked` or `expired`), sending these resources as part of the request may result in a `403 Forbidden` error. ",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2267,7 +2461,7 @@
               }
             }
           },
-          "description": "`request` is an array of objects, with each object containing `token` UUID and `resources` array to be set as active\n\n`resources` cannot be empty i.e. there must be at least one resource to be added"
+          "description": "`request` is an array of objects, with each object containing `token` UUID and `resources` array to be set for the token.\n\n- `resources` cannot be empty i.e. there must be at least one resource to be added\n- resource IDs in `resources` array can be either resource group IDs or resource item IDs (same as `POST /token` `request`)"
         },
         "tags": [
           "Token APIs"
@@ -2280,7 +2474,7 @@
         "operationId": "post-auth-v1-token-introspect",
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "The token is valid. The response contains details of the resources that the token permits access to, along with the APIs for each.\n\n**NOTE**: For resource groups, resource IDs are appended with `/*` ",
             "content": {
               "application/json": {
                 "schema": {
@@ -2338,7 +2532,7 @@
                           ]
                         },
                         {
-                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/test/*",
+                          "id": "iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/example.com/test-group/item-1",
                           "apis": [
                             "/iudx/v1/adapter"
                           ]
@@ -2351,7 +2545,40 @@
             }
           },
           "400": {
-            "description": "- Invalid/malformed token\n- No token in body"
+            "description": "- Invalid/malformed token\n- No token in body\n- SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "error": {
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "$ref": "#/components/schemas/NGINX-Errors"
+                    }
+                  ]
+                },
+                "examples": {
+                  "Invalid token": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid 'token'"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "403": {
             "description": "- Expired/deleted token\n- Non existent token\n- Resource server not permitted to introspect the token\n- If access to resources associated with token are expired/revoked\n",
@@ -2380,7 +2607,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nIntrospect a token by a resource server",
+        "description": "**Requires a valid class-1 client certificate issued by IUDX OR a valid certificate issued by a trusted CA (e.g. Let's Encrypt). The certificate must contain the hostname of the resource server**\n\nIntrospect a token. This API is called by resource servers to determine the resources the token permits access to, along with APIs for each.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2393,14 +2620,15 @@
                 }
               },
               "examples": {
-                "example-1": {
+                "Example": {
                   "value": {
                     "token": "auth.iudx.org.in/jane.doe@datakaveri.org/b2c8cb96c665a3f9de1a5d7a768e326b/720a4d55-a377-464c-bc8f-e0984eaba192"
                   }
                 }
               }
             }
-          }
+          },
+          "description": "The request body contains the token to be introspected"
         },
         "tags": [
           "Token APIs"
@@ -2530,6 +2758,16 @@
               }
             }
           },
+          "400": {
+            "description": "SSL Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NGINX-Errors"
+                }
+              }
+            }
+          },
           "401": {
             "description": "If the user calling the API is not a registered consumer",
             "content": {
@@ -2634,7 +2872,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer**\n\nAllow consumers to see resources that they have been given access to along with capabilities\n\n**NOTE: Onboarder and data ingester access is not shown currently**\n\n## Capabilities\n\nCapabilities map keywords to a set of APIs. Valid capabilities for consumers depends on the resource server containing the resource.\n\nFor **rs.iudx.org.in**, capabilities are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*, *`/ngsi-ld/v1/temporal/entities`* \n\nFor **file.iudx.org.in**, capabilities are:\n- `download` : *`/iudx/v1/download`*",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer**\n\nAllow consumers to see resources that they have been given access to along with capabilities\n\n**NOTE: Onboarder and data ingester access is not displayed**\n\n### Capabilities\n\nCapabilities map keywords to a set of APIs. Valid capabilities for consumers depends on the resource server containing the resource.\n\nFor **rs.iudx.org.in**, capabilities are:\n- `subscription` : *`/ngsi-ld/v1/subscription`*\n- `temporal` : *`/ngsi-ld/v1/temporal/entities`* , *`/ngsi-ld/v1/entities/<resource-group>`*\n- `complex` : *`/ngsi-ld/v1/entityOperations/query`* , *`/ngsi-ld/v1/entities/<resource-group>`* , *`/ngsi-ld/v1/entities`*, *`/ngsi-ld/v1/temporal/entities`* \n\nFor **file.iudx.org.in**, capabilities are:\n- `download` : *`/iudx/v1/download`*",
         "tags": [
           "Consumer APIs"
         ]
