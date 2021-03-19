@@ -1231,24 +1231,6 @@
           }
         },
         "description": "**Requires a valid IUDX issued client certificate and user must be a registered provider OR user must be a registered delegate and have a delegate policy set by the provider for them**\n\nUpdate multiple access policies set by the provider or delegates.\n\n### Provider delegates\n\nOnce a delegate has been authorized by a provider, a delegate may update policies on behalf of the provider. When doing this, the request must include the **provider-email** header field, that contains the email of the provider for which the rule is to be set.\n\n- Delegates can update policies \n- **Delegates cannot update delegate policies**",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "header",
-            "name": "session-id",
-            "description": "the session-id that the user received on the registered phone number"
-          },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "header",
-            "name": "provider-email",
-            "description": "Email of provider that delegate is setting rule for"
-          }
-        ],
         "tags": [
           "Access APIs"
         ],
