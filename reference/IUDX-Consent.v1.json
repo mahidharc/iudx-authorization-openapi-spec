@@ -1,594 +1,622 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "title": "IUDX Consent",
-    "version": "1.0",
-    "description": "API specification for IUDX consent APIs. These APIs are used for registration for various roles, such as Provider, Consumers, Data ingesters and Onboarders.",
-    "contact": {
-      "url": "https://www.iudx.org.in/"
-    }
-  },
-  "servers": [
-    {
-      "url": "https://consent.iudx.org.in"
-    }
-  ],
-  "tags": [
-    {
-      "name": "Registration APIs",
-      "description": "APIs related to registering for different roles"
-    },
-    {
-      "name": "Organization APIs",
-      "description": "APIs related to organizations"
-    }
-  ],
-  "paths": {
-    "/v1/provider/registration": {
-      "parameters": [],
-      "post": {
-        "summary": "Provider Registration",
-        "operationId": "postv1-provider-registration",
-        "responses": {
-          "200": {
-            "description": "The registration is successful, and the registration request is pending approval",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Generic-Success"
-                },
-                "examples": {
-                  "Success": {
-                    "value": {
-                      "success": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "example": "Invalid data (<field>)",
-                          "type": "string"
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Invalid CSR": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid data (csr)"
-                      }
-                    }
-                  },
-                  "Invalid Email address": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid data (email)"
-                      }
-                    }
-                  },
-                  "Invalid name": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid data (name)"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "* The email address used has already been used for registration\n* An organization with the requested ID does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Organization ID does not exist": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid organization"
-                      }
-                    }
-                  },
-                  "Email has been used to register ": {
-                    "value": {
-                      "error": {
-                        "message": "Email exists"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "Register as a Provider. Provider registration requires a valid Certificate Signing Request (CSR) generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac. \n\nOnce a Provider has registered successfully, their registration request is subject to approval by an IUDX admin. If the registration is approved, a signed certificate will be sent to the registered email address. This certificate would be used by the Provider for several operations, such as giving consumers access to their resources, auditing tokens issued for their resources and revoking tokens.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "object",
-                    "required": [
-                      "title",
-                      "firstName",
-                      "lastName"
-                    ],
-                    "properties": {
-                      "title": {
-                        "type": "string"
-                      },
-                      "firstName": {
-                        "type": "string"
-                      },
-                      "lastName": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "organization": {
-                    "type": "integer",
-                    "description": "Valid organization ID obtained GET organization API"
-                  },
-                  "phone": {
-                    "type": "string",
-                    "description": "A valid mobile number",
-                    "pattern": "^[9876]\\d{9}$"
-                  },
-                  "csr": {
-                    "type": "string",
-                    "description": "A valid Certificate Signing Request in .PEM format, generated with RSA keys"
-                  },
-                  "email": {
-                    "type": "string",
-                    "description": "",
-                    "format": "email"
-                  }
-                },
-                "required": [
-                  "name",
-                  "organization",
-                  "phone",
-                  "csr",
-                  "email"
-                ]
-              },
-              "examples": {
-                "Example": {
-                  "value": {
-                    "name": {
-                      "title": "Ind.",
-                      "firstName": "Jane",
-                      "lastName": "Doe"
-                    },
-                    "organization": 7,
-                    "phone": "9845596211",
-                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
-                    "email": "jane.doe@acme.org"
-                  }
-                }
-              }
-            }
-          },
-          "description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `csr` is a valid CSR generated using RSA keys."
-        },
-        "parameters": [],
-        "tags": [
-          "Registration APIs"
-        ]
-      }
-    },
-    "/v1/registration": {
-      "post": {
-        "summary": "Consumer/Onboarder/Data Ingester/Delegate Registration",
-        "operationId": "post-v1-registration",
-        "responses": {
-          "200": {
-            "description": "Successful registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "examples": {
-                  "Successful registration for the first time": {
-                    "value": {
-                      "success": true,
-                      "message": "A certificate has been generated and sent to your email"
-                    }
-                  },
-                  "Successful registration of another role": {
-                    "value": {
-                      "success": true,
-                      "message": "Since you have registered before, please continue to use the certificate that was sent before."
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n  - If phone number not sent when registering as Delegate\n- `email`\n- `organization`\n- `roles`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Invalid CSR": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid data (csr)"
-                      }
-                    }
-                  },
-                  "Invalid email ": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid data (email)"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "- An organization with the requested ID does not exist (applicable for Onboarder, Data Ingester and Delegate)\n- Website of organization and domain of email address does not match (applicable for Onboarder, Data Ingester and Delegate)\n- If the email has been used for Provider registration\n- Attempting to register for an already registered role",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Organization does not exist": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid organization"
-                      }
-                    }
-                  },
-                  "Domain of email address and organization website mismatching": {
-                    "value": {
-                      "error": {
-                        "message": "Invalid data (domains do not match)"
-                      }
-                    }
-                  },
-                  "Re-registering as consumer": {
-                    "value": {
-                      "error": {
-                        "message": "Already registered as consumer"
-                      }
-                    }
-                  },
-                  "Re-registering as onboarder": {
-                    "value": {
-                      "error": {
-                        "message": "Already registered as onboarder"
-                      }
-                    }
-                  },
-                  "Re-registering as data ingester": {
-                    "value": {
-                      "error": {
-                        "message": "Already registered as data ingester"
-                      }
-                    }
-                  },
-                  "If the email has been used in Provider registration": {
-                    "value": {
-                      "error": {
-                        "message": "Email exists"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "* Internal Server Error OR\n* Error in certificate generation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Internal error": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  },
-                  "Error in certificate generation": {
-                    "value": {
-                      "error": {
-                        "message": "Certificate Error"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider\n* A Delegate can create, update and view policies on behalf of a Provider\n\nIf a user is registering for the first time, then a valid Certificate Signing Request (CSR) is required. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "object",
-                    "required": [
-                      "title",
-                      "firstName",
-                      "lastName"
-                    ],
-                    "properties": {
-                      "title": {
-                        "type": "string"
-                      },
-                      "firstName": {
-                        "type": "string"
-                      },
-                      "lastName": {
-                        "type": "string"
-                      }
-                    }
-                  },
-                  "phone": {
-                    "type": "string",
-                    "pattern": "^[9876]\\d{9}$",
-                    "description": "phone number is mandatory for Delegate"
-                  },
-                  "email": {
-                    "type": "string",
-                    "format": "email"
-                  },
-                  "organization": {
-                    "type": "integer",
-                    "description": "Organization ID not required for consumers"
-                  },
-                  "csr": {
-                    "type": "string",
-                    "description": "CSR is necessary if the user has not registered for another role before"
-                  },
-                  "roles": {
-                    "type": "array",
-                    "uniqueItems": true,
-                    "minItems": 1,
-                    "maxItems": 4,
-                    "items": {
-                      "type": "string",
-                      "enum": [
-                        "consumer",
-                        "onboarder",
-                        "data ingester",
-                        "delegate"
-                      ]
-                    }
-                  }
-                },
-                "required": [
-                  "name",
-                  "email",
-                  "roles"
-                ]
-              },
-              "examples": {
-                "Registering for Onboarder and Data ingester": {
-                  "value": {
-                    "name": {
-                      "title": "Ms.",
-                      "firstName": "Jane",
-                      "lastName": "Doe"
-                    },
-                    "phone": "9845596201",
-                    "email": "jane.doe@acme.org",
-                    "organization": 7,
-                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
-                    "roles": [
-                      "onboarder",
-                      "data ingester"
-                    ]
-                  }
-                },
-                "Registering for Consumer (Organization ID not required)": {
-                  "value": {
-                    "name": {
-                      "title": "Mr.",
-                      "firstName": "John",
-                      "lastName": "Doe"
-                    },
-                    "phone": "9845596201",
-                    "email": "john.doe@hotmail.org",
-                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
-                    "roles": [
-                      "consumer"
-                    ]
-                  }
-                },
-                "Registering as Consumer after already registering as Onboarder, Data Ingester": {
-                  "value": {
-                    "name": {
-                      "title": "Ms.",
-                      "firstName": "Jane",
-                      "lastName": "Doe"
-                    },
-                    "phone": "9845596201",
-                    "email": "jane.doe@acme.org",
-                    "roles": [
-                      "consumer"
-                    ]
-                  }
-                },
-                "Registering for Delegate": {
-                  "value": {
-                    "name": {
-                      "title": "Ms.",
-                      "firstName": "Jane",
-                      "lastName": "Doe"
-                    },
-                    "phone": "9845596322",
-                    "email": "jane.doe@acme.org",
-                    "organization": 7,
-                    "csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
-                    "roles": [
-                      "delegate"
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders, Data Ingesters and Delegates, the domain of the email must match the website of the organization\n- **For Delegates, `phone` is mandatory**\n- `csr` is a valid CSR generated using RSA keys. \n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for `roles` are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`"
-        },
-        "tags": [
-          "Registration APIs"
-        ]
-      }
-    },
-    "/v1/organizations": {
-      "get": {
-        "summary": "Get all registered Organizations",
-        "tags": [
-          "Organization APIs"
-        ],
-        "operationId": "get-v1-organizations",
-        "description": "Get name and organization ID for all registered organizations",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "organizations": {
-                      "type": "array",
-                      "uniqueItems": true,
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "name": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "organizations": [
-                        {
-                          "id": 1,
-                          "name": "IISc"
-                        },
-                        {
-                          "id": 2,
-                          "name": "Data Kaveri"
-                        },
-                        {
-                          "id": 3,
-                          "name": "ACME Corp"
-                        },
-                        {
-                          "id": 4,
-                          "name": "Testing CORP"
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Error-Message": {
-        "title": "Error-Message",
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "x-examples": {},
-        "description": "Generic Error Message"
-      },
-      "Generic-Success": {
-        "title": "Generic-Success",
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          }
-        },
-        "description": "Generic Success Message"
-      }
-    }
-  }
+	"openapi": "3.0.0",
+	"info": {
+		"title": "IUDX Consent",
+		"version": "1.0",
+		"description": "API specification for IUDX consent APIs. These APIs are used for registration for various roles, such as Provider, Consumers, Data ingesters and Onboarders.",
+		"contact": {
+			"url": "https://www.iudx.org.in/"
+		}
+	},
+	"servers": [{
+		"url": "https://consent.iudx.org.in"
+	}],
+	"tags": [{
+			"name": "Registration APIs",
+			"description": "APIs related to registering for different roles"
+		},
+		{
+			"name": "Organization APIs",
+			"description": "APIs related to organizations"
+		}
+	],
+	"paths": {
+		"/v1/provider/registration": {
+			"parameters": [],
+			"post": {
+				"summary": "Provider Registration",
+				"operationId": "postv1-provider-registration",
+				"responses": {
+					"200": {
+						"description": "The registration is successful, and the registration request is pending approval",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Generic-Success"
+								},
+								"examples": {
+									"Success": {
+										"value": {
+											"success": true
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n- `email`\n- `organization`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"error": {
+											"type": "object",
+											"properties": {
+												"message": {
+													"example": "Invalid data (<field>)",
+													"type": "string"
+												}
+											}
+										}
+									}
+								},
+								"examples": {
+									"Invalid CSR": {
+										"value": {
+											"error": {
+												"message": "Invalid data (csr)"
+											}
+										}
+									},
+									"Invalid Email address": {
+										"value": {
+											"error": {
+												"message": "Invalid data (email)"
+											}
+										}
+									},
+									"Invalid name": {
+										"value": {
+											"error": {
+												"message": "Invalid data (name)"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "* The email address used has already been used for registration\n* An organization with the requested ID does not exist",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error-Message"
+								},
+								"examples": {
+									"Organization ID does not exist": {
+										"value": {
+											"error": {
+												"message": "Invalid organization"
+											}
+										}
+									},
+									"Email has been used to register ": {
+										"value": {
+											"error": {
+												"message": "Email exists"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal Server Error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error-Message"
+								},
+								"examples": {
+									"Example": {
+										"value": {
+											"error": {
+												"message": "Internal error!"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Register as a Provider. Provider registration requires a valid Certificate Signing Request (CSR) generated using RSA keys. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac. \n\nOnce a Provider has registered successfully, their registration request is subject to approval by an IUDX admin. If the registration is approved, a signed certificate will be sent to the registered email address. This certificate would be used by the Provider for several operations, such as giving consumers access to their resources, auditing tokens issued for their resources and revoking tokens.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "object",
+										"required": [
+											"title",
+											"firstName",
+											"lastName"
+										],
+										"properties": {
+											"title": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 512,
+												"pattern": "^[a-zA-Z]+\\.?$"
+											},
+											"firstName": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 512,
+												"pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
+											},
+											"lastName": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 512,
+												"pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
+											}
+										}
+									},
+									"organization": {
+										"type": "integer",
+										"description": "Valid organization ID obtained GET organization API",
+										"minimum": 1,
+										"maximum": 2147483647
+									},
+									"phone": {
+										"type": "string",
+										"description": "A valid mobile number",
+										"pattern": "^[9876]\\d{9}$",
+										"minLength": 10,
+										"maxLength": 10
+									},
+									"csr": {
+										"type": "string",
+										"description": "A valid Certificate Signing Request in .PEM format, generated with RSA keys",
+										"maxLength": 2048
+									},
+									"email": {
+										"type": "string",
+										"description": "",
+										"format": "email",
+										"minLength": 5,
+										"maxLength": 64
+									}
+								},
+								"required": [
+									"name",
+									"organization",
+									"phone",
+									"csr",
+									"email"
+								]
+							},
+							"examples": {
+								"Example": {
+									"value": {
+										"name": {
+											"title": "Ind.",
+											"firstName": "Jane",
+											"lastName": "Doe"
+										},
+										"organization": 7,
+										"phone": "9845596211",
+										"csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
+										"email": "jane.doe@acme.org"
+									}
+								}
+							}
+						}
+					},
+					"description": "- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `csr` is a valid CSR generated using RSA keys.\n\n**NOTE:The newlines in the CSR must be converted into '\\n'.** For example, if the CSR is:\n```\n-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBAMwdtLPKbncwwBaCVdYoyj1QbnbXhE1T+XQP+OI+\n3ZN6qaqrIy6/Q+deSY1QLX6VM28ng8tmW8F9xPsU0LtCEXKBVYovs1b8AntjJc+g\nJT58XW4emOIB0Ed5EfVebwexm66Zy0sQyAMcmXK2q1bWx3EwPppqozoHtlhvCXf5\nXi0FYKewIbCvPXo6/DItqWW7XnpkqjRTQXz2UT+h32aVK6gJTJ+Ddsg3mlVsoehV\nXvaYAL9zDMC+2BOi1CR9kQnh0QL9QjIwSfvSMx2sVw4HYdkPNpx3LS7eRz5AT7Aq\nSSmWpyhkk7mRlMsbgAYIsyZg56acga2vB0iUGUmX8dWU3KA4Yvw0HgC1dmEnTyub\n3h5krYa4baMZF6DwCT9ydZjcRmCkyydLu0xtqmC3qRViy/ihRIaDG8vNUuyh9p0A\nX+eN0AaARPPDrc+bvwWH6yR1GJx7PLriSgHKbQwppN6pynm8qaOWFzVpdEKKqT0f\nNGXza1yFFesIkjX/kxNdJcgAgrchixyKN87+md69mAgBLjpG/hfcR/ZURWTZO8+C\nVBJt/bQtp7h692+MJboVD548eLg7X1GN0HUmtErs0vF6cT9kCH3l81kGmghfiEmp\nbfRzmJQOHOF2j/NzFbE74TWtLIzXPELNcnxi6tIkgk5lrQf5GOzrbljyZIEUDibT\n81yvAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEAwHYlJlTL2e/7c/Kl/jt/9b4/\nDB7jaRkohipIkYCC/B8zpY/hSllRM6wAy0wzJ5qdAEWoysuFtufxeNNJwv/Tv2RT\n3K95lN9QlQs12A6Kvo8Uh/V+KWi3d1Sy3RR/R1xwCtuYBdhACj9nSs+1ZYw9SB28\nEfHoZSRxV9PEsCpmXGHom3/d7JFGCD33nGMocIdSVoqmAjG0atjtLCNHc+hwhRiQ\nEDzz7RQ1BySj41NsCoUB9KgnhXxtYthxnOxthQMClLmXSwZr1qZ2Z6BR8wZVVCLp\ngH6MQnaHvc2EtzUsTKqePxMdaqL76/WlaIo7D65PCnuyLJnSP2EQt8EKr8gDtGN+\nwmXcHuczekfCaqwFySsHT4yNcI7GSTuJYzsNwcVPva9VRnkzjsysvCFSUFNA1byI\nNVAyYR3qIDVS8dKEnkGGVuKcSC+eA9uWSlV24na7j/2Uru8AUB+QWBYGUCv5Y4mV\n3QPCawo8kwR+Qd61oYnxZOkRrh0l7F7nF3APEEaKnLBJmpmoCKdbRHWHhGMsmE5v\nUXBVOs06J6ap59zXHDzTUK6tPqS0QzJM1ApKzy8RB3am/CzPZyZbOwhf7VjgP0ut\neeVVwvaadFOihyWSsKAmr4H7/WporKL2jv15YV0FE2yMib6o0RRSIRdHhJQUYSNv\nymONhiAAAJjT4jAW2Xs=\n-----END CERTIFICATE REQUEST-----\n```\n, the value for the `csr` field must be\n```\n-----BEGIN CERTIFICATE REQUEST-----\\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\\nAQEBBQADggIPADCCAgoCggIBAMwdtLPKbncwwBaCVdYoyj1QbnbXhE1T+XQP+OI+\\n3ZN6qaqrIy6/Q+deSY1QLX6VM28ng8tmW8F9xPsU0LtCEXKBVYovs1b8AntjJc+g\\nJT58XW4emOIB0Ed5EfVebwexm66Zy0sQyAMcmXK2q1bWx3EwPppqozoHtlhvCXf5\\nXi0FYKewIbCvPXo6/DItqWW7XnpkqjRTQXz2UT+h32aVK6gJTJ+Ddsg3mlVsoehV\\nXvaYAL9zDMC+2BOi1CR9kQnh0QL9QjIwSfvSMx2sVw4HYdkPNpx3LS7eRz5AT7Aq\\nSSmWpyhkk7mRlMsbgAYIsyZg56acga2vB0iUGUmX8dWU3KA4Yvw0HgC1dmEnTyub\\n3h5krYa4baMZF6DwCT9ydZjcRmCkyydLu0xtqmC3qRViy/ihRIaDG8vNUuyh9p0A\\nX+eN0AaARPPDrc+bvwWH6yR1GJx7PLriSgHKbQwppN6pynm8qaOWFzVpdEKKqT0f\\nNGXza1yFFesIkjX/kxNdJcgAgrchixyKN87+md69mAgBLjpG/hfcR/ZURWTZO8+C\\nVBJt/bQtp7h692+MJboVD548eLg7X1GN0HUmtErs0vF6cT9kCH3l81kGmghfiEmp\\nbfRzmJQOHOF2j/NzFbE74TWtLIzXPELNcnxi6tIkgk5lrQf5GOzrbljyZIEUDibT\\n81yvAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEAwHYlJlTL2e/7c/Kl/jt/9b4/\\nDB7jaRkohipIkYCC/B8zpY/hSllRM6wAy0wzJ5qdAEWoysuFtufxeNNJwv/Tv2RT\\n3K95lN9QlQs12A6Kvo8Uh/V+KWi3d1Sy3RR/R1xwCtuYBdhACj9nSs+1ZYw9SB28\\nEfHoZSRxV9PEsCpmXGHom3/d7JFGCD33nGMocIdSVoqmAjG0atjtLCNHc+hwhRiQ\\nEDzz7RQ1BySj41NsCoUB9KgnhXxtYthxnOxthQMClLmXSwZr1qZ2Z6BR8wZVVCLp\\ngH6MQnaHvc2EtzUsTKqePxMdaqL76/WlaIo7D65PCnuyLJnSP2EQt8EKr8gDtGN+\\nwmXcHuczekfCaqwFySsHT4yNcI7GSTuJYzsNwcVPva9VRnkzjsysvCFSUFNA1byI\\nNVAyYR3qIDVS8dKEnkGGVuKcSC+eA9uWSlV24na7j/2Uru8AUB+QWBYGUCv5Y4mV\\n3QPCawo8kwR+Qd61oYnxZOkRrh0l7F7nF3APEEaKnLBJmpmoCKdbRHWHhGMsmE5v\\nUXBVOs06J6ap59zXHDzTUK6tPqS0QzJM1ApKzy8RB3am/CzPZyZbOwhf7VjgP0ut\\neeVVwvaadFOihyWSsKAmr4H7/WporKL2jv15YV0FE2yMib6o0RRSIRdHhJQUYSNv\\nymONhiAAAJjT4jAW2Xs=\\n-----END CERTIFICATE REQUEST-----\\n\n```\nYou may use the following awk command to get the CSR in the required format\n```\nawk 'NF {sub(/\\r/, \"\"); printf \"%s\\\\n\",$0;}' <name-of-csr-file>\n```"
+				},
+				"parameters": [],
+				"tags": [
+					"Registration APIs"
+				]
+			}
+		},
+		"/v1/registration": {
+			"post": {
+				"summary": "Consumer/Onboarder/Data Ingester/Delegate Registration",
+				"operationId": "post-v1-registration",
+				"responses": {
+					"200": {
+						"description": "Successful registration. If the user is registering for the first time, a signed certificate will be emailed to their registered email address.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"success": {
+											"type": "boolean"
+										},
+										"message": {
+											"type": "string"
+										}
+									}
+								},
+								"examples": {
+									"Successful registration for the first time": {
+										"value": {
+											"success": true,
+											"message": "A certificate has been generated and sent to your email"
+										}
+									},
+									"Successful registration of another role": {
+										"value": {
+											"success": true,
+											"message": "Since you have registered before, please continue to use the certificate that was sent before."
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Missing or malformed data. Can occur for:\n- `name`\n- `phone`\n  - If phone number not sent when registering as Delegate\n- `email`\n- `organization`\n- `roles`\n- `csr` \n    - Ensure that the CSR is generated using RSA keys, and is in the .PEM format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error-Message"
+								},
+								"examples": {
+									"Invalid CSR": {
+										"value": {
+											"error": {
+												"message": "Invalid data (csr)"
+											}
+										}
+									},
+									"Invalid email ": {
+										"value": {
+											"error": {
+												"message": "Invalid data (email)"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "- An organization with the requested ID does not exist (applicable for Onboarder, Data Ingester and Delegate)\n- Website of organization and domain of email address does not match (applicable for Onboarder, Data Ingester and Delegate)\n- If the email has been used for Provider registration\n- Attempting to register for an already registered role",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error-Message"
+								},
+								"examples": {
+									"Organization does not exist": {
+										"value": {
+											"error": {
+												"message": "Invalid organization"
+											}
+										}
+									},
+									"Domain of email address and organization website mismatching": {
+										"value": {
+											"error": {
+												"message": "Invalid data (domains do not match)"
+											}
+										}
+									},
+									"Re-registering as consumer": {
+										"value": {
+											"error": {
+												"message": "Already registered as consumer"
+											}
+										}
+									},
+									"Re-registering as onboarder": {
+										"value": {
+											"error": {
+												"message": "Already registered as onboarder"
+											}
+										}
+									},
+									"Re-registering as data ingester": {
+										"value": {
+											"error": {
+												"message": "Already registered as data ingester"
+											}
+										}
+									},
+									"If the email has been used in Provider registration": {
+										"value": {
+											"error": {
+												"message": "Email exists"
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "* Internal Server Error OR\n* Error in certificate generation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Error-Message"
+								},
+								"examples": {
+									"Internal error": {
+										"value": {
+											"error": {
+												"message": "Internal error!"
+											}
+										}
+									},
+									"Error in certificate generation": {
+										"value": {
+											"error": {
+												"message": "Certificate Error"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"description": "Register for Consumer, Onboarder and Data Ingester roles\n* A Consumer can access secure APIs\n* An Onboarder can add items to a catalogue on behalf of a Provider\n* A Data Ingester can push data into a resource server on behalf of a Provider\n* A Delegate can create, update and view policies on behalf of a Provider\n\nIf a user is registering for the first time, then a valid Certificate Signing Request (CSR) is required. Check [here](https://www.ibm.com/support/pages/how-generate-certificate-signing-request-csr) for instructions on how to create a CSR on Windows/Linux/Mac",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "object",
+										"required": [
+											"title",
+											"firstName",
+											"lastName"
+										],
+										"properties": {
+											"title": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 512,
+												"pattern": "^[a-zA-Z]+\\.?$"
+											},
+											"firstName": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 512,
+												"pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
+											},
+											"lastName": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 512,
+												"pattern": "^[a-zA-Z]+(?:(?: |[' -])[a-zA-Z]+)*$"
+											}
+										}
+									},
+									"phone": {
+										"type": "string",
+										"pattern": "^[9876]\\d{9}$",
+										"minLength": 10,
+										"maxLength": 10
+									},
+									"email": {
+										"type": "string",
+										"format": "email",
+										"minLength": 5,
+										"maxLength": 64
+									},
+									"organization": {
+										"type": "integer",
+										"description": "Organization ID not required for consumers",
+										"minimum": 1,
+										"maximum": 2147483647
+									},
+									"csr": {
+										"type": "string",
+										"description": "CSR is necessary if the user has not registered for another role before",
+										"maxLength": 2048,
+										"minLength": 1
+									},
+									"roles": {
+										"type": "array",
+										"uniqueItems": true,
+										"minItems": 1,
+										"maxItems": 4,
+										"items": {
+											"type": "string",
+											"enum": [
+												"consumer",
+												"onboarder",
+												"data ingester",
+												"delegate"
+											]
+										}
+									}
+								},
+								"required": [
+									"name",
+									"email",
+									"roles"
+								]
+							},
+							"examples": {
+								"Registering for Onboarder and Data ingester": {
+									"value": {
+										"name": {
+											"title": "Ms.",
+											"firstName": "Jane",
+											"lastName": "Doe"
+										},
+										"phone": "9845596201",
+										"email": "jane.doe@acme.org",
+										"organization": 7,
+										"csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
+										"roles": [
+											"onboarder",
+											"data ingester"
+										]
+									}
+								},
+								"Registering for Consumer (Organization ID not required)": {
+									"value": {
+										"name": {
+											"title": "Mr.",
+											"firstName": "John",
+											"lastName": "Doe"
+										},
+										"phone": "9845596201",
+										"email": "john.doe@hotmail.org",
+										"csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
+										"roles": [
+											"consumer"
+										]
+									}
+								},
+								"Registering as Consumer after already registering as Onboarder, Data Ingester": {
+									"value": {
+										"name": {
+											"title": "Ms.",
+											"firstName": "Jane",
+											"lastName": "Doe"
+										},
+										"phone": "9845596201",
+										"email": "jane.doe@acme.org",
+										"roles": [
+											"consumer"
+										]
+									}
+								},
+								"Registering for Delegate": {
+									"value": {
+										"name": {
+											"title": "Ms.",
+											"firstName": "Jane",
+											"lastName": "Doe"
+										},
+										"phone": "9845596322",
+										"email": "jane.doe@acme.org",
+										"organization": 7,
+										"csr": "-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBALJOkT2n07vzAJPbQP9eS75pFIBB9KoCjUsxmkHj\ntL5GgHeKIsXVGWrv8+65wQ/e1jldrhkNk1NyFOWC1TONXtF0/kFEbGsTP/o4fiEI\n4mcc/XdH8I5/SKf81T2XhJMSkJr8thGwGexrk1bNt4LaAHaWiphM/XUvc4R8pmd4\nOg1hmp4bNEExbOn6nT15/wm+7zS73eJ6O+JT2gWc/fa61VzA/7dYClWdfcI8uHy2\nj+zjTqYkiwAXXgHPXAl0cqB9Q8fLffsq2fydISYZvMXhRor9d1CYSo+dDFxBZsxF\n1zMaLD5WdPho2mui9kLuJv4/SgV35DrFnqjEpXDNIBtsyKuN3mkOtkBowmVjRf/P\nYLUeXdNumoyw6jzkBbaNoLSx1q8kcrETsMtiZnZa2olMXblZPqAqdW3FBGBroD6N\nTLj/qVHEuZR5ErxD4ATYMnGN7/yi0vqiJ7c/+OJSucpVqF8av8uetEibcpYxqTnE\nep4P6xgdK99xAkQbJz1qzE3fw2BomzAnpWQNW5IEaWgjkk83W9H7orXqJNRQ8VIv\neCBjD6blrR6bpvMZmZzFab4kyaQ/+DKstFhO87dGMN1nl4QRk+lBUb/DZ+M86ZOZ\n/QpG5NThT2qx0LIgKyPC6L61JbzwrRPJaf7hbvLjyDzSW962lzpPFH21W6zqdKL0\nPJCNAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEARN+5y+qyCX593rwfnYKYnjR9\n1gfezjc36FYcDetfnJsv0PyyHb8MrnA3ZeRTsMPyfa6v/AFf14u3E1KUC9Jqrh/9\nqmGrltQt5aPjfD3HKAwDMWJQu9Kk25mPUTXZPzkwM3bD+QEs8UA2Dq9zxWxywOrF\nYr+XkStFo+fp/vDafzcapzEFswa5m+CidSogMoLbTPPdtc+0iaYlYmF8LdQJAYhS\no6jQEI4UCu1+sdE/6IlBxu6QjuWS3Rma69qwytmu19015i9UBn9aGAgmEmJiTWh0\nmrxqztL+NTGQpCHRXY9umM6qvWhpq80j1IGOFf/kh8RKuKXjanw/RAOAlTKUMQbd\n5A1qz4TQsj5sbVB1+45fZzNuwlAKVVi99xB0u7BjrjiWdNaH7VX9lioylIenbWpj\n5vTo5kFVcwPRzfxpgevxQTWC4Ck/J4gKAsPx0kMt3MA9N5JnQgInsRmtNT6SC2zE\nMyGstjxDbkYNMMkurT+6yuh2CCOKa1hM5WgmQH7kqjCcr5XVxE4CiLaZu1FOvGiQ\nYILM4F/Qay1X4+MZ35Fz9LA6VoLCegjty1S2yQDeURyKIunnBrmCdUhqwpDJZbvR\n9k2PtGKf4DJzMbyM6VQboxyzg+b2lI8dxdaf8XGeg9mdaEqNVYHDUu/BSjLJFfRy\njMkVAbTW0Ben9mpHpzU=\n-----END CERTIFICATE REQUEST-----\n",
+										"roles": [
+											"delegate"
+										]
+									}
+								}
+							}
+						}
+					},
+					"description": "- An `email` that was used for Provider registration cannot be used for Consumer/Data Ingester/Onboarder registration\n- `organization` is a valid organization ID obtained from the GET /v1/organizations API\n- `organization` field is not required for Consumer registration\n- For Onboarders, Data Ingesters and Delegates, the domain of the email must match the website of the organization\n- **For Delegates, `phone` is mandatory**\n- `csr` is a valid CSR generated using RSA keys.\n- `csr` is a valid CSR generated using RSA keys. \n\n**NOTE:The newlines in the CSR must be converted into '\\n'.** For example, if the CSR is:\n```\n-----BEGIN CERTIFICATE REQUEST-----\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\nAQEBBQADggIPADCCAgoCggIBAMwdtLPKbncwwBaCVdYoyj1QbnbXhE1T+XQP+OI+\n3ZN6qaqrIy6/Q+deSY1QLX6VM28ng8tmW8F9xPsU0LtCEXKBVYovs1b8AntjJc+g\nJT58XW4emOIB0Ed5EfVebwexm66Zy0sQyAMcmXK2q1bWx3EwPppqozoHtlhvCXf5\nXi0FYKewIbCvPXo6/DItqWW7XnpkqjRTQXz2UT+h32aVK6gJTJ+Ddsg3mlVsoehV\nXvaYAL9zDMC+2BOi1CR9kQnh0QL9QjIwSfvSMx2sVw4HYdkPNpx3LS7eRz5AT7Aq\nSSmWpyhkk7mRlMsbgAYIsyZg56acga2vB0iUGUmX8dWU3KA4Yvw0HgC1dmEnTyub\n3h5krYa4baMZF6DwCT9ydZjcRmCkyydLu0xtqmC3qRViy/ihRIaDG8vNUuyh9p0A\nX+eN0AaARPPDrc+bvwWH6yR1GJx7PLriSgHKbQwppN6pynm8qaOWFzVpdEKKqT0f\nNGXza1yFFesIkjX/kxNdJcgAgrchixyKN87+md69mAgBLjpG/hfcR/ZURWTZO8+C\nVBJt/bQtp7h692+MJboVD548eLg7X1GN0HUmtErs0vF6cT9kCH3l81kGmghfiEmp\nbfRzmJQOHOF2j/NzFbE74TWtLIzXPELNcnxi6tIkgk5lrQf5GOzrbljyZIEUDibT\n81yvAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEAwHYlJlTL2e/7c/Kl/jt/9b4/\nDB7jaRkohipIkYCC/B8zpY/hSllRM6wAy0wzJ5qdAEWoysuFtufxeNNJwv/Tv2RT\n3K95lN9QlQs12A6Kvo8Uh/V+KWi3d1Sy3RR/R1xwCtuYBdhACj9nSs+1ZYw9SB28\nEfHoZSRxV9PEsCpmXGHom3/d7JFGCD33nGMocIdSVoqmAjG0atjtLCNHc+hwhRiQ\nEDzz7RQ1BySj41NsCoUB9KgnhXxtYthxnOxthQMClLmXSwZr1qZ2Z6BR8wZVVCLp\ngH6MQnaHvc2EtzUsTKqePxMdaqL76/WlaIo7D65PCnuyLJnSP2EQt8EKr8gDtGN+\nwmXcHuczekfCaqwFySsHT4yNcI7GSTuJYzsNwcVPva9VRnkzjsysvCFSUFNA1byI\nNVAyYR3qIDVS8dKEnkGGVuKcSC+eA9uWSlV24na7j/2Uru8AUB+QWBYGUCv5Y4mV\n3QPCawo8kwR+Qd61oYnxZOkRrh0l7F7nF3APEEaKnLBJmpmoCKdbRHWHhGMsmE5v\nUXBVOs06J6ap59zXHDzTUK6tPqS0QzJM1ApKzy8RB3am/CzPZyZbOwhf7VjgP0ut\neeVVwvaadFOihyWSsKAmr4H7/WporKL2jv15YV0FE2yMib6o0RRSIRdHhJQUYSNv\nymONhiAAAJjT4jAW2Xs=\n-----END CERTIFICATE REQUEST-----\n```\n, the value for the `csr` field must be\n```\n-----BEGIN CERTIFICATE REQUEST-----\\nMIIEijCCAnICAQAwRTELMAkGA1UEBhMCQVUxEzARBgNVBAgMClNvbWUtU3RhdGUx\\nITAfBgNVBAoMGEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDCCAiIwDQYJKoZIhvcN\\nAQEBBQADggIPADCCAgoCggIBAMwdtLPKbncwwBaCVdYoyj1QbnbXhE1T+XQP+OI+\\n3ZN6qaqrIy6/Q+deSY1QLX6VM28ng8tmW8F9xPsU0LtCEXKBVYovs1b8AntjJc+g\\nJT58XW4emOIB0Ed5EfVebwexm66Zy0sQyAMcmXK2q1bWx3EwPppqozoHtlhvCXf5\\nXi0FYKewIbCvPXo6/DItqWW7XnpkqjRTQXz2UT+h32aVK6gJTJ+Ddsg3mlVsoehV\\nXvaYAL9zDMC+2BOi1CR9kQnh0QL9QjIwSfvSMx2sVw4HYdkPNpx3LS7eRz5AT7Aq\\nSSmWpyhkk7mRlMsbgAYIsyZg56acga2vB0iUGUmX8dWU3KA4Yvw0HgC1dmEnTyub\\n3h5krYa4baMZF6DwCT9ydZjcRmCkyydLu0xtqmC3qRViy/ihRIaDG8vNUuyh9p0A\\nX+eN0AaARPPDrc+bvwWH6yR1GJx7PLriSgHKbQwppN6pynm8qaOWFzVpdEKKqT0f\\nNGXza1yFFesIkjX/kxNdJcgAgrchixyKN87+md69mAgBLjpG/hfcR/ZURWTZO8+C\\nVBJt/bQtp7h692+MJboVD548eLg7X1GN0HUmtErs0vF6cT9kCH3l81kGmghfiEmp\\nbfRzmJQOHOF2j/NzFbE74TWtLIzXPELNcnxi6tIkgk5lrQf5GOzrbljyZIEUDibT\\n81yvAgMBAAGgADANBgkqhkiG9w0BAQsFAAOCAgEAwHYlJlTL2e/7c/Kl/jt/9b4/\\nDB7jaRkohipIkYCC/B8zpY/hSllRM6wAy0wzJ5qdAEWoysuFtufxeNNJwv/Tv2RT\\n3K95lN9QlQs12A6Kvo8Uh/V+KWi3d1Sy3RR/R1xwCtuYBdhACj9nSs+1ZYw9SB28\\nEfHoZSRxV9PEsCpmXGHom3/d7JFGCD33nGMocIdSVoqmAjG0atjtLCNHc+hwhRiQ\\nEDzz7RQ1BySj41NsCoUB9KgnhXxtYthxnOxthQMClLmXSwZr1qZ2Z6BR8wZVVCLp\\ngH6MQnaHvc2EtzUsTKqePxMdaqL76/WlaIo7D65PCnuyLJnSP2EQt8EKr8gDtGN+\\nwmXcHuczekfCaqwFySsHT4yNcI7GSTuJYzsNwcVPva9VRnkzjsysvCFSUFNA1byI\\nNVAyYR3qIDVS8dKEnkGGVuKcSC+eA9uWSlV24na7j/2Uru8AUB+QWBYGUCv5Y4mV\\n3QPCawo8kwR+Qd61oYnxZOkRrh0l7F7nF3APEEaKnLBJmpmoCKdbRHWHhGMsmE5v\\nUXBVOs06J6ap59zXHDzTUK6tPqS0QzJM1ApKzy8RB3am/CzPZyZbOwhf7VjgP0ut\\neeVVwvaadFOihyWSsKAmr4H7/WporKL2jv15YV0FE2yMib6o0RRSIRdHhJQUYSNv\\nymONhiAAAJjT4jAW2Xs=\\n-----END CERTIFICATE REQUEST-----\\n\n```\nYou may use the following awk command to get the CSR in the required format\n```\nawk 'NF {sub(/\\r/, \"\"); printf \"%s\\\\n\",$0;}' <name-of-csr-file>\n```\n\n- The `csr` field is not required if the user has already registered as Consumer/Data Ingester/Onboarder\n- The valid items for the `roles` array are:\n   - `consumer`\n   - `onboarder`\n   - `data ingester`\n - **Duplicates in the ```roles``` array are ignored**"
+				},
+				"tags": [
+					"Registration APIs"
+				]
+			}
+		},
+		"/v1/organizations": {
+			"get": {
+				"summary": "Get all registered Organizations",
+				"tags": [
+					"Organization APIs"
+				],
+				"operationId": "get-v1-organizations",
+				"description": "Get name and organization ID for all registered organizations",
+				"responses": {
+					"200": {
+						"description": "OK",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"organizations": {
+											"type": "array",
+											"uniqueItems": true,
+											"items": {
+												"type": "object",
+												"properties": {
+													"id": {
+														"type": "integer"
+													},
+													"name": {
+														"type": "string"
+													}
+												}
+											}
+										}
+									}
+								},
+								"examples": {
+									"Example": {
+										"value": {
+											"organizations": [{
+													"id": 1,
+													"name": "IISc"
+												},
+												{
+													"id": 2,
+													"name": "Data Kaveri"
+												},
+												{
+													"id": 3,
+													"name": "ACME Corp"
+												},
+												{
+													"id": 4,
+													"name": "Testing CORP"
+												}
+											]
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"Error-Message": {
+				"title": "Error-Message",
+				"type": "object",
+				"properties": {
+					"error": {
+						"type": "object",
+						"properties": {
+							"message": {
+								"type": "string"
+							}
+						}
+					}
+				},
+				"x-examples": {},
+				"description": "Generic Error Message"
+			},
+			"Generic-Success": {
+				"title": "Generic-Success",
+				"type": "object",
+				"properties": {
+					"success": {
+						"type": "boolean"
+					}
+				},
+				"description": "Generic Success Message"
+			}
+		}
+	}
 }
