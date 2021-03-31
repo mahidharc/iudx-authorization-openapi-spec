@@ -371,25 +371,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "operationId": "get-auth-v1-provider-access",
@@ -579,25 +560,6 @@
                       "error": {
                         "message": "Delegate cannot set delegate rule",
                         "id": 4
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
                       }
                     }
                   }
@@ -919,25 +881,6 @@
                       "error": {
                         "message": "Delegate cannot delete delegate rules",
                         "access_id": 8
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
                       }
                     }
                   }
@@ -1402,25 +1345,6 @@
                 }
               }
             }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error-Message"
-                },
-                "examples": {
-                  "Example": {
-                    "value": {
-                      "error": {
-                        "message": "Internal error!"
-                      }
-                    }
-                  }
-                }
-              }
-            }
           }
         },
         "operationId": "get-auth-v1-delegate-providers",
@@ -1823,7 +1747,7 @@
             }
           }
         },
-        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nGet a token **OR** using an expired token, get a new token with all the same resources as the expired one.\n\nIf the user has access to the resources, a token will be generated with a validity of **1 week**. The token structure is as follows:\n\n```<Authorization server URL>/<email of the requesting user>/<32 chars of random characters in hex>/<uuid>```\n\nThe UUID of the token serves as the ID of the token. The `PUT /token` and `DELETE /token` APIs make use of the UUID to identify the token.\n\n### Token Validity\n\nAs mentioned earlier, a token is valid for 1 week. However, note that **policies also have an expiry that is set by the Provider, or the Provider may delete the policy associated with the resource**. Hence, a token may be valid, but the resources associated with the token would no longer be accessible. You may use the `GET /token` API to determine the status of the resources associated with the token.",
+        "description": "**Requires a valid class-2/consumer client certificate issued by IUDX and is a registered consumer/onboarder/data ingester**\n\nGet a token **OR** using an expired token, get a new token with all the same resources as the expired one.\n\nIf the user has access to the resources, a token will be generated with a validity of **1 week**. The token structure is as follows:\n\n```<Authorization server URL>/<email of the requesting user>/<32 chars of random characters in hex>/<uuid>```\n\nThe UUID of the token serves as the ID of the token. The `PUT /token` and `DELETE /token` APIs make use of the UUID to identify the token.\n\nNOTE: **The user will implicitly get access to all APIs that they are permitted to access for the requested resources.**\n\n### Token Validity\n\nAs mentioned earlier, a token is valid for 1 week. However, note that **policies also have an expiry that is set by the Provider, or the Provider may delete the policy associated with the resource**. Hence, a token may be valid, but the resources associated with the token would no longer be accessible. You may use the `GET /token` API to determine the status of the resources associated with the token.\n\n### Consumers\n\nConsumers can check what resources and capabilities they have access to via the `GET /consumer/resources` API\n\n### Data Ingesters\n\nIf a data ingester has been given access to a resource group, the permitted APIs depend on the resource server containing the resource.\n\n- **rs.iudx.org.in** - *`/iudx/v1/adapter`*\n- **file.iudx.org.in** - *`/iudx/v1/download`*, *`/iudx/v1/delete`*\n\n## Onboarders\n\nOnboarders do not get access to any APIs. The resource ID in `request` must be in the format: ```<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud```\n\nFor example, if the provider is *provider.foobar@datakaveri.org*, `id` will be:\n```\ndatakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud\n```",
         "requestBody": {
           "content": {
             "application/json": {
