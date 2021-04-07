@@ -1511,7 +1511,7 @@
           "title": {
             "type": "string"
           },
-          "details": {
+          "detail": {
             "type": "string"
           }
         }
