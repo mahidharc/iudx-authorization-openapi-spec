@@ -403,7 +403,7 @@
             }
           },
           "400": {
-            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `expiry_time`\n  - `provider-email` header\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
+            "description": "- Missing or malformed data. Can occur for\n  - `body` (if not an array)\n  - `user_email`\n  - `user_role`\n  - `item_id`\n  - `item_type`\n  - `capabilities`\n  - `expiry_time`\n  - `provider-email` header\n- Duplicate policies in the request\n  - Onboarder and delegate policies set for the same `user_email`\n  - Consumer and data ingester policies set for the same `user_email`, `item_id` and `item_type`\n**The index (from 0) of the object in the request array containing the error (except for `provider-email` header and `body`) will be returned in the error response**\n- SSL Errors",
             "content": {
               "application/json": {
                 "schema": {
