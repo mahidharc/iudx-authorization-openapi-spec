@@ -92,7 +92,7 @@
             }
           },
           "403": {
-            "description": "* The email address used has already been used for registration\n* An organization with the requested ID does not exist",
+            "description": "* The email address used has already been used for registration\n* An organization with the requested ID does not exist\n* If the domain of the organization does not match the provider's email domain",
             "content": {
               "application/json": {
                 "schema": {
@@ -110,6 +110,13 @@
                     "value": {
                       "error": {
                         "message": "Email exists"
+                      }
+                    }
+                  },
+                  "Provider email domain does not match organization domain": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid data (domains do not match)"
                       }
                     }
                   }
@@ -173,7 +180,7 @@
                   },
                   "email": {
                     "type": "string",
-                    "description": "",
+                    "description": "Allowed characters: A-Za-z0-9.-\\_@ (email cannot start with .-_@ and must have one @)",
                     "format": "email",
                     "minLength": 5,
                     "maxLength": 64
@@ -297,17 +304,10 @@
                       }
                     }
                   },
-                  "Re-registering as consumer": {
+                  "Re-registering as consumer and onboarder": {
                     "value": {
                       "error": {
-                        "message": "Already registered as consumer"
-                      }
-                    }
-                  },
-                  "Re-registering as onboarder": {
-                    "value": {
-                      "error": {
-                        "message": "Already registered as onboarder"
+                        "message": "Already registered as consumer,onboarder"
                       }
                     }
                   },
@@ -375,7 +375,8 @@
                     "type": "string",
                     "format": "email",
                     "minLength": 5,
-                    "maxLength": 64
+                    "maxLength": 64,
+                    "description": "Allowed characters: A-Za-z0-9.-\\_@ (email cannot start with .-_@ and must have one @)"
                   },
                   "organization": {
                     "type": "integer",
