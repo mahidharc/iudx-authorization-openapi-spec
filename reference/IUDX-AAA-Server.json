@@ -1,145 +1,24 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "temp",
-    "version": "1.0"
+    "title": "IUDX AAA Server (2.0)",
+    "version": "1.0",
+    "description": "API spec for IUDX AAA server 2.0",
+    "contact": {
+      "name": "Foo",
+      "url": "Bar"
+    }
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "https://authorization.iudx.org.in"
     }
   ],
   "paths": {
-    "/users/{userId}": {
-      "parameters": [
-        {
-          "schema": {
-            "type": "integer"
-          },
-          "name": "userId",
-          "in": "path",
-          "required": true,
-          "description": "Id of an existing user."
-        }
-      ],
-      "get": {
-        "summary": "Get User Info by User ID",
-        "tags": [],
-        "responses": {
-          "200": {
-            "description": "User Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                },
-                "examples": {
-                  "Get User Alice Smith": {
-                    "value": {
-                      "id": 142,
-                      "firstName": "Alice",
-                      "lastName": "Smith",
-                      "email": "alice.smith@gmail.com",
-                      "dateOfBirth": "1997-10-31",
-                      "emailVerified": true,
-                      "signUpDate": "2019-08-24"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User Not Found"
-          }
-        },
-        "operationId": "get-users-userId",
-        "description": "Retrieve the information of the user with the matching user ID."
-      },
-      "patch": {
-        "summary": "Update User Information",
-        "operationId": "patch-users-userId",
-        "responses": {
-          "200": {
-            "description": "User Updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                },
-                "examples": {
-                  "Updated User Rebecca Baker": {
-                    "value": {
-                      "id": 13,
-                      "firstName": "Rebecca",
-                      "lastName": "Baker",
-                      "email": "rebecca@gmail.com",
-                      "dateOfBirth": "1985-10-02",
-                      "emailVerified": false,
-                      "createDate": "2019-08-24"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "User Not Found"
-          },
-          "409": {
-            "description": "Email Already Taken"
-          }
-        },
-        "description": "Update the information of an existing user.",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "firstName": {
-                    "type": "string"
-                  },
-                  "lastName": {
-                    "type": "string"
-                  },
-                  "email": {
-                    "type": "string",
-                    "description": "If a new email is given, the user's email verified property will be set to false."
-                  },
-                  "dateOfBirth": {
-                    "type": "string"
-                  }
-                }
-              },
-              "examples": {
-                "Update First Name": {
-                  "value": {
-                    "firstName": "Rebecca"
-                  }
-                },
-                "Update Email": {
-                  "value": {
-                    "email": "rebecca@gmail.com"
-                  }
-                },
-                "Update Last Name & Date of Birth": {
-                  "value": {
-                    "lastName": "Baker",
-                    "dateOfBirth": "1985-10-02"
-                  }
-                }
-              }
-            }
-          },
-          "description": "Patch user properties to update."
-        }
-      }
-    },
     "/user/profile": {
       "post": {
-        "summary": "Create New User",
-        "operationId": "post-user",
+        "summary": "Create a new user profile",
+        "operationId": "post-user-profile",
         "responses": {
           "201": {
             "description": "User Created",
@@ -303,7 +182,9 @@
                   "phone": {
                     "type": "string",
                     "minLength": 10,
-                    "maxLength": 10
+                    "maxLength": 10,
+                    "pattern": "^[9876]\\d{9}$",
+                    "example": "9845598989"
                   }
                 },
                 "required": [
@@ -311,12 +192,13 @@
                 ]
               },
               "examples": {
-                "Create User Bob Fellow": {
+                "Example": {
                   "value": {
-                    "firstName": "Bob",
-                    "lastName": "Fellow",
-                    "email": "bob.fellow@gmail.com",
-                    "dateOfBirth": "1996-08-24"
+                    "roles": [
+                      "consumer"
+                    ],
+                    "orgId": "25b2c2d5-a7fc-47d0-89e4-8709a1560bfa",
+                    "phone": "9845598989"
                   }
                 }
               }
@@ -324,7 +206,15 @@
           },
           "description": "Post the necessary fields for the API to create a new user."
         },
-        "description": "Create a new user."
+        "description": "Create a new user profile",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ],
+        "tags": [
+          "User Profile APIs"
+        ]
       },
       "parameters": []
     }
@@ -384,6 +274,22 @@
           "emailVerified"
         ]
       }
+    },
+    "securitySchemes": {
+      "OIDC Authentication": {
+        "type": "openIdConnect",
+        "description": "OIDC auth - JWT Identity token"
+      },
+      "Client ID and Client Secret": {
+        "name": "Client ID",
+        "type": "apiKey",
+        "in": "header"
+      }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "User Profile APIs"
+    }
+  ]
 }
