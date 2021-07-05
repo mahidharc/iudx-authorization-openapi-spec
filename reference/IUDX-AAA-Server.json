@@ -29,118 +29,150 @@
                   "type": "object",
                   "x-examples": {
                     "example-1": {
-                      "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
-                      "name": {
-                        "firstName": "Foo",
-                        "lastName": "Bar"
-                      },
-                      "roles": [
-                        "CONSUMER"
-                      ],
-                      "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
-                      "clients": [
+                      "type": "URN:SUCCESS",
+                      "title": "User created",
+                      "detail": [
                         {
-                          "client": "default",
-                          "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7",
-                          "clientSecret": "a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6"
+                          "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
+                          "name": {
+                            "firstName": "Foo",
+                            "lastName": "Bar"
+                          },
+                          "roles": [
+                            "CONSUMER"
+                          ],
+                          "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
+                          "clients": [
+                            {
+                              "client": "default",
+                              "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7",
+                              "clientSecret": "a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6"
+                            }
+                          ],
+                          "email": "ngoaf@chspomvjuq.com"
                         }
-                      ],
-                      "email": "ngoaf@chspomvjuq.com"
+                      ]
                     }
                   },
                   "properties": {
-                    "keycloakId": {
+                    "type": {
                       "type": "string",
                       "minLength": 1
                     },
-                    "name": {
-                      "type": "object",
-                      "required": [
-                        "firstName",
-                        "lastName"
-                      ],
-                      "properties": {
-                        "firstName": {
-                          "type": "string",
-                          "minLength": 1
-                        },
-                        "lastName": {
-                          "type": "string",
-                          "minLength": 1
-                        }
-                      }
-                    },
-                    "roles": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "userId": {
+                    "title": {
                       "type": "string",
                       "minLength": 1
                     },
-                    "clients": {
+                    "detail": {
                       "type": "array",
                       "uniqueItems": true,
                       "minItems": 1,
                       "items": {
                         "type": "object",
                         "properties": {
-                          "client": {
+                          "keycloakId": {
                             "type": "string",
                             "minLength": 1
                           },
-                          "clientId": {
+                          "name": {
+                            "type": "object",
+                            "properties": {
+                              "firstName": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "lastName": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "firstName",
+                              "lastName"
+                            ]
+                          },
+                          "roles": {
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
+                          },
+                          "userId": {
                             "type": "string",
                             "minLength": 1
                           },
-                          "clientSecret": {
+                          "clients": {
+                            "type": "array",
+                            "uniqueItems": true,
+                            "minItems": 1,
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "client": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "clientId": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "clientSecret": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "required": [
+                                "client",
+                                "clientId",
+                                "clientSecret"
+                              ]
+                            }
+                          },
+                          "email": {
                             "type": "string",
                             "minLength": 1
                           }
                         },
                         "required": [
-                          "client",
-                          "clientId",
-                          "clientSecret"
+                          "keycloakId",
+                          "userId",
+                          "email"
                         ]
                       }
-                    },
-                    "email": {
-                      "type": "string",
-                      "minLength": 1
                     }
                   },
                   "required": [
-                    "keycloakId",
-                    "name",
-                    "roles",
-                    "userId",
-                    "clients",
-                    "email"
+                    "type",
+                    "title",
+                    "detail"
                   ]
                 },
                 "examples": {
                   "Example": {
                     "value": {
-                      "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
-                      "name": {
-                        "firstName": "Foo",
-                        "lastName": "Bar"
-                      },
-                      "roles": [
-                        "CONSUMER"
-                      ],
-                      "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
-                      "clients": [
+                      "type": "URN:SUCCESS",
+                      "title": "User created",
+                      "detail": [
                         {
-                          "client": "default",
-                          "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7",
-                          "clientSecret": "a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6"
+                          "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
+                          "name": {
+                            "firstName": "Foo",
+                            "lastName": "Bar"
+                          },
+                          "roles": [
+                            "CONSUMER"
+                          ],
+                          "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
+                          "clients": [
+                            {
+                              "client": "default",
+                              "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7",
+                              "clientSecret": "a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6"
+                            }
+                          ],
+                          "email": "ngoaf@chspomvjuq.com"
                         }
-                      ],
-                      "email": "ngoaf@chspomvjuq.com"
+                      ]
                     }
                   }
                 }
@@ -204,7 +236,7 @@
               }
             }
           },
-          "description": "Post the necessary fields for the API to create a new user."
+          "description": ""
         },
         "description": "Create a new user profile",
         "security": [
@@ -216,7 +248,150 @@
           "User Profile APIs"
         ]
       },
-      "parameters": []
+      "parameters": [],
+      "get": {
+        "summary": "List user profile",
+        "operationId": "get-user-profile",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "User profile does not exists"
+          }
+        },
+        "description": "Get user profile ",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ]
+      }
+    },
+    "/organizations": {
+      "get": {
+        "summary": "View all registered organizations",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "detail": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "items": {
+                        "required": [
+                          "id",
+                          "name",
+                          "url"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "url": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "detail"
+                  ],
+                  "x-examples": {
+                    "example-1": {
+                      "type": "urn:dx:as:Success",
+                      "title": "Organizations",
+                      "detail": [
+                        {
+                          "id": "ea51dfff-dd8b-4528-8c0c-5881a482e825",
+                          "name": "example",
+                          "url": "example.com"
+                        },
+                        {
+                          "id": "6e30ac8c-8a91-4420-9d9d-a3d007b4fbdf",
+                          "name": "datakaveri",
+                          "url": "datakaveri.org"
+                        },
+                        {
+                          "id": "894777b1-e82a-4cf8-b99a-86fc3d7d707b",
+                          "name": "IISc",
+                          "url": "iisc.ac.in"
+                        },
+                        {
+                          "id": "4a79add1-9630-42dc-8803-55d0c992f3a8",
+                          "name": "NEC",
+                          "url": "india.nec.org"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:Success",
+                      "title": "Organizations",
+                      "detail": [
+                        {
+                          "id": "ea51dfff-dd8b-4528-8c0c-5881a482e825",
+                          "name": "example",
+                          "url": "example.com"
+                        },
+                        {
+                          "id": "6e30ac8c-8a91-4420-9d9d-a3d007b4fbdf",
+                          "name": "datakaveri",
+                          "url": "datakaveri.org"
+                        },
+                        {
+                          "id": "894777b1-e82a-4cf8-b99a-86fc3d7d707b",
+                          "name": "IISc",
+                          "url": "iisc.ac.in"
+                        },
+                        {
+                          "id": "4a79add1-9630-42dc-8803-55d0c992f3a8",
+                          "name": "NEC",
+                          "url": "india.nec.org"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-organizations",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ],
+        "description": "View all registered orgs"
+      }
     }
   },
   "components": {
