@@ -1912,6 +1912,314 @@ paths:
         required: true
       tags:
         - Admin APIs
+  /auth/v1/policies:
+    get:
+      summary: Get User Policies
+      tags:
+        - Policies APIs
+      responses:
+        '200':
+          description: Successfully listing the User policies
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Policy read
+                    results:
+                      policyBy:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                      policyFor:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                    required:
+                      - policyBy
+                      - policyFor
+                    properties:
+                      policyBy:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            user_id:
+                              type: string
+                              minLength: 1
+                            owner_id:
+                              type: string
+                              minLength: 1
+                            item_id:
+                              type: string
+                              minLength: 1
+                            item_type:
+                              type: string
+                              minLength: 1
+                            expiry_time:
+                              type: string
+                              minLength: 1
+                            constraints:
+                              type: object
+                            cat_id:
+                              type: string
+                              minLength: 1
+                            user_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                            owner_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                          required:
+                            - user_id
+                            - owner_id
+                            - item_id
+                            - item_type
+                            - expiry_time
+                            - cat_id
+                      policyFor:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            user_id:
+                              type: string
+                              minLength: 1
+                            owner_id:
+                              type: string
+                              minLength: 1
+                            item_id:
+                              type: string
+                              minLength: 1
+                            item_type:
+                              type: string
+                              minLength: 1
+                            expiry_time:
+                              type: string
+                              minLength: 1
+                            constraints:
+                              type: object
+                            cat_id:
+                              type: string
+                              minLength: 1
+                            user_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                            owner_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                          required:
+                            - user_id
+                            - owner_id
+                            - item_id
+                            - item_type
+                            - expiry_time
+                            - cat_id
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                ListPolicies-Success:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Policy read
+                    results:
+                      policyBy:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                      policyFor:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - Unauthorized - `clientId` & `clientSecret` invalid/not match
+            - User is not admin of IUDX AAA server
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      operationId: get-auth-v1-policy
+      description: Get all related policies of an authenticated User
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+    parameters: []
 components:
   schemas:
     RequestToken:
