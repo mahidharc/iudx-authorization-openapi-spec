@@ -858,6 +858,17 @@ paths:
               schema:
                 type: string
               description: application/json
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: |-
             - Unauthorized - `token` invalid/expired
@@ -2089,25 +2100,48 @@ paths:
       operationId: delete-auth-v1-policies
       responses:
         '200':
-          description: OK
+          description: Successfully deleted the User Policies
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
         '400':
-          description: Bad Request
+          description: Bad Request- Error or exceptions
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
         '401':
-          description: Unauthorized
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - Unauthorized - `clientId` & `clientSecret` invalid/not match
+            - User is not admin of IUDX AAA server
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
         '404':
-          description: Not Found
+          description: If the requested policies not exists
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
       description: Delete policies of an authenticated User.
       parameters:
         - schema:
