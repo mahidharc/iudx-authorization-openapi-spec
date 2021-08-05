@@ -1238,7 +1238,7 @@ paths:
       operationId: post-auth-v1-admin-organizations
       responses:
         '201':
-          description: An organization has been created successfully
+          description: An organization has been created successfully.
           content:
             application/json:
               schema:
