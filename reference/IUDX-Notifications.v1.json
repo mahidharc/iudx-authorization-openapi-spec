@@ -29,10 +29,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "type": {
-                      "$ref": "./IUDX-AAA-BIS.v1.json#/components/schemas/ResponseType"
-                    },
-                    "results": {
+                    "Mahidhar": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Access-Request"
