@@ -29,7 +29,7 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "Mahidhar": {
+                    "data": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Access-Request"
