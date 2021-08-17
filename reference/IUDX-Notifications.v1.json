@@ -29,6 +29,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "type": {
+                      "$ref": "#/components/schemas/Access-Request"
+                    },
                     "data": {
                       "type": "array",
                       "items": {
