@@ -1,0 +1,302 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "IUDX-Notifications.v1",
+    "version": "1.0",
+    "contact": {
+      "name": "IUDX"
+    },
+    "description": "Notifications CRUD API"
+  },
+  "servers": [
+    {
+      "url": "https://authorization.iudx.org.in",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/auth/v1/policies/requests": {
+      "get": {
+        "summary": "List Requests",
+        "tags": [
+          "Notifications"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "./IUDX-AAA-BIS.v1.json#/components/schemas/ResponseType"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Access-Request"
+                      }
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "operationId": "get-auth-v1-policies-requests",
+        "description": "Lists all the requests of that user. In case of provider or auth delegate, the requests which pertain to the items which are owned by the provider are returned. In case of consumer, the requests which are created by the consumer are returned.",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "header",
+            "name": "providerID",
+            "description": "Required only if the caller is an auth delegate"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create Requests",
+        "operationId": "post-auth-v1-policies-requests",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "./IUDX-AAA-BIS.v1.json#/components/schemas/ResponseType"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Access-Request"
+                      }
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "tags": [
+          "Notifications"
+        ],
+        "description": "The access request API called by consumers which will show up on the provider/auth delegate dashboards for approval or rejection. Can be called with unique multiple requests in a single API call.",
+        "x-internal": false,
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "itemID": {
+                          "type": "string",
+                          "description": "Catalogue ID"
+                        },
+                        "itemType": {
+                          "type": "string",
+                          "enum": [
+                            "resource_server",
+                            "resource_group",
+                            "resource"
+                          ]
+                        },
+                        "expiryDuration": {
+                          "type": "string"
+                        },
+                        "constraints": {
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "itemID",
+                        "itemType",
+                        "constraints"
+                      ]
+                    }
+                  }
+                }
+              },
+              "examples": {}
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Requests",
+        "operationId": "put-auth-v1-policies-requests",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "$ref": "./IUDX-AAA-BIS.v1.json#/components/schemas/ResponseType"
+                    },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Access-Request"
+                      }
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "tags": [
+          "Notifications"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "requestID": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending",
+                            "approved",
+                            "rejected"
+                          ]
+                        },
+                        "expiryDuration": {
+                          "type": "string"
+                        },
+                        "constraints": {
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "requestID",
+                        "status"
+                      ]
+                    }
+                  }
+                }
+              },
+              "examples": {}
+            }
+          }
+        },
+        "description": "This endpoint is used by the provider or an auth delegate to grant access to a consumer for a particular item that they own. This API automatically createed the required policy also."
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Access-Request": {
+        "title": "Access-Request",
+        "type": "object",
+        "properties": {
+          "requestID": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "itemID": {
+            "type": "string",
+            "description": "Catalogue ID"
+          },
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "resource_server",
+              "resource_group",
+              "resource"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected"
+            ]
+          },
+          "expiryDuration": {
+            "type": "string"
+          },
+          "constraints": {
+            "type": "object"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "User": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "name": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "type": "string"
+              },
+              "lastName": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "KeycloakOIDCToken": {
+        "type": "openIdConnect",
+        "description": ""
+      }
+    },
+    "responses": {}
+  },
+  "tags": [
+    {
+      "name": "Notifications"
+    }
+  ],
+  "security": [
+    {
+      "KeycloakOIDCToken": []
+    }
+  ]
+}
