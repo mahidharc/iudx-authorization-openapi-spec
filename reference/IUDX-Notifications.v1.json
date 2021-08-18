@@ -375,7 +375,33 @@
           "owner": {
             "$ref": "#/components/schemas/User"
           }
-        }
+        },
+        "examples": [
+          {
+            "requestID": "e4619679-f5d9-4eff-9f79-bbded6130bb1",
+            "itemID": "string",
+            "itemType": "resource_server",
+            "status": "pending",
+            "expiryDuration": "string",
+            "constraints": {},
+            "user": {
+              "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+              "email": "user@example.com",
+              "name": {
+                "firstName": "string",
+                "lastName": "string"
+              }
+            },
+            "owner": {
+              "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+              "email": "user@example.com",
+              "name": {
+                "firstName": "string",
+                "lastName": "string"
+              }
+            }
+          }
+        ]
       },
       "User": {
         "title": "User",
