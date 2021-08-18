@@ -30,7 +30,7 @@
                   "type": "object",
                   "properties": {
                     "type": {
-                      "$ref": "#/components/schemas/Access-Request"
+                      "$ref": "./IUDX-AAA-BIS.v1.json#/components/schemas/ResponseType"
                     },
                     "data": {
                       "type": "array",
@@ -40,7 +40,39 @@
                     }
                   }
                 },
-                "examples": {}
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "data": [
+                        {
+                          "requestID": "e4619679-f5d9-4eff-9f79-bbded6130bb1",
+                          "itemID": "string",
+                          "itemType": "resource_server",
+                          "status": "pending",
+                          "expiryDuration": "string",
+                          "constraints": {},
+                          "user": {
+                            "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                            "email": "user@example.com",
+                            "name": {
+                              "firstName": "string",
+                              "lastName": "string"
+                            }
+                          },
+                          "owner": {
+                            "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                            "email": "user@example.com",
+                            "name": {
+                              "firstName": "string",
+                              "lastName": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
               }
             }
           }
@@ -81,7 +113,39 @@
                     }
                   }
                 },
-                "examples": {}
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "results": [
+                        {
+                          "requestID": "e4619679-f5d9-4eff-9f79-bbded6130bb1",
+                          "itemID": "string",
+                          "itemType": "resource_server",
+                          "status": "pending",
+                          "expiryDuration": "string",
+                          "constraints": {},
+                          "user": {
+                            "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                            "email": "user@example.com",
+                            "name": {
+                              "firstName": "string",
+                              "lastName": "string"
+                            }
+                          },
+                          "owner": {
+                            "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                            "email": "user@example.com",
+                            "name": {
+                              "firstName": "string",
+                              "lastName": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
               }
             }
           }
@@ -130,7 +194,20 @@
                   }
                 }
               },
-              "examples": {}
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "data": [
+                      {
+                        "itemID": "string",
+                        "itemType": "resource_server",
+                        "expiryDuration": "string",
+                        "constraints": {}
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         }
@@ -157,7 +234,39 @@
                     }
                   }
                 },
-                "examples": {}
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "type": "urn:iudx:aaa:Success",
+                      "results": [
+                        {
+                          "requestID": "e4619679-f5d9-4eff-9f79-bbded6130bb1",
+                          "itemID": "string",
+                          "itemType": "resource_server",
+                          "status": "pending",
+                          "expiryDuration": "string",
+                          "constraints": {},
+                          "user": {
+                            "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                            "email": "user@example.com",
+                            "name": {
+                              "firstName": "string",
+                              "lastName": "string"
+                            }
+                          },
+                          "owner": {
+                            "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                            "email": "user@example.com",
+                            "name": {
+                              "firstName": "string",
+                              "lastName": "string"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
               }
             }
           }
@@ -203,7 +312,20 @@
                   }
                 }
               },
-              "examples": {}
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "data": [
+                      {
+                        "requestID": "e4619679-f5d9-4eff-9f79-bbded6130bb1",
+                        "status": "pending",
+                        "expiryDuration": "string",
+                        "constraints": {}
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         },
