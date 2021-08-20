@@ -1,0 +1,2770 @@
+openapi: 3.0.0
+info:
+  title: IUDX-AAA-Server
+  version: '1.0'
+  description: 'API specification for IUDX AAA Server. These APIs are used by users manage tokens, policy etc. These APIs requires valid token or client details for authentication.'
+  license:
+    name: MIT
+  contact:
+    name: Md Adil
+    email: md.adil@datakaveir.org
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /auth/v1/token:
+    parameters: []
+    post:
+      summary: Create Token
+      operationId: post-auth-v1-token
+      responses:
+        '200':
+          description: Token has been successfully generated upon required validation and authentication.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - accessToken
+                        - expiry
+                        - server
+                      properties:
+                        accessToken:
+                          type: string
+                          minLength: 1
+                        expiry:
+                          type: number
+                        server:
+                          type: string
+                          minLength: 1
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                General Structure:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Token created
+                    results:
+                      - accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIzNDliNGI1NS0wMjUxLTQ5MGUtYmVlOS0wMGYzYTVkM2U2NDMiLCJpc3MiOiJhdXRoLnRlc3QuY29tIiwiYXVkIjoiZm9vYmFyLml1ZHguaW8iLCJleHAiOjE2MjY4MzY3ODQsImlhdCI6MTYyNjc5MzU4NCwiaWlkIjoicmc6ZXhhbXBsZS5jb20vNzllN2JmYTYyZmFkNmM3NjViYWM2OTE1NGMyZjI0Yzk0Yzk1MjIwYS9yZXNvdXJjZS1ncm91cCIsInJvbGUiOiJjb25zdW1lciIsImNvbnMiOnt9fQ.eAWKamrRdV4c1MPuoLU6j0bWB6iiM_of5F3LA-_DZGhyu_6aFP4cmCI1Y3ZN2ZRklOSGcrL5aHC8Ccga6dtTrg
+                        expiry: 1626836784
+                        server: foobar.iudx.io
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: Generally for missing or invalid payload details.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  detail:
+                    type: string
+                    minLength: 1
+                required:
+                  - type
+                  - title
+                  - detail
+              examples:
+                Invalid Role:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Role not defined
+                    detail: Role not defined
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - Unauthorized - `clientId` & `clientSecret` invalid/not match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Missing Authentication Details:
+                  value:
+                    type: 'urn:dx:as:MissingAuthenticationToken'
+                    title: Missing auth details
+                    detail: Missing auth details
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+            maxLength: 1500
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+        - schema:
+            type: string
+            format: uuid
+            minLength: 36
+            maxLength: 36
+            pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+          in: header
+          name: clientId
+          description: Keycloak Issued clientId
+        - schema:
+            type: string
+            format: uuid
+            maxLength: 36
+            pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+            minLength: 36
+          in: header
+          description: Keycloak Issued clientSecret
+          name: clientSecret
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                itemId:
+                  type: string
+                  minLength: 1
+                itemType:
+                  type: string
+                  minLength: 1
+                  enum:
+                    - resource_server
+                    - resource
+                    - resource_group
+                role:
+                  type: string
+                  maxLength: 10
+                  minLength: 5
+                  enum:
+                    - provider
+                    - delegate
+                    - consumer
+                    - admin
+              required:
+                - itemId
+                - itemType
+            examples:
+              Body for resourceGroup:
+                value:
+                  itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/resource-group
+                  itemType: resource_group
+                  role: admin
+              Body for Open Resources:
+                value:
+                  itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/<rs.url>
+                  itemType: resource_server
+                  role: admin
+        description: ''
+        required: true
+      description: 'Request for a JWT (token). One can generate token using either by providing token header or providing clientId/clientSecret in the header. '
+      tags:
+        - Token APIs
+      security:
+        - authorization: []
+  /auth/v1/introspect:
+    post:
+      summary: Introspect Token
+      operationId: post-auth-v1-introspect
+      responses:
+        '200':
+          description: Token validated.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        sub:
+                          type: string
+                          minLength: 1
+                        iss:
+                          type: string
+                          minLength: 1
+                        aud:
+                          type: string
+                          minLength: 1
+                        exp:
+                          type: number
+                        iat:
+                          type: number
+                        iid:
+                          type: string
+                          minLength: 1
+                        role:
+                          type: string
+                          minLength: 1
+                        cons:
+                          type: object
+                      required:
+                        - sub
+                        - iss
+                        - aud
+                        - exp
+                        - iat
+                        - iid
+                        - role
+                        - cons
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Introspect Token:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Token authenticated
+                    results:
+                      - sub: 129b4b55-0251-490e-bee9-00f3a5d3e632
+                        iss: auth.test.com
+                        aud: foobar.iudx.io
+                        exp: 1626837909
+                        iat: 1626794709
+                        iid: 'rg:example.com/79e7bfa62fad6c765bac69154c2f24c94c95210v/resource-group'
+                        role: consumer
+                        cons: {}
+        '400':
+          description: Invalid/missing information
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  detail:
+                    type: string
+                    minLength: 1
+                required:
+                  - type
+                  - title
+                  - detail
+              examples:
+                Invalid/missing information:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  minLength: 1
+                  maxLength: 512
+                  example: JWT
+              required:
+                - accessToken
+            examples:
+              Introspect Token:
+                value:
+                  accessToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJhM2U3ZTM0Yy00NGJmLTQxZmYtYWQ4Ni0yZWUwNGE5NTQ0MTgiLCJpc3MiOiJhdXRoLnRlc3QuY29tIiwiYXVkIjoiZm9vYmFyLml1ZHguaW8iLCJleHAiOjE2MjY0NzMwNDgsImlhdCI6MTYyNjQyOTg0OCwiaWlkIjoicmc6ZXhhbXBsZS5jb20vOGQ0YjIwZWM0YmYyMWVmYjM2M2U3MjY3MWUxYjViZDc3ZmQ2Y2Y5MS9yZXNvdXJjZS1ncm91cCIsInJvbGUiOiJhZG1pbiIsImNvbnMiOnt9fQ.iyQXw21_4cXixVHm45rlHpzYjDz2PfTDRORbdQz9EHlLP_mQ-oBHZaWg1IWcuuoPS4FTRgNXWwM_uLhyxTDcuw
+        description: ''
+        required: true
+      description: Introspect already generated JWT (token).
+      tags:
+        - Token APIs
+    parameters: []
+  /auth/v1/token/revoke:
+    post:
+      summary: Revoke Token
+      operationId: post-auth-v1-revoke
+      responses:
+        '200':
+          description: Successfully token revoke
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    items: {}
+                required:
+                  - type
+                  - title
+              examples:
+                Token revoked:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Token revoked
+                    results: []
+        '400':
+          description: Invalid/missing information.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  detail:
+                    type: string
+                    minLength: 1
+                required:
+                  - type
+                  - title
+                  - detail
+              examples:
+                Bad request:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Unauthorized:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+      description: |-
+        Revoke the token associated with clientId. 
+        <!--- (Commented out) Revoke token requires either token header or clientId/clientSecret header.---!>
+      tags:
+        - Token APIs
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                clientId:
+                  type: string
+                  minLength: 36
+                  format: uuid
+                  pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                  maxLength: 36
+                rsUrl:
+                  type: string
+                  minLength: 1
+              required:
+                - clientId
+                - rsUrl
+            examples:
+              Revoke Request:
+                value:
+                  clientId: 123e4567-e89b-12d3-a456-426614174000
+                  rsUrl: string
+        required: true
+      security:
+        - authorization: []
+    parameters: []
+  /auth/v1/user/profile:
+    post:
+      summary: Create User Profile
+      operationId: post-auth-v1-user-profile
+      responses:
+        '201':
+          description: The user profile has been created successfully. The client ID and client secret is also returned. **The client secret is ONLY shown to the user here and can never be obtained again.**
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: User created
+                    results:
+                      keycloakId: c0c52fd1-e9de-456c-b553-8d408e8d2a42
+                      name:
+                        firstName: Foo
+                        lastName: Bar
+                      roles:
+                        - CONSUMER
+                      userId: 67194fc9-495e-40f7-b016-4470c1d4397f
+                      clients:
+                        - client: default
+                          clientId: 6d0b58c3-c0c4-48af-bca2-4f255c0e73a7
+                          clientSecret: a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6
+                      email: ngoaf@chspomvjuq.com
+                      phone: '9989967899'
+                      organization:
+                        name: example
+                        url: example.com
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                    required:
+                      - keycloakId
+                      - name
+                      - roles
+                      - userId
+                      - clients
+                      - email
+                    properties:
+                      keycloakId:
+                        type: string
+                        minLength: 1
+                      name:
+                        type: object
+                        required:
+                          - firstName
+                          - lastName
+                        properties:
+                          firstName:
+                            type: string
+                            minLength: 1
+                          lastName:
+                            type: string
+                            minLength: 1
+                      roles:
+                        type: array
+                        items:
+                          type: string
+                      userId:
+                        type: string
+                        minLength: 1
+                      clients:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            client:
+                              type: string
+                              minLength: 1
+                            clientId:
+                              type: string
+                              minLength: 1
+                            clientSecret:
+                              type: string
+                              minLength: 1
+                          required:
+                            - client
+                            - clientId
+                            - clientSecret
+                      email:
+                        type: string
+                        minLength: 1
+                      phone:
+                        type: string
+                        minLength: 1
+                      organization:
+                        type: object
+                        required:
+                          - name
+                          - url
+                        properties:
+                          name:
+                            type: string
+                            minLength: 1
+                          url:
+                            type: string
+                            minLength: 1
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                User Profile Response:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: User created
+                    results:
+                      keycloakId: c0c52fd1-e9de-456c-b553-8d408e8d2a42
+                      name:
+                        firstName: Foo
+                        lastName: Bar
+                      roles:
+                        - CONSUMER
+                      userId: 67194fc9-495e-40f7-b016-4470c1d4397f
+                      clients:
+                        - client: default
+                          clientId: 6d0b58c3-c0c4-48af-bca2-4f255c0e73a7
+                          clientSecret: a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6
+                      email: ngoaf@chspomvjuq.com
+                      phone: '9919967211'
+                      organization:
+                        name: example
+                        url: example.com
+        '400':
+          description: |-
+            - Malformed or missing data
+            - `orgId` not sent when registering as provider/delegate
+            - `orgId` does not exist
+            - `orgId` domain does not match email address domain
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IUDX-AAA-Server_Error-Response'
+              examples:
+                Invalid roles array:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Missing or malformed parameters
+                    detail: Invalid 'roles' array
+                orgId does not exist:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Organization does not exist
+                    detail: Organization ID does not correspond to an organization
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+        '409':
+          description: A user profile already exists for the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                User Already Exists:
+                  value:
+                    type: 'urn:dx:as:AlreadyExists'
+                    title: User exists
+                    detail: User has an existing user profile
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      description: |-
+        Create a new user profile. Users are required to have a user profile in order to interact with the IUDX AAA Server. During creation, they may specify what roles they would like to obtain. Current valid roles are:
+        - **consumer**, which allows users to access to secure resource via tokens
+        - **provider**, which allows users to manage their resources across the IUDX sub systems
+        - **delegate**, which allows users to perform tasks on behalf of a provider, mainly
+          - manage catalogue items
+          - manage data on resource servers
+          - manage policies
+          
+        ## Client ID and Client Secret
+        On successful creation of the user profile, the user would receive a client ID and a client secret. The client ID and client secret can be used instead of the OIDC flow to request for tokens. **The client secret is ONLY shown to the user here and can never be obtained again.**
+
+        ## Provider registration
+        **Once a Provider has registered successfully, their registration request is subject to approval by an IUDX admin**. The `provider` role would not be part of the user profile till the user has been approved.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                roles:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  maxItems: 3
+                  items:
+                    type: string
+                    enum:
+                      - provider
+                      - consumer
+                      - delegate
+                    minLength: 5
+                    maxLength: 10
+                orgId:
+                  type: string
+                  format: uuid
+                  minLength: 36
+                  maxLength: 36
+                  pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                phone:
+                  type: string
+                  example: '9900990099'
+                  pattern: '^[9876]\d{9}$'
+                  minLength: 10
+                  maxLength: 10
+              required:
+                - roles
+            examples:
+              Create UserProfile:
+                value:
+                  roles:
+                    - provider
+                    - consumer
+                    - delegate
+                  orgId: 123e4567-e89b-12d3-a456-426614174000
+        description: |-
+          - `orgId` is a valid organization ID obtain from the `GET /auth/v1/organizations` API
+          - **`orgId` is required for `provider` and `delegate` roles**
+          - **The domain of the email address of the registering user must match the organization domain**
+        required: true
+      tags:
+        - User APIs
+      security:
+        - authorization: []
+    get:
+      summary: Get User Profile
+      operationId: get-auth-v1-user-profile
+      responses:
+        '200':
+          description: Successfully list user profile
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: User details
+                    results:
+                      keycloakId: c46e7a5d-7c2d-471e-8222-6a59a5095e7a
+                      name:
+                        firstName: B
+                        lastName: c
+                      roles:
+                        - PROVIDER
+                        - CONSUMER
+                      userId: a13eb955-c691-4fd3-b200-f18bc78810b5
+                      email: bye@example.com
+                      clients:
+                        - clientName: default
+                          clientId: a3e7e34c-44bf-41ff-ad86-2ee04a954418
+                      phone: '9984567899'
+                      organization:
+                        name: example
+                        url: example.com
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                    required:
+                      - keycloakId
+                      - name
+                      - roles
+                      - userId
+                      - email
+                      - clients
+                    properties:
+                      keycloakId:
+                        type: string
+                        minLength: 1
+                      name:
+                        type: object
+                        required:
+                          - firstName
+                          - lastName
+                        properties:
+                          firstName:
+                            type: string
+                            minLength: 1
+                          lastName:
+                            type: string
+                            minLength: 1
+                      roles:
+                        type: array
+                        items:
+                          type: string
+                      userId:
+                        type: string
+                        minLength: 1
+                      email:
+                        type: string
+                        minLength: 1
+                      clients:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            clientName:
+                              type: string
+                              minLength: 1
+                            clientId:
+                              type: string
+                              minLength: 1
+                          required:
+                            - clientName
+                            - clientId
+                      phone:
+                        type: string
+                        minLength: 1
+                      organization:
+                        type: object
+                        required:
+                          - name
+                          - url
+                        properties:
+                          name:
+                            type: string
+                            minLength: 1
+                          url:
+                            type: string
+                            minLength: 1
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Success:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: User details
+                    results:
+                      keycloakId: c46e7a5d-7c2d-471e-8222-6a59a5095e7a
+                      name:
+                        firstName: B
+                        lastName: c
+                      roles:
+                        - PROVIDER
+                        - CONSUMER
+                      userId: a13eb955-c691-4fd3-b200-f18bc78810b5
+                      email: bye@example.com
+                      clients:
+                        - clientName: default
+                          clientId: a3e7e34c-44bf-41ff-ad86-2ee04a954418
+                      phone: '9984567899'
+                      organization:
+                        name: example
+                        url: example.com
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+        '404':
+          description: A user profile for the user does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: User profile does not exist
+                    detail: Please register to create user profile
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      description: 'Get user profile. The response contains user details such as roles, name, email. It also lists the client ID of the user.'
+      tags:
+        - User APIs
+      security:
+        - authorization: []
+    put:
+      summary: 'Update User Profile [Role]'
+      operationId: put-auth-v1-user-profile
+      responses:
+        '200':
+          description: Successfully updated the user roles.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Registered for requested roles
+                    results:
+                      keycloakId: c0c52fd1-e9de-456c-b553-8d408e8d2a42
+                      name:
+                        firstName: Foo
+                        lastName: Bar
+                      roles:
+                        - CONSUMER
+                        - DELEGATE
+                      userId: 67194fc9-495e-40f7-b016-4470c1d4397f
+                      clients:
+                        - client: default
+                          clientId: 6d0b58c3-c0c4-48af-bca2-4f255c0e73a7
+                      email: ngoaf@chspomvjuq.com
+                      phone: '9989967899'
+                      organization:
+                        name: example
+                        url: example.com
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                    required:
+                      - keycloakId
+                      - name
+                      - roles
+                      - userId
+                      - clients
+                      - email
+                    properties:
+                      keycloakId:
+                        type: string
+                        minLength: 1
+                      name:
+                        type: object
+                        required:
+                          - firstName
+                          - lastName
+                        properties:
+                          firstName:
+                            type: string
+                            minLength: 1
+                          lastName:
+                            type: string
+                            minLength: 1
+                      roles:
+                        type: array
+                        items:
+                          type: string
+                      userId:
+                        type: string
+                        minLength: 1
+                      clients:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            client:
+                              type: string
+                              minLength: 1
+                            clientId:
+                              type: string
+                              minLength: 1
+                          required:
+                            - client
+                            - clientId
+                      email:
+                        type: string
+                        minLength: 1
+                      phone:
+                        type: string
+                        minLength: 1
+                      organization:
+                        type: object
+                        required:
+                          - name
+                          - url
+                        properties:
+                          name:
+                            type: string
+                            minLength: 1
+                          url:
+                            type: string
+                            minLength: 1
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Updated User Profile:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Registered for requested roles
+                    results:
+                      keycloakId: c0c52fd1-e9de-456c-b553-8d408e8d2a42
+                      name:
+                        firstName: Foo
+                        lastName: Bar
+                      roles:
+                        - CONSUMER
+                        - DELEGATE
+                      userId: 67194fc9-495e-40f7-b016-4470c1d4397f
+                      clients:
+                        - client: default
+                          clientId: 6d0b58c3-c0c4-48af-bca2-4f255c0e73a7
+                      email: ngoaf@chspomvjuq.com
+                      phone: '9989967899'
+                      organization:
+                        name: example
+                        url: example.com
+        '400':
+          description: |-
+            - Missing or malformed data
+            - User has already registered for a requested role
+            - `orgId` does not exist
+            - `orgId` required for delegate registration
+            - `orgId` domain does not match the domain of the email address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                orgId does not exist:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Organization does not exist
+                    detail: Organization ID does not correspond to an organization
+                Invalid roles array:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Missing or malformed parameters
+                    detail: Invalid 'roles' array
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+        '404':
+          description: A user profile for the user does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: User profile does not exist
+                    detail: Please register to create user profile
+      description: |-
+        Update an existing user profile. Currently a user may use this API to:
+        - Add roles to their user profile
+
+        ## Add roles
+        A user may add `consumer` and `delegate` roles to their user profile. **The `provider` role cannot be added**.
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  roles:
+                    - provider
+                    - consumer
+                    - delegate
+                  orgId: 123e4567-e89b-12d3-a456-426614174000
+              properties:
+                roles:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  maxItems: 2
+                  items:
+                    type: string
+                    enum:
+                      - consumer
+                      - delegate
+                    minLength: 5
+                    maxLength: 10
+                orgId:
+                  type: string
+                  format: uuid
+                  minLength: 36
+                  maxLength: 36
+                  pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+              required:
+                - roles
+            examples:
+              Update UserProfile:
+                value:
+                  roles:
+                    - consumer
+                    - delegate
+                  orgId: 123e4567-e89b-12d3-a456-426614174000
+        description: |-
+          - `orgId` is a valid organization ID obtain from the `GET /auth/v1/organizations` API
+          - **`orgId` is required for `delegate` roles**
+        required: true
+      tags:
+        - User APIs
+      security:
+        - authorization: []
+  /auth/v1/organizations:
+    get:
+      summary: Get Organization Details
+      tags:
+        - Organization APIs
+      responses:
+        '200':
+          description: Successfully retrieving the registered Organization details
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Organizations
+                    results: []
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        url:
+                          type: string
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Get Organization Details:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Organizations
+                    results:
+                      - id: bc51dfff-ee8b-4438-8c0c-5881a482e124
+                        name: example
+                        url: example.com
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+      operationId: get-auth-v1-organizations
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      description: Listing the details of registered Organization
+      security:
+        - authorization: []
+  /auth/v1/admin/organizations:
+    post:
+      summary: Create Organization
+      operationId: post-auth-v1-admin-organizations
+      responses:
+        '201':
+          description: An organization has been created successfully.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        minLength: 1
+                      name:
+                        type: string
+                        minLength: 1
+                      url:
+                        type: string
+                    required:
+                      - id
+                      - name
+                      - url
+                required:
+                  - type
+                  - title
+                  - results
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: User created
+                    results:
+                      id: id
+                      name: name
+                      url: ''
+              examples:
+                Create Organization:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      id: string
+                      name: string
+                      url: string
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: |-
+            - Malformed or missing data
+            - Invalid `url`
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Invalid url:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid URL
+                    detail: The domain is invalid
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - User is not an admin of IUDX AAA server
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+                User is not admin of AAA:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not admin of auth server
+                    detail: You are not an admin of the auth server
+        '409':
+          description: If an organization with the requested `url`/domain already exists
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAlreadyExists'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:AlreadyExists'
+                    title: Domains exists
+                    detail: An organization exists with the given domain
+      description: 'Register an Organization. This operation can be performed by an `admin` of the IUDX AAA server. '
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  name: Example
+                  url: example.com
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  pattern: '^[a-zA-Z0-9]+(?:(?: |['' -])[a-zA-Z0-9]+)*$'
+                  maxLength: 100
+                url:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+              required:
+                - name
+                - url
+            examples:
+              Create Organization:
+                value:
+                  name: Data Kaveri
+                  url: datakaveri.org
+        description: |-
+          - The payload must have `name` and `url` to create a Organization.
+          - `url` must be a **valid domain/hostname**. This domain must match the domain used in the email addresses of the particular organization.
+          - The authentication details must be `admin` oriented. It must be the owner of the server.
+        required: true
+      tags:
+        - Admin APIs
+      security:
+        - authorization: []
+  /auth/v1/admin/provider/registrations:
+    get:
+      summary: Get Provider Registrations
+      tags:
+        - Admin APIs
+      responses:
+        '200':
+          description: 'Successfully listing providers, their details with status.'
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Provider registrations
+                    results:
+                      - userId: 543e251b-532b-46e6-9247-f76f1f70a664
+                        status: APPROVED
+                        email: test@gmail.com
+                        name:
+                          firstName: First
+                          lastName: Last
+                        organization:
+                          name: Foo
+                          url: foo.bar.in
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: string
+                          minLength: 1
+                        status:
+                          type: string
+                          minLength: 1
+                        email:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: object
+                          properties:
+                            firstName:
+                              type: string
+                              minLength: 1
+                            lastName:
+                              type: string
+                              minLength: 1
+                          required:
+                            - firstName
+                            - lastName
+                        organization:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              minLength: 1
+                            url:
+                              type: string
+                              minLength: 1
+                          required:
+                            - name
+                            - url
+                      required:
+                        - userId
+                        - status
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                List of approved providers:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Provider registrations
+                    results:
+                      - userId: 844e251b-574b-46e6-9247-f76f1f70a637
+                        status: APPROVED
+                        email: xy@iisc.ac.in
+                        name:
+                          firstName: X
+                          lastName: 'Y'
+                        organization:
+                          name: IISc
+                          url: iisc.ac.in
+                      - userId: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        status: APPROVED
+                        email: someone@example.com
+                        name:
+                          firstName: Someone
+                          lastName: Person
+                        organization:
+                          name: example
+                          url: example.com
+                      - userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
+                        status: APPROVED
+                        email: individual@example.com
+                        name:
+                          firstName: Indiv
+                          lastName: Vidual
+                        organization:
+                          name: example
+                          url: example.com
+                List of rejected providers:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Provider registrations
+                    results:
+                      - userId: e5bf3f6f-f22b-463d-aacb-cd62fbd8056f
+                        status: REJECTED
+                        organization:
+                          name: lmwohberob
+                          url: lmwohberob.com
+                      - userId: fd0dfa08-d87a-4a51-86ce-060424f981c5
+                        status: REJECTED
+                        organization:
+                          name: fufwcudijj
+                          url: fufwcudijj.com
+        '400':
+          description: '- Invalid filter value'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid 'filter' value
+                    detail: Invalid 'filter' value
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - User is not admin of IUDX AAA server
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+                Not admin of AAA:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not admin of auth server
+                    detail: You are not an admin of the auth server
+      operationId: get-auth-v1-admin-provider-registrations
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+        - schema:
+            type: string
+            enum:
+              - pending
+              - approved
+              - rejected
+            maxLength: 8
+            minLength: 7
+            default: pending
+          in: query
+          name: filter
+          description: Filter the status of the Registration
+      description: |-
+        Get all the provider registration details. This operation can be performed by an `admin` of the IUDX AAA server. 
+        The request can be filtered based on the status of registration using the query param `filter`.
+        The various statuses are:
+        - `pending`
+        - `approved`
+        - `rejected`
+
+        If no `filter` value is given, registrations with status `pending` is returned.
+      security:
+        - authorization: []
+    put:
+      summary: Update Provider Registration status
+      operationId: put-auth-v1-admin-provider-registrations
+      responses:
+        '200':
+          description: Provider status successfully updated
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Provider status updated
+                    results:
+                      - status: APPROVED
+                        userId: 844e251b-574b-46e6-9247-f76f1f70a637
+                        email: bryanrobert@iisc.ac.in
+                        name:
+                          firstName: B
+                          lastName: Robert
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        status:
+                          type: string
+                          minLength: 1
+                        userId:
+                          type: string
+                          minLength: 1
+                        email:
+                          type: string
+                          minLength: 1
+                        name:
+                          type: object
+                          required:
+                            - firstName
+                            - lastName
+                          properties:
+                            firstName:
+                              type: string
+                              minLength: 1
+                            lastName:
+                              type: string
+                              minLength: 1
+                      required:
+                        - status
+                        - userId
+                        - email
+                        - name
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Provider Status Update:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Provider status updated
+                    results:
+                      - status: APPROVED
+                        userId: 355e251b-574b-46e6-9247-f76f1f70a123
+                        email: test@gmail.com
+                        name:
+                          firstName: First
+                          lastName: Last
+        '400':
+          description: |-
+            - Missing or malformed data
+            - Duplicate `userId`s in request.
+            - Invalid `userId`or User is not provider/pending provider.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                User ID not pending/userId does not exist:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid User ID
+                    detail: 'User is not a provider/pending provider : 0'
+                Duplicate userIds in request:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Duplicate user IDs
+                    detail: Duplicate user IDs in request
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - User is not admin of IUDX AAA server
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+                User is not admin of AAA:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not admin of auth server
+                    detail: You are not an admin of the auth server
+      description: |-
+        Update the status of multiple Provider registrations to `approved` or `rejected`.This operation can be performed by an `admin` of the IUDX AAA server.
+
+        The API takes the provider's user ID (obtained from the `GET /auth/v1/admin/provider/registrations` API) and the status to update.
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: ''
+              x-examples:
+                example-1:
+                  - userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
+                    status: approved
+              properties:
+                request:
+                  type: array
+                  uniqueItems: true
+                  minItems: 1
+                  items:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        format: uuid
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                        minLength: 36
+                        maxLength: 36
+                      status:
+                        type: string
+                        enum:
+                          - approved
+                          - rejected
+                        minLength: 7
+                        maxLength: 8
+                    required:
+                      - userId
+                      - status
+              required:
+                - request
+            examples:
+              Updating Registration status:
+                value:
+                  request:
+                    - userId: c34b1565-7281-4f66-b220-ed79f9bb0a31
+                      status: approved
+        required: true
+        description: The request is an object with key `request` having value as an array of objects containing the provider's `userId` and the `status` to be updated for said provider
+      tags:
+        - Admin APIs
+      security:
+        - authorization: []
+  /auth/v1/policies:
+    get:
+      summary: Get User Policies
+      tags:
+        - Policies APIs
+      responses:
+        '200':
+          description: Successfully listing the User policies
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Policy read
+                    results:
+                      policyBy:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                      policyFor:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                    required:
+                      - policyBy
+                      - policyFor
+                    properties:
+                      policyBy:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            user_id:
+                              type: string
+                              minLength: 1
+                            owner_id:
+                              type: string
+                              minLength: 1
+                            item_id:
+                              type: string
+                              minLength: 1
+                            item_type:
+                              type: string
+                              minLength: 1
+                            expiry_time:
+                              type: string
+                              minLength: 1
+                            constraints:
+                              type: object
+                            cat_id:
+                              type: string
+                              minLength: 1
+                            user_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                            owner_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                          required:
+                            - user_id
+                            - owner_id
+                            - item_id
+                            - item_type
+                            - expiry_time
+                            - cat_id
+                      policyFor:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            user_id:
+                              type: string
+                              minLength: 1
+                            owner_id:
+                              type: string
+                              minLength: 1
+                            item_id:
+                              type: string
+                              minLength: 1
+                            item_type:
+                              type: string
+                              minLength: 1
+                            expiry_time:
+                              type: string
+                              minLength: 1
+                            constraints:
+                              type: object
+                            cat_id:
+                              type: string
+                              minLength: 1
+                            user_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                            owner_details:
+                              type: object
+                              properties:
+                                email:
+                                  type: string
+                                  minLength: 1
+                                name:
+                                  type: object
+                                  required:
+                                    - firstName
+                                    - lastName
+                                  properties:
+                                    firstName:
+                                      type: string
+                                      minLength: 1
+                                    lastName:
+                                      type: string
+                                      minLength: 1
+                              required:
+                                - email
+                                - name
+                          required:
+                            - user_id
+                            - owner_id
+                            - item_id
+                            - item_type
+                            - expiry_time
+                            - cat_id
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                ListPolicies-Success:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Policy read
+                    results:
+                      policyBy:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                      policyFor:
+                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
+                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
+                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                          item_type: RESOURCE_GROUP
+                          expiry_time: '2022-06-15T09:07:16.034289'
+                          constraints: {}
+                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-group
+                          user_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+                          owner_details:
+                            email: someone@example.com
+                            name:
+                              firstName: Someone
+                              lastName: Person
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      operationId: get-auth-v1-policies
+      description: Get all related policies of an authenticated User
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      security:
+        - authorization: []
+    parameters: []
+    delete:
+      summary: Delete User Policies
+      operationId: delete-auth-v1-policies
+      responses:
+        '200':
+          description: Successfully deleted the User Policies
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad Request- Error or exceptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '404':
+          description: If the requested policies not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+      description: Delete policies of an authenticated User.
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: ''
+              minItems: 1
+              uniqueItems: true
+              x-examples:
+                example-1:
+                  - id: 1e435fcb-11ce-4f4d-94c0-adf339932ba4
+                  - id: 7d50c547-9f36-4daa-bdc6-cca3c932379d
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 36
+                    format: uuid
+                    maxLength: 36
+                required:
+                  - id
+            examples:
+              Delete Policies:
+                value:
+                  - id: 231f6eca-6276-4993-bfeb-53cbbbba6f06
+        description: Request body is a JsonArray having one or multiple ID Objects to delete policies.
+      tags:
+        - Policies APIs
+      security:
+        - authorization: []
+    post:
+      summary: Create user Policies
+      operationId: post-auth-v1-policies
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+      description: Create new policies of an authenticated User
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: ''
+              minItems: 1
+              uniqueItems: true
+              x-examples:
+                example-1:
+                  - user_id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+                  - user_id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+                  - user_id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+              items:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    minLength: 36
+                    format: uuid
+                    maxLength: 36
+                  res_id:
+                    type: string
+                    minLength: 1
+                  res_type:
+                    type: string
+                    minLength: 1
+                    enum:
+                      - resource_server
+                      - resource
+                      - resource_group
+                  expiry_time:
+                    type: string
+                    minLength: 1
+                  constraints:
+                    type: object
+                required:
+                  - user_id
+                  - res_id
+                  - res_type
+                  - expiry_time
+                  - constraints
+            examples:
+              Create MultiplePolicies:
+                value:
+                  - user_id: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cd32/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+                  - user_id: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cq21/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+                  - user_id: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf31/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+              Create SinglePolicies:
+                value:
+                  - user_id: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    res_id: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cd32/resource-group
+                    res_type: resource_group
+                    expiry_time: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: Request body will be JsonArray having or many objects
+      tags:
+        - Policies APIs
+      security:
+        - authorization: []
+  /auth/v1/policies/requests:
+    get:
+      summary: List Requests
+      tags: []
+      responses:
+        '200':
+          description: Successfully listing all the requests of a Consumer or of a providers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequest'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: User permission requests
+                    results:
+                      - requestID: e4619679-f5d9-4eff-9f79-bbded6130bb1
+                        itemID: string
+                        itemType: resource_server
+                        status: pending
+                        expiryDuration: string
+                        constraints: {}
+                        user:
+                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          email: user@example.com
+                          name:
+                            firstName: string
+                            lastName: string
+                        owner:
+                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          email: user@example.com
+                          name:
+                            firstName: string
+                            lastName: string
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - Unauthorized - `providerID` in case of delegate/provider
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                example-1:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+        '404':
+          description: No request associated with the User or delegate
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: string
+                    detail: string
+      operationId: get-auth-v1-policies-requests
+      description: 'Lists all the requests of that user. In case of provider or auth delegate, the requests which pertain to the items which are owned by the provider are returned. In case of consumer, the requests which are created by the consumer are returned.'
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            minLength: 36
+            maxLength: 36
+          in: header
+          name: providerID
+          description: Required only if the caller is an auth delegate
+      security:
+        - authorization: []
+    parameters: []
+    post:
+      summary: Create Requests
+      operationId: post-auth-v1-policies-requests
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequest'
+              examples:
+                Example:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - requestID: string
+                        itemID: string
+                        itemType: string
+                        status: string
+                        expiryDuration: string
+                        constraints: {}
+                        user:
+                          id: string
+                          email: string
+                          name:
+                            firstName: string
+                            lastName: string
+                        owner:
+                          id: string
+                          email: string
+                          name:
+                            firstName: string
+                            lastName: string
+        '400':
+          description: 'Bad Request- Schema validation, missing or incorrect fields & values'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+      description: The access request API called by consumers which will show up on the provider/auth delegate dashboards for approval or rejection. Can be called with unique multiple requests in a single API call.
+      security:
+        - authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                data:
+                  type: array
+                  uniqueItems: true
+                  minItems: 1
+                  items:
+                    required:
+                      - itemID
+                      - itemType
+                      - expiryDuration
+                    properties:
+                      itemID:
+                        type: string
+                        minLength: 1
+                      itemType:
+                        type: string
+                        minLength: 1
+                      expiryDuration:
+                        type: string
+                        minLength: 1
+                      constraints:
+                        type: object
+                        properties: {}
+                        required: []
+              required:
+                - data
+              x-examples:
+                example-1:
+                  data:
+                    - itemID: string
+                      itemType: resource_server
+                      expiryDuration: string
+                      constraints: {}
+            examples:
+              example-1:
+                value:
+                  data:
+                    - itemID: string
+                      itemType: resource_server
+                      expiryDuration: string
+                      constraints: {}
+    put:
+      summary: Update Requests
+      operationId: put-auth-v1-policies-requests
+      responses:
+        '200':
+          description: OK
+      description: This endpoint is used by the provider or an auth delegate to grant access to a consumer for a particular item that they own. This API automatically createed the required policy also.
+      security:
+        - authorization: []
+components:
+  schemas:
+    RequestToken:
+      description: Request payload for create token
+      type: object
+      properties:
+        itemId:
+          type: string
+          minLength: 1
+        itemType:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          minLength: 1
+      required:
+        - itemId
+        - itemType
+        - role
+      title: RequestToken
+      x-examples: {}
+    RevokeToken:
+      description: ''
+      type: object
+      properties:
+        clientId:
+          type: string
+          minLength: 1
+        rsUrl:
+          type: string
+          minLength: 1
+      required:
+        - clientId
+        - rsUrl
+    ErrorResponse:
+      description: ''
+      type: object
+      properties:
+        type:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        detail:
+          type: string
+          minLength: 1
+      required:
+        - type
+        - title
+        - detail
+      x-examples: {}
+    UserAlreadyExists:
+      description: ''
+      type: object
+      properties:
+        type:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        detail:
+          type: string
+          minLength: 1
+      required:
+        - type
+        - title
+        - detail
+      x-examples: {}
+    Unauthorized:
+      description: ''
+      x-examples:
+        example-1:
+          value:
+            type: 'urn:dx:as:MissingAuthenticationToken'
+            title: Missing auth details
+            detail: Missing auth details
+      type: object
+      properties:
+        type:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        detail:
+          type: string
+          minLength: 1
+      required:
+        - type
+        - title
+        - detail
+    IUDX-AAA-Server_Error-Response:
+      title: Error-Response
+      type: object
+      x-examples: {}
+      properties:
+        type:
+          type: string
+          description: A URN
+        title:
+          type: string
+        detail:
+          type: string
+      required:
+        - type
+        - title
+        - detail
+    AccessRequest:
+      description: ''
+      type: object
+      x-examples:
+        Example:
+          type: 'urn:dx:as:Success'
+          title: User permission requests
+          results:
+            - requestID: e4619679-f5d9-4eff-9f79-bbded6130bb1
+              itemID: string
+              itemType: resource_server
+              status: pending
+              expiryDuration: string
+              constraints: {}
+              user:
+                id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                email: user@example.com
+                name:
+                  firstName: string
+                  lastName: string
+              owner:
+                id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                email: user@example.com
+                name:
+                  firstName: string
+                  lastName: string
+          value:
+            type: 'urn:dx:as:Success'
+            title: User permission requests
+            results:
+              - requestID: e4619679-f5d9-4eff-9f79-bbded6130bb1
+                itemID: string
+                itemType: resource_server
+                status: pending
+                expiryDuration: string
+                constraints: {}
+                user:
+                  id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                  email: user@example.com
+                  name:
+                    firstName: string
+                    lastName: string
+                owner:
+                  id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                  email: user@example.com
+                  name:
+                    firstName: string
+                    lastName: string
+      properties:
+        type:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+        results:
+          type: array
+          uniqueItems: true
+          minItems: 1
+          items:
+            type: object
+            properties:
+              requestID:
+                type: string
+                minLength: 1
+              itemID:
+                type: string
+                minLength: 1
+              itemType:
+                type: string
+                minLength: 1
+              status:
+                type: string
+                minLength: 1
+              expiryDuration:
+                type: string
+                minLength: 1
+              constraints:
+                type: object
+              user:
+                $ref: '#/components/schemas/User'
+              owner:
+                $ref: '#/components/schemas/User'
+            required:
+              - requestID
+              - itemID
+              - itemType
+              - status
+              - expiryDuration
+      required:
+        - type
+        - title
+        - results
+    User:
+      description: ''
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          minLength: 1
+        name:
+          type: object
+          properties:
+            firstName:
+              type: string
+              minLength: 1
+            lastName:
+              type: string
+              minLength: 1
+          required:
+            - firstName
+            - lastName
+      required:
+        - id
+        - email
+        - name
+      x-examples:
+        Example:
+          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          email: user@example.com
+          name:
+            firstName: string
+            lastName: string
+          value:
+            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+            email: user@example.com
+            name:
+              firstName: string
+              lastName: string
+  securitySchemes:
+    authorization:
+      type: http
+      scheme: bearer
+  responses: {}
+security: []
