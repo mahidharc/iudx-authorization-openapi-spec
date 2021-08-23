@@ -2512,6 +2512,7 @@ paths:
                     constraints: {}
       tags:
         - Notifications APIs
+      parameters: []
     put:
       summary: Update Requests
       operationId: put-auth-v1-policies-requests
