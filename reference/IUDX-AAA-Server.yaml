@@ -2343,7 +2343,6 @@ paths:
           description: |-
             - Unauthorized - `token` invalid/expired
             - Unauthorized - `providerID` in case of delegate/provider
-            - User is not admin of IUDX AAA server
           headers:
             Content-Type:
               schema:
@@ -2391,12 +2390,217 @@ paths:
         - authorization: []
     parameters: []
     post:
-      summary: ''
+      summary: Create Requests
       operationId: post-auth-v1-policies-requests
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequest'
+              examples:
+                Example:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - requestID: string
+                        itemID: string
+                        itemType: string
+                        status: string
+                        expiryDuration: string
+                        constraints: {}
+                        user:
+                          id: string
+                          email: string
+                          name:
+                            firstName: string
+                            lastName: string
+                        owner:
+                          id: string
+                          email: string
+                          name:
+                            firstName: string
+                            lastName: string
+        '400':
+          description: 'Bad Request- Schema validation, missing or incorrect fields & values'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Example:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
       description: The access request API called by consumers which will show up on the provider/auth delegate dashboards for approval or rejection. Can be called with unique multiple requests in a single API call.
+      security:
+        - authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  data:
+                    - itemID: string
+                      itemType: resource_server
+                      expiryDuration: string
+                      constraints: {}
+              properties:
+                data:
+                  type: array
+                  uniqueItems: true
+                  minItems: 1
+                  items:
+                    type: object
+                    properties:
+                      itemID:
+                        type: string
+                        minLength: 1
+                      itemType:
+                        type: string
+                        minLength: 1
+                        enum:
+                          - resource_server
+                          - resource_group
+                          - resource
+                      expiryDuration:
+                        type: string
+                        minLength: 1
+                      constraints:
+                        type: object
+                    required:
+                      - itemID
+                      - itemType
+                      - expiryDuration
+              required:
+                - data
+            examples:
+              example-1:
+                value:
+                  data:
+                    - itemID: string
+                      itemType: resource_server
+                      expiryDuration: string
+                      constraints: {}
+    put:
+      summary: Update Requests
+      operationId: put-auth-v1-policies-requests
+      responses:
+        '201':
+          description: Created
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: 'Bad Request- Schema validation, missing or incorrect fields & values'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+      description: This endpoint is used by the provider or an auth delegate to grant access to a consumer for a particular item that they own. This API automatically createed the required policy also.
+      security:
+        - authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  data:
+                    - requestID: e4619679-f5d9-4eff-9f79-bbded6130bb1
+                      status: pending
+                      expiryDuration: string
+                      constraints: {}
+              properties:
+                data:
+                  type: array
+                  uniqueItems: true
+                  minItems: 1
+                  items:
+                    type: object
+                    properties:
+                      requestID:
+                        type: string
+                        minLength: 1
+                        format: uuid
+                      status:
+                        type: string
+                        minLength: 1
+                        enum:
+                          - approved
+                          - rejected
+                      expiryDuration:
+                        type: string
+                        minLength: 1
+                      constraints:
+                        type: object
+                    required:
+                      - requestID
+                      - status
+                      - expiryDuration
+              required:
+                - data
+            examples:
+              Example:
+                value:
+                  data:
+                    - requestID: e4619679-f5d9-4eff-9f79-bbded6130bb1
+                      status: approved
+                      expiryDuration: string
+                      constraints: {}
 components:
   schemas:
     RequestToken:
