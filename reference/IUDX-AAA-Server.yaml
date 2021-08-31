@@ -2318,6 +2318,458 @@ paths:
         - Policies APIs
       security:
         - authorization: []
+  /auth/v1/policies/delegations:
+    get:
+      summary: Get Delegations
+      responses:
+        '200':
+          description: Successfully list delegations
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Delegations
+                    results:
+                      - id: 0bb3cd2b-331a-474c-8107-becdcbdb0b41
+                        url: foobar.iudx.io
+                        resource_server: Foobar
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        user:
+                          email: individual@example.com
+                          name:
+                            firstName: Indiv
+                            lastName: Vidual
+                          id: d34b1547-7281-4f66-b550-ed79f9bb0c36
+                      - id: 8f79dec9-a327-439c-b00b-731fea264af4
+                        url: foobar.iudx.io
+                        resource_server: Foobar
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        user:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: array
+                    uniqueItems: true
+                    minItems: 0
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          minLength: 1
+                        url:
+                          type: string
+                          minLength: 1
+                        server:
+                          type: string
+                          minLength: 1
+                        owner:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                              minLength: 1
+                            name:
+                              type: object
+                              required:
+                                - firstName
+                                - lastName
+                              properties:
+                                firstName:
+                                  type: string
+                                  minLength: 1
+                                lastName:
+                                  type: string
+                                  minLength: 1
+                            id:
+                              type: string
+                              minLength: 1
+                          required:
+                            - email
+                            - name
+                            - id
+                        user:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                              minLength: 1
+                            name:
+                              type: object
+                              required:
+                                - firstName
+                                - lastName
+                              properties:
+                                firstName:
+                                  type: string
+                                  minLength: 1
+                                lastName:
+                                  type: string
+                                  minLength: 1
+                            id:
+                              type: string
+                              minLength: 1
+                          required:
+                            - email
+                            - name
+                            - id
+                      required:
+                        - id
+                        - url
+                        - server
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Success:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Delegations
+                    results:
+                      - id: 0bb3cd2b-331a-474c-8107-becdcbdb0b41
+                        url: foobar.iudx.io
+                        server: Foobar
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        user:
+                          email: individual@example.com
+                          name:
+                            firstName: Indiv
+                            lastName: Vidual
+                          id: d34b1547-7281-4f66-b550-ed79f9bb0c36
+                      - id: 8f79dec9-a327-439c-b00b-731fea264af4
+                        url: foobar.iudx.io
+                        server: Foobar
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        user:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '400':
+          description: '- Invalid `providerId`'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - `providerId` does not match a provider who has assigned the user as a Auth delegate OR is blank
+            - User does have the `provider` or `delegate` roles
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Invalid.expired token:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+                Invalid providerId - no delegation exists:
+                  value:
+                    type: 'urn:dx:as:MissingAuthenticationToken'
+                    title: Invalid delegate request
+                    detail: Invalid delegate request
+      operationId: get-auth-v1-policies-delegations
+      description: |-
+        Get delegations related to a particular user. The response depends upon the roles that the user has:
+        - `provider` : returns all delegations created by the provider/auth delegate of the provider
+        - `delegate` : returns all providers who have assigned them as delegates for certain servers
+
+        ## Auth delegate
+        An auth delegate may use the API to view delegations on behalf of their provider. This is done by passing the user ID of the provider as a header called `providerId`. 
+
+        **NOTE: An auth delegate may not view any delegations related to the auth server.**
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+            minLength: 36
+            maxLength: 36
+          in: header
+          name: providerId
+          description: 'User ID of the provider, if an auth delegate wishes to view delegations of their provider'
+      security:
+        - authorization: []
+      tags:
+        - Delegation APIs
+    parameters: []
+    delete:
+      summary: Delete Delegations
+      operationId: delete-auth-v1-policies-delegations
+      responses:
+        '200':
+          description: Successfully deleted the User Policies
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad Request- Error or exceptions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '404':
+          description: If the requested policies not exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+      description: |
+        A provider may delete delegations created by them. 
+
+        ## Auth delegate
+        An auth delegate may use the API to delete delegations on behalf of their provider. This is done by passing the user ID of the provider as a header called `providerId`. 
+
+        **NOTE: An auth delegate may not delete any delegations related to the auth server.**
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+        - schema:
+            type: string
+            format: uuid
+          in: header
+          name: providerId
+          description: 'User ID of the provider, if an auth delegate wishes to view delegations of their provider'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: ''
+              x-examples:
+                example-1:
+                  - id: 1e435fcb-11ce-4f4d-94c0-adf339932ba4
+                  - id: 7d50c547-9f36-4daa-bdc6-cca3c932379d
+              properties:
+                request:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                        minLength: 36
+                        maxLength: 36
+                        format: uuid
+                    required:
+                      - id
+              required:
+                - request
+            examples:
+              Example:
+                value:
+                  request:
+                    - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+        description: ''
+      security:
+        - authorization: []
+      tags:
+        - Delegation APIs
+    post:
+      summary: Create Delegations
+      operationId: post-auth-v1-policies-delegations
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+        '401':
+          description: '- Unauthorized - `token` invalid/expired'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+          headers:
+            Content-Type:
+              schema:
+                type: string
+              description: application/json
+      description: Create new policies of an authenticated User
+      parameters:
+        - schema:
+            type: string
+            maxLength: 1500
+            minLength: 1
+            example: Bearer <JWT>
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              description: ''
+              minItems: 1
+              uniqueItems: true
+              x-examples:
+                example-1:
+                  - userId: 89bbe934-5f18-4f57-b68e-fb821ba77291
+                    itemId: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-abcd
+                    itemType: resource_group
+                    expiryTime: '2021-08-30T21:10:06.834292'
+                    constraints: {}
+              items:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    minLength: 1
+                  itemId:
+                    type: string
+                    minLength: 1
+                  itemType:
+                    type: string
+                    minLength: 1
+                  expiryTime:
+                    type: string
+                    minLength: 1
+                  constraints:
+                    type: object
+                required:
+                  - userId
+                  - itemId
+                  - itemType
+                  - constraints
+            examples:
+              Create MultiplePolicies:
+                value:
+                  - userId: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cd32/resource-group
+                    itemType: resource_group
+                    expiryTime: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+                  - userId: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cq21/resource-group
+                    itemType: resource_group
+                    expiryTime: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+              Create SinglePolicies:
+                value:
+                  - userId: b34eb955-c691-4fd3-b200-f18bc78810a2
+                    itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cd32/resource-group
+                    itemType: resource_group
+                    expiryTime: '2022-08-04T20:00:19+0000'
+                    constraints: {}
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: Request body will be JsonArray having or many objects
+      security:
+        - authorization: []
+      tags:
+        - Delegation APIs
   /auth/v1/policies/requests:
     get:
       summary: List Requests
