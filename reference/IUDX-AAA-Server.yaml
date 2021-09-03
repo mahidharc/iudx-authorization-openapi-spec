@@ -2323,7 +2323,7 @@ paths:
       summary: Get Delegations
       responses:
         '200':
-          description: Successfully list delegations
+          description: 'Successfully list delegations. If the user does not have any valid delegations, the `results` array is empty.'
           content:
             application/json:
               schema:
@@ -2481,13 +2481,18 @@ paths:
                             firstName: Someone
                             lastName: Person
                           id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                User does not have any valid delegations:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Delegations
+                    results: []
           headers:
             Content-Type:
               schema:
                 type: string
               description: application/json
         '400':
-          description: '- Invalid `providerId`'
+          description: '- Invalid `providerId` header'
           headers:
             Content-Type:
               schema:
@@ -2497,6 +2502,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Malformed request/missing or malformed request parameters
+                    detail: '[Bad Request] Validation error for parameter providerId in location HEADER: provided string should have size >= 36'
         '401':
           description: |-
             - Unauthorized - `token` invalid/expired
@@ -2522,6 +2533,11 @@ paths:
                     type: 'urn:dx:as:MissingAuthenticationToken'
                     title: Invalid delegate request
                     detail: Invalid delegate request
+                User does not have required roles:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: User does not have roles to use API
+                    detail: User with provider/delegate role or is an auth delegate may call the API
       operationId: get-auth-v1-policies-delegations
       description: |-
         Get delegations related to a particular user. The response depends upon the roles that the user has:
@@ -2561,7 +2577,7 @@ paths:
       operationId: delete-auth-v1-policies-delegations
       responses:
         '200':
-          description: Successfully deleted the User Policies
+          description: Successfully deleted the requested delegations
           headers:
             Content-Type:
               schema:
@@ -2570,40 +2586,98 @@ paths:
           content:
             application/json:
               schema:
+                description: ''
                 type: object
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Deleted requested delegations
+                    results: {}
+                properties:
+                  type:
+                    type: string
+                    minLength: 1
+                  title:
+                    type: string
+                    minLength: 1
+                  results:
+                    type: object
+                required:
+                  - type
+                  - title
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Deleted requested delegations
+                    results: {}
         '400':
-          description: Bad Request- Error or exceptions
+          description: |-
+            - Invalid `providerId` header
+            - Invalid or malformed request
+            - An invalid/deleted delegation ID is sent
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Bad providerId header:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Malformed request/missing or malformed request parameters
+                    detail: '[Bad Request] Validation error for parameter providerId in location HEADER: provided string should have size >= 36'
+                Invalid/deleted delegation ID:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid delegation ID
+                    detail: 5dd1c776-8ba6-4272-b157-0a5de2035355
           headers:
             Content-Type:
               schema:
                 type: string
               description: application/json
         '401':
-          description: '- Unauthorized - `token` invalid/expired'
+          description: |-
+            - Unauthorized - `token` invalid/expired
+            - `providerId` does not match a provider who has assigned the user as a Auth delegate OR is blank
+            - User does have the `provider` role or is not an auth delegate
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
+              examples:
+                Invalid/Expired token:
+                  value:
+                    type: 'urn:dx:as:InvalidAuthenticationToken'
+                    title: Token authentication failed
+                    detail: Inactive Token
+                Invalid providerId - no delegation exists:
+                  value:
+                    type: 'urn:dx:as:MissingAuthenticationToken'
+                    title: Invalid delegate request
+                    detail: Invalid delegate request
+                User does not have valid roles:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: User does not have roles to use API
+                    detail: User with provider role or is an auth delegate may call the API
           headers:
             Content-Type:
               schema:
                 type: string
               description: application/json
-        '404':
-          description: If the requested policies not exists
+        '403':
+          description: '- If an auth delegate attempts to delete an auth delegation'
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-          headers:
-            Content-Type:
-              schema:
-                type: string
-              description: application/json
+              examples:
+                Example:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Auth delegate may not delete auth delegations
+                    detail: 8ff57971-10d9-4bc6-ab3b-87dc328c72ce
       description: |
         A provider may delete delegations created by them. 
 
@@ -2660,13 +2734,13 @@ paths:
                 value:
                   request:
                     - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-        description: ''
+        description: The body is a JSON object with a JSON array containing the delegation IDs. The IDs can be obtained from the `GET /auth/v1/policies/delegations` API
       security:
         - authorization: []
       tags:
         - Delegation APIs
     post:
-      summary: Create Delegations
+      summary: Create Delegations - DRAFT
       operationId: post-auth-v1-policies-delegations
       responses:
         '200':
@@ -2693,7 +2767,7 @@ paths:
               schema:
                 type: string
               description: application/json
-      description: Create new policies of an authenticated User
+      description: Create new delegations
       parameters:
         - schema:
             type: string
