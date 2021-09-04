@@ -1788,47 +1788,6 @@ paths:
               schema:
                 description: ''
                 type: object
-                x-examples:
-                  example-1:
-                    type: 'urn:dx:as:Success'
-                    title: Policy read
-                    results:
-                      policyBy:
-                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
-                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
-                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
-                          item_type: RESOURCE_GROUP
-                          expiry_time: '2022-06-15T09:07:16.034289'
-                          constraints: {}
-                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
-                          user_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
-                          owner_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
-                      policyFor:
-                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
-                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
-                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
-                          item_type: RESOURCE_GROUP
-                          expiry_time: '2022-06-15T09:07:16.034289'
-                          constraints: {}
-                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-group
-                          user_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
-                          owner_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
                 properties:
                   type:
                     type: string
@@ -1837,209 +1796,137 @@ paths:
                     type: string
                     minLength: 1
                   results:
-                    type: object
-                    required:
-                      - policyBy
-                      - policyFor
-                    properties:
-                      policyBy:
-                        type: array
-                        uniqueItems: true
-                        minItems: 1
-                        items:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      required:
+                        - id
+                        - item_id
+                        - item_type
+                        - expiry_time
+                        - cat_id
+                      properties:
+                        id:
+                          type: string
+                          minLength: 1
+                        item_id:
+                          type: string
+                          minLength: 1
+                        item_type:
+                          type: string
+                          minLength: 1
+                        expiry_time:
+                          type: string
+                          minLength: 1
+                        constraints:
+                          type: object
+                          properties: {}
+                          required: []
+                        cat_id:
+                          type: string
+                          minLength: 1
+                        owner:
                           type: object
                           properties:
-                            user_id:
+                            email:
                               type: string
                               minLength: 1
-                            owner_id:
-                              type: string
-                              minLength: 1
-                            item_id:
-                              type: string
-                              minLength: 1
-                            item_type:
-                              type: string
-                              minLength: 1
-                            expiry_time:
-                              type: string
-                              minLength: 1
-                            constraints:
-                              type: object
-                            cat_id:
-                              type: string
-                              minLength: 1
-                            user_details:
+                            name:
                               type: object
                               properties:
-                                email:
+                                firstName:
                                   type: string
                                   minLength: 1
-                                name:
-                                  type: object
-                                  required:
-                                    - firstName
-                                    - lastName
-                                  properties:
-                                    firstName:
-                                      type: string
-                                      minLength: 1
-                                    lastName:
-                                      type: string
-                                      minLength: 1
-                              required:
-                                - email
-                                - name
-                            owner_details:
-                              type: object
-                              properties:
-                                email:
+                                lastName:
                                   type: string
                                   minLength: 1
-                                name:
-                                  type: object
-                                  required:
-                                    - firstName
-                                    - lastName
-                                  properties:
-                                    firstName:
-                                      type: string
-                                      minLength: 1
-                                    lastName:
-                                      type: string
-                                      minLength: 1
                               required:
-                                - email
-                                - name
+                                - firstName
+                                - lastName
+                            id:
+                              type: string
+                              minLength: 1
                           required:
-                            - user_id
-                            - owner_id
-                            - item_id
-                            - item_type
-                            - expiry_time
-                            - cat_id
-                      policyFor:
-                        type: array
-                        uniqueItems: true
-                        minItems: 1
-                        items:
+                            - email
+                            - name
+                            - id
+                        user:
                           type: object
                           properties:
-                            user_id:
+                            email:
                               type: string
                               minLength: 1
-                            owner_id:
-                              type: string
-                              minLength: 1
-                            item_id:
-                              type: string
-                              minLength: 1
-                            item_type:
-                              type: string
-                              minLength: 1
-                            expiry_time:
-                              type: string
-                              minLength: 1
-                            constraints:
-                              type: object
-                            cat_id:
-                              type: string
-                              minLength: 1
-                            user_details:
+                            name:
                               type: object
                               properties:
-                                email:
+                                firstName:
                                   type: string
                                   minLength: 1
-                                name:
-                                  type: object
-                                  required:
-                                    - firstName
-                                    - lastName
-                                  properties:
-                                    firstName:
-                                      type: string
-                                      minLength: 1
-                                    lastName:
-                                      type: string
-                                      minLength: 1
-                              required:
-                                - email
-                                - name
-                            owner_details:
-                              type: object
-                              properties:
-                                email:
+                                lastName:
                                   type: string
                                   minLength: 1
-                                name:
-                                  type: object
-                                  required:
-                                    - firstName
-                                    - lastName
-                                  properties:
-                                    firstName:
-                                      type: string
-                                      minLength: 1
-                                    lastName:
-                                      type: string
-                                      minLength: 1
                               required:
-                                - email
-                                - name
+                                - firstName
+                                - lastName
+                            id:
+                              type: string
+                              minLength: 1
                           required:
-                            - user_id
-                            - owner_id
-                            - item_id
-                            - item_type
-                            - expiry_time
-                            - cat_id
+                            - email
+                            - name
+                            - id
                 required:
                   - type
                   - title
                   - results
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: Delegations
+                    results:
+                      - id: 5882036e-a731-42fe-a77c-ecf3f3148999
+                        item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                        item_type: RESOURCE_GROUP
+                        expiry_time: '2022-06-15T09:07:16.034289'
+                        constraints: {}
+                        cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        user:
+                          email: aman.asif@datakaveri.org
+                          name:
+                            firstName: Aman
+                            lastName: Asif
+                          id: d1262b13-1cbe-4b66-a9b2-96df86437683
               examples:
                 ListPolicies-Success:
                   value:
                     type: 'urn:dx:as:Success'
-                    title: Policy read
+                    title: Delegations
                     results:
-                      policyBy:
-                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
-                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
-                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
-                          item_type: RESOURCE_GROUP
-                          expiry_time: '2022-06-15T09:07:16.034289'
-                          constraints: {}
-                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
-                          user_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
-                          owner_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
-                      policyFor:
-                        - user_id: a13eb132-c691-4fd3-b455-f18bc78819a2
-                          owner_id: a12cd922-c691-4fc6-b200-f18bc78810b5
-                          item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
-                          item_type: RESOURCE_GROUP
-                          expiry_time: '2022-06-15T09:07:16.034289'
-                          constraints: {}
-                          cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95220a/resource-group
-                          user_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
-                          owner_details:
-                            email: someone@example.com
-                            name:
-                              firstName: Someone
-                              lastName: Person
+                      - id: 5882036e-a731-42fe-a77c-ecf3f3148999
+                        item_id: 04617a43-7e5d-4118-8773-1b6c85da14ed
+                        item_type: RESOURCE_GROUP
+                        expiry_time: '2022-06-15T09:07:16.034289'
+                        constraints: {}
+                        cat_id: example.com/79e7bfa62fad6c765bac69154c2f24c94c95221a/resource-group
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        user:
+                          email: aman.asif@datakaveri.org
+                          name:
+                            firstName: Aman
+                            lastName: Asif
+                          id: d1262b13-1cbe-4b66-a9b2-96df86437683
                 example-2:
                   value:
                     type: string
@@ -2120,6 +2007,11 @@ paths:
           name: Authorization
           description: Keycloak Issued token
           required: true
+        - schema:
+            type: string
+          in: header
+          description: 'User ID of the provider, if an auth delegate wishes to view delegations of their provider'
+          name: providerId
       security:
         - authorization: []
     parameters: []
