@@ -887,6 +887,22 @@ paths:
           name: Authorization
           description: Keycloak Issued token
           required: true
+        - schema:
+            type: string
+            pattern: '^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&''*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&''*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$'
+            format: email
+          in: header
+          name: email
+          description: Email of User to be found
+        - schema:
+            type: string
+            enum:
+              - provider
+              - consumer
+              - delegate
+          in: header
+          name: role
+          description: Role of user to be found
       description: 'Get user profile. The response contains user details such as roles, name, email. It also lists the client ID of the user.'
       tags:
         - User APIs
