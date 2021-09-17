@@ -2802,56 +2802,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/AccessRequest'
               examples:
-                Example:
+                ListResults:
                   value:
                     type: 'urn:dx:as:Success'
-                    title: User permission requests
+                    title: Access requests
                     results:
-                      - requestId: e4619679-f5d9-4eff-9f79-bbded6130bb1
-                        itemId: string
-                        itemType: resource_server
-                        status: pending
-                        expiryDuration: string
-                        constraints: {}
+                      - requestId: bd5f0bb3-c02c-4e3d-b75c-a6eb8144bddc
+                        itemId: 604cec16-0ba3-4eb9-bdcf-d2b98f1fddab
+                        itemType: RESOURCE
+                        status: PENDING
+                        expiryDuration: P1Y2M10DT2H30M
+                        constraints:
+                          access:
+                            - api
+                            - subs
+                            - ingest
+                            - file
                         user:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          email: user@example.com
+                          email: someone@example.com
                           name:
-                            firstName: string
-                            lastName: string
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
                         owner:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          email: user@example.com
+                          email: someone@example.com
                           name:
-                            firstName: string
-                            lastName: string
-                List:
-                  type: 'urn:dx:as:Success'
-                  title: Access requests
-                  results:
-                    - requestId: bd5f0bb3-c02c-4e3d-b75c-a6eb8144bddc
-                      itemId: 604cec16-0ba3-4eb9-bdcf-d2b98f1fddab
-                      itemType: RESOURCE
-                      status: PENDING
-                      expiryDuration: P1Y2M10DT2H30M
-                      constraints:
-                        access:
-                          - api
-                          - subs
-                          - ingest
-                          - file
-                      user:
-                        email: someone@example.com
-                        name:
-                          firstName: Someone
-                          lastName: Person
-                        id: a13eb955-c691-4fd3-b200-f18bc78810b5
-                      owner:
-                        email: someone@example.com
-                        name:
-                          firstName: Someone
-                          lastName: Person
-                        id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
           headers:
             Content-Type:
               schema:
@@ -2927,27 +2905,31 @@ paths:
               examples:
                 Example:
                   value:
-                    type: string
-                    title: string
+                    type: 'urn:dx:as:Success'
+                    title: Access requests
                     results:
-                      - requestId: string
-                        itemId: string
-                        itemType: string
-                        status: string
-                        expiryDuration: string
-                        constraints: {}
+                      - requestId: bd5f0bb3-c02c-4e3d-b75c-a6eb8144bddc
+                        itemId: 604cec16-0ba3-4eb9-bdcf-d2b98f1fddab
+                        itemType: RESOURCE
+                        status: PENDING
+                        expiryDuration: P1Y2M10DT2H30M
+                        constraints:
+                          access:
+                            - api
+                            - subs
+                            - file
                         user:
-                          id: string
-                          email: string
+                          email: someone@example.com
                           name:
-                            firstName: string
-                            lastName: string
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
                         owner:
-                          id: string
-                          email: string
+                          email: someone@example.com
                           name:
-                            firstName: string
-                            lastName: string
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
         '400':
           description: 'Bad Request- Schema validation, missing or incorrect fields & values'
           headers:
@@ -2994,9 +2976,9 @@ paths:
               x-examples:
                 example-1:
                   request:
-                    - itemId: string
-                      itemType: resource_server
-                      expiryDuration: string
+                    - itemId: iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/pune-env-flood/FWR03
+                      itemType: resource
+                      expiryDuration: P1Y2M10DT2H30M
                       constraints: {}
               properties:
                 request:
@@ -3013,7 +2995,6 @@ paths:
                         type: string
                         minLength: 1
                         enum:
-                          - resource_server
                           - resource_group
                           - resource
                       expiryDuration:
@@ -3025,27 +3006,21 @@ paths:
                       - itemId
                       - itemType
                       - expiryDuration
+                      - constraints
               required:
                 - request
             examples:
-              Example:
+              Create:
                 value:
                   request:
-                    - itemId: string
-                      itemType: resource_server
-                      expiryDuration: string
-                      constraints: {}
-              Example-Request:
-                request:
-                  - itemId: iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/pune-env-flood/FWR035
-                    itemType: resource
-                    expiryDuration: P1Y2M10DT2H30M
-                    constraints:
-                      access:
-                        - api
-                        - subs
-                        - ingest
-                        - file
+                    - itemId: iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/pune-env-flood/FWR035
+                      itemType: resource
+                      expiryDuration: P1Y2M10DT2H30M
+                      constraints:
+                        access:
+                          - api
+                          - subs
+                          - file
         description: ''
       tags:
         - Notifications APIs
@@ -3065,6 +3040,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccessRequest'
+              examples:
+                Update:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Access requests
+                    results:
+                      - requestId: bd5f0bb3-c02c-4e3d-b75c-a6eb8144bddc
+                        itemId: 604cec16-0ba3-4eb9-bdcf-d2b98f1fddab
+                        itemType: RESOURCE
+                        status: PENDING
+                        expiryDuration: P1Y2M10DT2H30M
+                        constraints:
+                          access:
+                            - api
+                            - subs
+                            - file
+                        user:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
+                        owner:
+                          email: someone@example.com
+                          name:
+                            firstName: Someone
+                            lastName: Person
+                          id: a13eb955-c691-4fd3-b200-f18bc78810b5
         '400':
           description: 'Bad Request- Schema validation, missing or incorrect fields & values'
           headers:
@@ -3094,15 +3097,19 @@ paths:
         content:
           application/json:
             schema:
-              description: ''
               type: object
+              description: ''
               x-examples:
                 example-1:
                   request:
-                    - requestId: e4619679-f5d9-4eff-9f79-bbded6130bb1
+                    - requestId: bca11712-f381-46a5-afa3-a29b00568ace
                       status: approved
-                      expiryDuration: string
-                      constraints: {}
+                      expiryDuration: P1Y2M10DT2H30M
+                      constraints:
+                        access:
+                          - api
+                          - subs
+                          - file
               properties:
                 request:
                   type: array
@@ -3131,27 +3138,22 @@ paths:
                       - requestId
                       - status
                       - expiryDuration
+                      - constraints
               required:
                 - request
             examples:
-              Example:
+              Update:
                 value:
                   request:
-                    - requestId: e4619679-f5d9-4eff-9f79-bbded6130bb1
+                    - requestId: bca11712-f381-46a5-afa3-a29b00568ace
                       status: approved
-                      expiryDuration: string
-                      constraints: {}
-              Update:
-                request:
-                  - requestId: bca11712-f381-46a5-afa3-a29b00568ace
-                    status: approved
-                    expiryDuration: P1Y2M10DT2H30M
-                    constraints:
-                      access:
-                        - api
-                        - subs
-                        - ingest
-                        - file
+                      expiryDuration: P1Y2M10DT2H30M
+                      constraints:
+                        access:
+                          - api
+                          - subs
+                          - file
+        description: ''
       tags:
         - Notifications APIs
 components:
@@ -3174,7 +3176,11 @@ components:
         - itemType
         - role
       title: RequestToken
-      x-examples: {}
+      x-examples:
+        example-1:
+          itemId: string
+          itemType: string
+          role: string
     RevokeToken:
       description: ''
       type: object
@@ -3205,7 +3211,11 @@ components:
         - type
         - title
         - detail
-      x-examples: {}
+      x-examples:
+        example-1:
+          type: string
+          title: string
+          detail: string
     UserAlreadyExists:
       description: ''
       type: object
@@ -3276,7 +3286,12 @@ components:
               itemType: resource_server
               status: pending
               expiryDuration: string
-              constraints: {}
+              constraints:
+                access:
+                  - api
+                  - subs
+                  - ingest
+                  - file
               user:
                 id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                 email: user@example.com
@@ -3289,28 +3304,6 @@ components:
                 name:
                   firstName: string
                   lastName: string
-          value:
-            type: 'urn:dx:as:Success'
-            title: User permission requests
-            results:
-              - requestId: e4619679-f5d9-4eff-9f79-bbded6130bb1
-                itemId: string
-                itemType: resource_server
-                status: pending
-                expiryDuration: string
-                constraints: {}
-                user:
-                  id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                  email: user@example.com
-                  name:
-                    firstName: string
-                    lastName: string
-                owner:
-                  id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                  email: user@example.com
-                  name:
-                    firstName: string
-                    lastName: string
       properties:
         type:
           type: string
@@ -3328,6 +3321,7 @@ components:
               requestId:
                 type: string
                 minLength: 1
+                format: uuid
               itemId:
                 type: string
                 minLength: 1
@@ -3343,9 +3337,55 @@ components:
               constraints:
                 type: object
               user:
-                $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  email:
+                    type: string
+                    minLength: 1
+                  name:
+                    type: object
+                    required:
+                      - firstName
+                      - lastName
+                    properties:
+                      firstName:
+                        type: string
+                        minLength: 1
+                      lastName:
+                        type: string
+                        minLength: 1
+                required:
+                  - id
+                  - email
+                  - name
               owner:
-                $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    minLength: 1
+                  email:
+                    type: string
+                    minLength: 1
+                  name:
+                    type: object
+                    required:
+                      - firstName
+                      - lastName
+                    properties:
+                      firstName:
+                        type: string
+                        minLength: 1
+                      lastName:
+                        type: string
+                        minLength: 1
+                required:
+                  - id
+                  - email
+                  - name
             required:
               - requestId
               - itemId
