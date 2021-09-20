@@ -2696,7 +2696,7 @@ paths:
       tags:
         - Delegation APIs
     post:
-      summary: Create Delegations - DRAFT
+      summary: Create Delegations
       operationId: post-auth-v1-policies-delegations
       responses:
         '200':
@@ -2793,10 +2793,12 @@ paths:
                 - request
             examples:
               single request:
+               value: 
                 request:
                   - resSerId: rs.iudx.io
                     userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
               multiple request:
+               value: 
                 request:
                   - resSerId: rs.iudx.io
                     userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
