@@ -163,6 +163,8 @@ paths:
                 itemId:
                   type: string
                   minLength: 1
+                  pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
+                  maxLength: 512
                 itemType:
                   type: string
                   minLength: 1
@@ -185,14 +187,14 @@ paths:
             examples:
               Body for resourceGroup:
                 value:
-                  itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/resource-group
+                  itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/rs.iudx.io/resource-group
                   itemType: resource_group
-                  role: admin
+                  role: consumer
               Body for Open Resources:
                 value:
-                  itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/<rs.url>
+                  itemId: rs.iudx.io
                   itemType: resource_server
-                  role: admin
+                  role: consumer
         description: ''
         required: true
       description: 'Request for a JWT (token). One can generate token using either by providing token header or providing clientId/clientSecret in the header. '
@@ -2180,24 +2182,29 @@ paths:
             schema:
               description: ''
               type: object
+              x-examples:
+                example-1:
+                  request:
+                    - id: ''
+                    - id: ''
               properties:
                 request:
                   type: array
                   uniqueItems: true
                   minItems: 1
                   items:
-                    required:
-                      - id
+                    type: object
                     properties:
                       id:
                         type: string
+                        format: uuid
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                        minLength: 36
+                        maxLength: 36
+                    required:
+                      - id
               required:
                 - request
-              x-examples:
-                example-1:
-                  request:
-                    - id: ''
-                    - id: ''
             examples:
               Delete Policies:
                 value:
@@ -2205,6 +2212,7 @@ paths:
                     - id: 231f6eca-6276-4993-bfeb-53cbbbba6f06
                     - id: 231f6eca-6276-4993-bfeb-53cbbbba6f0b
         description: Request body is a JsonObject containing a JsonArray having one or multiple ID Objects to delete policies.
+        required: true
       tags:
         - Policies APIs
       security:
@@ -2302,10 +2310,15 @@ paths:
                     properties:
                       userId:
                         type: string
-                        minLength: 1
+                        format: uuid
+                        minLength: 36
+                        maxLength: 36
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
                       itemId:
                         type: string
                         minLength: 1
+                        maxLength: 512
+                        pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
                       itemType:
                         type: string
                         minLength: 1
@@ -2375,6 +2388,7 @@ paths:
               type: object
               properties: {}
         description: Request body will be an JsonObject containing JsonArray of requests
+        required: true
       tags:
         - Policies APIs
       security:
@@ -2796,6 +2810,7 @@ paths:
                   request:
                     - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
         description: The body is a JSON object with a JSON array containing the delegation IDs. The IDs can be obtained from the `GET /auth/v1/policies/delegations` API
+        required: true
       security:
         - authorization: []
       tags:
@@ -2890,7 +2905,10 @@ paths:
                         minLength: 1
                       userId:
                         type: string
-                        minLength: 1
+                        minLength: 36
+                        pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
+                        maxLength: 36
+                        format: uuid
                     required:
                       - resSerId
                       - userId
@@ -2910,6 +2928,7 @@ paths:
                     - resSerId: auth.iudx.io
                       userId: d34b1547-7281-4f66-b550-ed79f9bb0c37
         description: The body is a JSON object with a JSON array containing the objects that need to be created.
+        required: true
   /auth/v1/policies/requests:
     get:
       summary: List Requests
@@ -3110,6 +3129,8 @@ paths:
                       itemId:
                         type: string
                         minLength: 1
+                        pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
+                        maxLength: 512
                       itemType:
                         type: string
                         minLength: 1
@@ -3141,6 +3162,7 @@ paths:
                           - subs
                           - file
         description: ''
+        required: true
       tags:
         - Notifications APIs
       parameters: []
@@ -3276,6 +3298,7 @@ paths:
                     - requestId: bca11712-f381-46a5-afa3-a29b00568ace
                       status: rejected
         description: ''
+        required: true
       tags:
         - Notifications APIs
 components:
