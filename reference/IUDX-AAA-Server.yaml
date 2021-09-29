@@ -3148,8 +3148,8 @@ paths:
       summary: Update Requests
       operationId: put-auth-v1-policies-requests
       responses:
-        '201':
-          description: Created
+        '200':
+          description: OK
           headers:
             Content-Type:
               schema:
@@ -3270,6 +3270,11 @@ paths:
                           - api
                           - subs
                           - file
+              Update-Rejected:
+                value:
+                  request:
+                    - requestId: bca11712-f381-46a5-afa3-a29b00568ace
+                      status: rejected
         description: ''
       tags:
         - Notifications APIs
