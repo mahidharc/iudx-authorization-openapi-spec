@@ -1,0 +1,1053 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "IUDX AAA Server (2.0)",
+    "version": "1.0",
+    "description": "API spec for IUDX AAA server 2.0",
+    "contact": {
+      "name": "Foo",
+      "url": "Bar"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://authorization.iudx.org.in"
+    }
+  ],
+  "paths": {
+    "/auth/v1/user/profile": {
+      "post": {
+        "summary": "Create a new user profile",
+        "operationId": "post-user-profile",
+        "responses": {
+          "201": {
+            "description": "The user profile has been created successfully. The client ID and client secret is also returned. **The client secret is ONLY shown to the user here and can never be obtained again.**",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "type": "urn:dx:as:Success",
+                      "title": "User created",
+                      "results": {
+                        "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
+                        "name": {
+                          "firstName": "Foo",
+                          "lastName": "Bar"
+                        },
+                        "roles": [
+                          "CONSUMER"
+                        ],
+                        "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
+                        "clients": [
+                          {
+                            "client": "default",
+                            "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7",
+                            "clientSecret": "a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6"
+                          }
+                        ],
+                        "email": "ngoaf@chspomvjuq.com",
+                        "phone": "9989967899",
+                        "organization": {
+                          "name": "example",
+                          "url": "example.com"
+                        }
+                      }
+                    }
+                  },
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "results": {
+                      "type": "object",
+                      "required": [
+                        "keycloakId",
+                        "name",
+                        "roles",
+                        "userId",
+                        "clients",
+                        "email",
+                        "phone",
+                        "organization"
+                      ],
+                      "properties": {
+                        "keycloakId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "name": {
+                          "type": "object",
+                          "required": [
+                            "firstName",
+                            "lastName"
+                          ],
+                          "properties": {
+                            "firstName": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "lastName": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "roles": {
+                          "type": "array",
+                          "minItems": 0,
+                          "maxItems": 3,
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "CONSUMER",
+                              "PROVIDER",
+                              "DELEGATE"
+                            ]
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "clients": {
+                          "type": "array",
+                          "uniqueItems": true,
+                          "minItems": 1,
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "client": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "clientId": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "clientSecret": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "client",
+                              "clientId",
+                              "clientSecret"
+                            ]
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "phone": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "organization": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "url"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "results"
+                  ]
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:Success",
+                      "title": "User created",
+                      "results": {
+                        "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
+                        "name": {
+                          "firstName": "Foo",
+                          "lastName": "Bar"
+                        },
+                        "roles": [
+                          "CONSUMER"
+                        ],
+                        "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
+                        "clients": [
+                          {
+                            "client": "default",
+                            "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7",
+                            "clientSecret": "a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6"
+                          }
+                        ],
+                        "email": "ngoaf@chspomvjuq.com",
+                        "phone": "9989967899",
+                        "organization": {
+                          "name": "example",
+                          "url": "example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Malformed or missing data\n- `orgId` not sent when registering as provider/delegate\n- `orgId` does not exist\n- `orgId` domain does not match email address domain",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Invalid roles array": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidInput",
+                      "title": "Missing or malformed parameters",
+                      "detail": "Invalid 'roles' array"
+                    }
+                  },
+                  "orgId does not exist": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidInput",
+                      "title": "Organization does not exist",
+                      "detail": "Organization ID does not correspond to an organization"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - OIDC token invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidAuthenticationToken",
+                      "title": "Token authentication failed",
+                      "detail": "Inactive Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A user profile already exists for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:AlreadyExists",
+                      "title": "User exists",
+                      "detail": "User has an existing user profile"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roles": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "description": "Roles that the user would like to have",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "consumer",
+                        "provider",
+                        "delegate"
+                      ]
+                    }
+                  },
+                  "orgId": {
+                    "type": "string",
+                    "description": "The organization ID",
+                    "format": "uuid"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 10,
+                    "pattern": "^[9876]\\d{9}$",
+                    "example": "9845598989",
+                    "description": "Valid mobile number"
+                  }
+                },
+                "required": [
+                  "roles"
+                ]
+              },
+              "examples": {
+                "Example": {
+                  "value": {
+                    "roles": [
+                      "consumer"
+                    ],
+                    "orgId": "25b2c2d5-a7fc-47d0-89e4-8709a1560bfa",
+                    "phone": "9845598989"
+                  }
+                }
+              }
+            }
+          },
+          "description": "- `orgId` is a valid organization ID obtain from the `GET /auth/v1/organizations` API\n  - **`orgId` is required for `provider` and `delegate` roles**\n  - **The domain of the email address of the registering user must match the organization domain**"
+        },
+        "description": "Create a new user profile. Users are required to have a user profile in order to interact with the IUDX AAA Server. During creation, they may specify what roles they would like to obtain. Current valid roles are:\n- **consumer**, which allows users to access to secure resource via tokens\n- **provider**, which allows users to manage their resources across the IUDX sub systems\n- **delegate**, which allows users to perform tasks on behalf of a provider, mainly\n  - manage catalogue items\n  - manage data on resource servers\n  - manage policies\n  \n## Client ID and Client Secret\nOn successful creation of the user profile, the user would receive a client ID and a client secret. The client ID and client secret can be used instead of the OIDC flow to request for tokens. **The client secret is ONLY shown to the user here and can never be obtained again.**\n\n## Provider registration\n**Once a Provider has registered successfully, their registration request is subject to approval by an IUDX admin**. The `provider` role would not be part of the user profile till the user has been approved.",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ],
+        "tags": [
+          "User Profile APIs"
+        ]
+      },
+      "parameters": [],
+      "get": {
+        "summary": "Get user profile",
+        "operationId": "get-user-profile",
+        "responses": {
+          "200": {
+            "description": "Returns user profile.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "type": "urn:dx:as:Success",
+                      "title": "User details",
+                      "results": {
+                        "keycloakId": "c46e7a5d-7c2d-471e-8222-6a59a5095e7a",
+                        "name": {
+                          "firstName": "B",
+                          "lastName": "c"
+                        },
+                        "roles": [
+                          "PROVIDER",
+                          "CONSUMER"
+                        ],
+                        "userId": "a13eb955-c691-4fd3-b200-f18bc78810b5",
+                        "email": "bye@example.com",
+                        "clients": [
+                          {
+                            "clientName": "default",
+                            "clientId": "a3e7e34c-44bf-41ff-ad86-2ee04a954418"
+                          }
+                        ],
+                        "phone": "1234567899",
+                        "organization": {
+                          "name": "example",
+                          "url": "example.com"
+                        }
+                      }
+                    }
+                  },
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "results": {
+                      "type": "object",
+                      "required": [
+                        "keycloakId",
+                        "name",
+                        "roles",
+                        "userId",
+                        "email",
+                        "clients"
+                      ],
+                      "properties": {
+                        "keycloakId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "object",
+                          "required": [
+                            "firstName",
+                            "lastName"
+                          ],
+                          "properties": {
+                            "firstName": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "lastName": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "roles": {
+                          "type": "array",
+                          "minItems": 0,
+                          "maxItems": 4,
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "CONSUMER",
+                              "PROVIDER",
+                              "ADMIN",
+                              "DELEGATE"
+                            ]
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "format": "uuid"
+                        },
+                        "email": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "clients": {
+                          "type": "array",
+                          "uniqueItems": true,
+                          "minItems": 1,
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "clientName": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "clientId": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "clientName",
+                              "clientId"
+                            ]
+                          }
+                        },
+                        "phone": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "organization": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "url"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "results"
+                  ]
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:Success",
+                      "title": "User details",
+                      "results": {
+                        "keycloakId": "c46e7a5d-7c2d-471e-8222-6a59a5095e7a",
+                        "name": {
+                          "firstName": "B",
+                          "lastName": "c"
+                        },
+                        "roles": [
+                          "PROVIDER",
+                          "CONSUMER"
+                        ],
+                        "userId": "a13eb955-c691-4fd3-b200-f18bc78810b5",
+                        "email": "bye@example.com",
+                        "clients": [
+                          {
+                            "clientName": "default",
+                            "clientId": "a3e7e34c-44bf-41ff-ad86-2ee04a954418"
+                          }
+                        ],
+                        "phone": "9984567899",
+                        "organization": {
+                          "name": "example",
+                          "url": "example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - token invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidAuthenticationToken",
+                      "title": "Token authentication failed",
+                      "detail": "Inactive Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A user profile for the user does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:MissingInformation",
+                      "title": "User profile does not exist",
+                      "detail": "Please register to create user profile"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Get user profile. The response contains user details such as roles, name, email. It also lists the client ID of the user.",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ],
+        "tags": [
+          "User Profile APIs"
+        ]
+      },
+      "put": {
+        "summary": "Update user profile",
+        "operationId": "put-auth-v1-user-profile",
+        "responses": {
+          "200": {
+            "description": "User profile has been successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "x-examples": {
+                    "example-1": {
+                      "type": "urn:dx:as:Success",
+                      "title": "User created",
+                      "results": {
+                        "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
+                        "name": {
+                          "firstName": "Foo",
+                          "lastName": "Bar"
+                        },
+                        "roles": [
+                          "CONSUMER"
+                        ],
+                        "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
+                        "clients": [
+                          {
+                            "client": "default",
+                            "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7"
+                          }
+                        ],
+                        "email": "ngoaf@chspomvjuq.com",
+                        "phone": "9989967899",
+                        "organization": {
+                          "name": "example",
+                          "url": "example.com"
+                        }
+                      }
+                    }
+                  },
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "results": {
+                      "type": "object",
+                      "required": [
+                        "keycloakId",
+                        "name",
+                        "roles",
+                        "userId",
+                        "clients",
+                        "email",
+                        "phone"
+                      ],
+                      "properties": {
+                        "keycloakId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "name": {
+                          "type": "object",
+                          "required": [
+                            "firstName",
+                            "lastName"
+                          ],
+                          "properties": {
+                            "firstName": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "lastName": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        },
+                        "roles": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "userId": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "clients": {
+                          "type": "array",
+                          "uniqueItems": true,
+                          "minItems": 1,
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "client": {
+                                "type": "string",
+                                "minLength": 1
+                              },
+                              "clientId": {
+                                "type": "string",
+                                "minLength": 1
+                              }
+                            },
+                            "required": [
+                              "client",
+                              "clientId"
+                            ]
+                          }
+                        },
+                        "email": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "phone": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "organization": {
+                          "type": "object",
+                          "required": [
+                            "name",
+                            "url"
+                          ],
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "url": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "results"
+                  ]
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:Success",
+                      "title": "Registered for requested roles",
+                      "results": {
+                        "keycloakId": "c0c52fd1-e9de-456c-b553-8d408e8d2a42",
+                        "name": {
+                          "firstName": "Foo",
+                          "lastName": "Bar"
+                        },
+                        "roles": [
+                          "CONSUMER",
+                          "DELEGATE"
+                        ],
+                        "userId": "67194fc9-495e-40f7-b016-4470c1d4397f",
+                        "clients": [
+                          {
+                            "client": "default",
+                            "clientId": "6d0b58c3-c0c4-48af-bca2-4f255c0e73a7"
+                          }
+                        ],
+                        "email": "ngoaf@chspomvjuq.com",
+                        "phone": "9989967899",
+                        "organization": {
+                          "name": "example",
+                          "url": "example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "- Missing or malformed data\n- User has already registered for a requested role\n- `orgId` does not exist\n- `orgId` required for delegate registration\n- `orgId` domain does not match the domain of the email address",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "orgId does not exist": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidInput",
+                      "title": "Organization does not exist",
+                      "detail": "Organization ID does not correspond to an organization"
+                    }
+                  },
+                  "Invalid roles array": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidInput",
+                      "title": "Missing or malformed parameters",
+                      "detail": "Invalid 'roles' array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - token invalid/expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:InvalidAuthenticationToken",
+                      "title": "Token authentication failed",
+                      "detail": "Inactive Token"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A user profile for the user does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error-Response"
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:MissingInformation",
+                      "title": "User profile does not exist",
+                      "detail": "Please register to create user profile"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Update an existing user profile. Currently a user may use this API to:\n- Add roles to their user profile\n\n## Add roles\nA user may add `consumer` and `delegate` roles to their user profile. **The `provider` role cannot be added** ",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "roles": {
+                    "type": "array",
+                    "description": "Roles to add",
+                    "minItems": 0,
+                    "maxItems": 2,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "consumer",
+                        "delegate"
+                      ]
+                    }
+                  },
+                  "orgId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "roles"
+                ]
+              },
+              "examples": {
+                "Example": {
+                  "value": {
+                    "roles": [
+                      "consumer"
+                    ],
+                    "orgId": "25b2c2d5-a7fc-47d0-89e4-8709a1560bfa"
+                  }
+                }
+              }
+            }
+          },
+          "description": "- `orgId` is a valid organization ID obtain from the `GET /auth/v1/organizations` API\n  - **`orgId` is required for `delegate` roles**"
+        },
+        "tags": [
+          "User Profile APIs"
+        ]
+      }
+    },
+    "/auth/v1/organizations": {
+      "get": {
+        "summary": "View all registered organizations",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "detail": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "items": {
+                        "required": [
+                          "id",
+                          "name",
+                          "url"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "url": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "title",
+                    "detail"
+                  ],
+                  "x-examples": {
+                    "example-1": {
+                      "type": "urn:dx:as:Success",
+                      "title": "Organizations",
+                      "detail": [
+                        {
+                          "id": "ea51dfff-dd8b-4528-8c0c-5881a482e825",
+                          "name": "example",
+                          "url": "example.com"
+                        },
+                        {
+                          "id": "6e30ac8c-8a91-4420-9d9d-a3d007b4fbdf",
+                          "name": "datakaveri",
+                          "url": "datakaveri.org"
+                        },
+                        {
+                          "id": "894777b1-e82a-4cf8-b99a-86fc3d7d707b",
+                          "name": "IISc",
+                          "url": "iisc.ac.in"
+                        },
+                        {
+                          "id": "4a79add1-9630-42dc-8803-55d0c992f3a8",
+                          "name": "NEC",
+                          "url": "india.nec.org"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "Example": {
+                    "value": {
+                      "type": "urn:dx:as:Success",
+                      "title": "Organizations",
+                      "detail": [
+                        {
+                          "id": "ea51dfff-dd8b-4528-8c0c-5881a482e825",
+                          "name": "example",
+                          "url": "example.com"
+                        },
+                        {
+                          "id": "6e30ac8c-8a91-4420-9d9d-a3d007b4fbdf",
+                          "name": "datakaveri",
+                          "url": "datakaveri.org"
+                        },
+                        {
+                          "id": "894777b1-e82a-4cf8-b99a-86fc3d7d707b",
+                          "name": "IISc",
+                          "url": "iisc.ac.in"
+                        },
+                        {
+                          "id": "4a79add1-9630-42dc-8803-55d0c992f3a8",
+                          "name": "NEC",
+                          "url": "india.nec.org"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-organizations",
+        "security": [
+          {
+            "OIDC Authentication": []
+          }
+        ],
+        "description": "View all registered orgs"
+      },
+      "parameters": []
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error-Response": {
+        "title": "Error-Response",
+        "type": "object",
+        "x-examples": {},
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "A URN"
+          },
+          "title": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "detail"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "OIDC Authentication": {
+        "type": "openIdConnect",
+        "description": "OIDC auth - JWT Identity token"
+      },
+      "Client ID and Client Secret": {
+        "name": "Client ID",
+        "type": "apiKey",
+        "in": "header"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "User Profile APIs"
+    }
+  ]
+}
