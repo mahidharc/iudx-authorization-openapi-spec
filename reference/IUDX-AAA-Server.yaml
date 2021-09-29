@@ -146,10 +146,10 @@ paths:
           description: Keycloak Issued clientId
         - schema:
             type: string
-            format: uuid
-            maxLength: 36
-            pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
-            minLength: 36
+            maxLength: 40
+            pattern: '^[0-9a-f]{40}$'
+            minLength: 40
+            example: 73b66ab55ba4d07ea487310679aa0689b4bd2c9d
           in: header
           description: Keycloak Issued clientSecret
           name: clientSecret
@@ -539,7 +539,9 @@ paths:
                               minLength: 1
                             clientSecret:
                               type: string
-                              minLength: 1
+                              minLength: 40
+                              maxLength: 40
+                              pattern: '^[0-9a-f]{40}$'
                           required:
                             - clientName
                             - clientId
@@ -582,7 +584,7 @@ paths:
                       clients:
                         - clientName: default
                           clientId: 6d0b58c3-c0c4-48af-bca2-4f255c0e73a7
-                          clientSecret: a18cb9fc-06b3-4ae5-8220-86fc4e89a1a6
+                          clientSecret: 73b66ab55ba4d07ea487310679aa0689b4bd2c9d
                       email: ngoaf@chspomvjuq.com
                       phone: '9919967211'
                       organization:
