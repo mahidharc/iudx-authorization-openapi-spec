@@ -2180,24 +2180,29 @@ paths:
             schema:
               description: ''
               type: object
+              x-examples:
+                example-1:
+                  request:
+                    - id: ''
+                    - id: ''
               properties:
                 request:
                   type: array
                   uniqueItems: true
                   minItems: 1
                   items:
-                    required:
-                      - id
+                    type: object
                     properties:
                       id:
                         type: string
+                        format: uuid
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                        minLength: 36
+                        maxLength: 36
+                    required:
+                      - id
               required:
                 - request
-              x-examples:
-                example-1:
-                  request:
-                    - id: ''
-                    - id: ''
             examples:
               Delete Policies:
                 value:
@@ -2302,10 +2307,15 @@ paths:
                     properties:
                       userId:
                         type: string
-                        minLength: 1
+                        format: uuid
+                        minLength: 36
+                        maxLength: 36
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
                       itemId:
                         type: string
                         minLength: 1
+                        maxLength: 512
+                        pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
                       itemType:
                         type: string
                         minLength: 1
@@ -2890,7 +2900,10 @@ paths:
                         minLength: 1
                       userId:
                         type: string
-                        minLength: 1
+                        minLength: 36
+                        pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
+                        maxLength: 36
+                        format: uuid
                     required:
                       - resSerId
                       - userId
