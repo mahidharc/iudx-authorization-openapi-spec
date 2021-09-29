@@ -2815,17 +2815,17 @@ paths:
                 - request
             examples:
               single request:
-               value: 
-                request:
-                  - resSerId: rs.iudx.io
-                    userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
+                value:
+                  request:
+                    - resSerId: rs.iudx.io
+                      userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
               multiple request:
-               value: 
-                request:
-                  - resSerId: rs.iudx.io
-                    userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
-                  - resSerId: auth.iudx.io
-                    userId: d34b1547-7281-4f66-b550-ed79f9bb0c37
+                value:
+                  request:
+                    - resSerId: rs.iudx.io
+                      userId: d34b1547-7281-4f66-b550-ed79f9bb0c36
+                    - resSerId: auth.iudx.io
+                      userId: d34b1547-7281-4f66-b550-ed79f9bb0c37
         description: The body is a JSON object with a JSON array containing the objects that need to be created.
   /auth/v1/policies/requests:
     get:
@@ -3173,8 +3173,6 @@ paths:
                     required:
                       - requestId
                       - status
-                      - expiryDuration
-                      - constraints
               required:
                 - request
             examples:
