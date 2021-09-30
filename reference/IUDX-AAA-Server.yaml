@@ -3140,6 +3140,8 @@ paths:
                       expiryDuration:
                         type: string
                         minLength: 1
+                        pattern: '^(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$'
+                        example: P1Y2M10DT2H30M
                       constraints:
                         type: object
                     required:
@@ -3273,6 +3275,8 @@ paths:
                       expiryDuration:
                         type: string
                         minLength: 1
+                        example: P1Y2M10DT2H30M
+                        pattern: '^(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$'
                       constraints:
                         type: object
                     required:
