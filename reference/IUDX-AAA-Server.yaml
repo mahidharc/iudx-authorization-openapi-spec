@@ -184,6 +184,7 @@ paths:
               required:
                 - itemId
                 - itemType
+                - role
             examples:
               Body for resourceGroup:
                 value:
