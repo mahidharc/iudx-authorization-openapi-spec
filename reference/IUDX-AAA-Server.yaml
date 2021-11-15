@@ -198,7 +198,32 @@ paths:
                   role: consumer
         description: ''
         required: true
-      description: 'Request for a JWT (token). One can generate token using either by providing token header or providing clientId/clientSecret in the header. '
+      description: |-
+        Request for a JWT (token). One can generate token using either by providing token header or providing clientId/clientSecret in the header. 
+
+        #Token request
+            `itemId`: the string value of the id of the resource
+        eg:  "datakaveri.org/facec5182e3bf44cc3ac42b0b611263676d668a2/rs.iudx.org.in/agartala-env-aqm",
+            `itemType`: resource/resource_group/resource_server
+            `role`:the role as which the user wants to get token for.
+            
+        ##Tokens for providers
+         -users with the `provider` role can get tokens for all of the resources that belong to them without having to set any specific policies to access them.
+         -If the provider wishes to get a token to access a paticular server, they require a policy by the server admin.
+            eg:  A provider can get a token for the IUDX catalogue server by using the itemid as
+           providerSHA/catalogue.iudx.io/catalogue/crud 
+           
+        ##Tokens for delegates
+         -users with the `delegate` role can get tokens for of the resources if they:
+           1. Are a delegate to the provider who owns the resource.
+           2. Have a policy set by the provider to access the resource 
+         -If the delegate wishes to get a token to access a paticular server, they :
+           1. Must be a delegate for the provider for that server 
+           3. Must have an active policy by the admin of that server
+           
+        ##Tokens for consumers
+        Consumers can access the items in the resource server by obtaining a token for the resource. Consumers can only access public resources and the private resources for which they have a policy set by either the `provider` or by a `delegate`
+             
       tags:
         - Token APIs
       security:
