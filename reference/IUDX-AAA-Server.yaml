@@ -186,23 +186,48 @@ paths:
                 - itemType
                 - role
             examples:
-              Body for resourceGroup:
+              Consumer requesting resource group:
                 value:
-                  itemId: example.com/8d4b20ec4bf21efb363e72671e1b5bd77fd6cf91/rs.iudx.io/resource-group
+                  itemId: datakaveri.org/04a15c9960ffda227e9546f3f46e629e1fe4132b/rs.iudx.org.in/pune-env-aqm
                   itemType: resource_group
                   role: consumer
-              Body for Open Resources:
+              Consumer requesting resource server (for access to public resources):
                 value:
-                  itemId: rs.iudx.io
+                  itemId: rs.iudx.org.in
                   itemType: resource_server
                   role: consumer
+              Consumer requesting resource:
+                value:
+                  itemId: datakaveri.org/04a15c9960ffda227e9546f3f46e629e1fe4132b/rs.iudx.org.in/pune-env-aqm/184ba502-22a8-ad15-a8f1-c966cd3aa7a7
+                  itemType: resource
+                  role: consumer
+              Provider requesting resource group:
+                value:
+                  itemId: datakaveri.org/04a15c9960ffda227e9546f3f46e629e1fe4132b/rs.iudx.org.in/pune-env-aqm
+                  itemType: resource_group
+                  role: provider
+              Delegate requesting for resource:
+                value:
+                  itemId: datakaveri.org/04a15c9960ffda227e9546f3f46e629e1fe4132b/rs.iudx.org.in/pune-env-aqm/184ba502-22a8-ad15-a8f1-c966cd3aa7a7
+                  itemType: resource
+                  role: delegate
+              Admin of RS requesting resource server:
+                value:
+                  itemId: rs.iudx.org.in
+                  itemType: resource_server
+                  role: admin
+              Delegate requesting catalogue token:
+                value:
+                  itemId: datakaveri.org/04a15c9960ffda227e9546f3f46e629e1fe4132b/catalogue.iudx.org.in/catalogue/crud
+                  itemType: resource
+                  role: delegate
         description: |-
           - `itemId` : the string value of the id of the resource
             - e.g. `datakaveri.org/facec5182e3bf44cc3ac42b0b611263676d668a2/rs.iudx.org.in/agartala-env-aqm`
           - `itemType` : the kind of item the desired resource is
           - `role` : the role as which the user wants to get token for
         required: true
-      description: |
+      description: |-
         Request for a JWT (token). One can generate token using either by providing token header or providing clientId and clientSecret in the header. 
 
         **NOTE : Either the JWT token in the `Authorization` header or `clientId`+`clientSecret` headers are required, not both**
@@ -212,7 +237,12 @@ paths:
         - users with the `provider` role can get tokens for all of the resources that belong to them without having to set any specific policies to access them.
         - If the provider wishes to get a token to access a particular server, they require a **policy by the server admin**.
             eg:  A provider can get a token for the IUDX catalogue server by using the `itemId` as
-           providerSHA/catalogue.iudx.io/catalogue/crud 
+           `<provider-domain>/<SHA1-of-provider-email>/<catalogue-url>/catalogue/crud`
+        For example, if the provider is *provider.foobar@datakaveri.org*, the `itemId` will be
+
+        ```
+        datakaveri.org/49276e9045a8a4c5c5bcc5b3b6923786896ff02d/catalogue.iudx.org.in/catalogue/crud
+        ```
            
         ## Tokens for delegates
         - Valid item types - `resource`, `resource_group` 
@@ -228,10 +258,13 @@ paths:
         - Consumers can access the private resources for which they have a policy set by either the `provider` or by a `delegate`
         - The IUDX Resource Server **requires a token for accessing public resources**. A consumer may obtain a token for this by setting `itemType` as `resource_server` and `itemId` as the resource server URL.
 
-
         ## Tokens for admins
         - Valid item types - `resource_server`
         - An admin may identify themselves with the servers they manage by getting an admin token, by setting `itemType` as `resource_server` and `itemId` as the server URL.
+
+        # JWT Token Response Structure
+         A valid IUDX AAA access token contains the following fields:
+         ....
       tags:
         - Token APIs
       security:
