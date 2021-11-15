@@ -339,19 +339,21 @@ paths:
                   - title
                   - results
               examples:
-                Introspect Token:
+                Introspected Token:
                   value:
                     type: 'urn:dx:as:Success'
                     title: Token authenticated
                     results:
-                      sub: 129b4b55-0251-490e-bee9-00f3a5d3e632
-                      iss: auth.test.com
-                      aud: foobar.iudx.io
-                      exp: 1626837909
-                      iat: 1626794709
-                      iid: 'rg:example.com/79e7bfa62fad6c765bac69154c2f24c94c95210v/resource-group'
+                      sub: a6a23ee3-19fe-4a09-a78f-eb66dcb6b892
+                      iss: authorization.iudx.org.in
+                      aud: rs.iudx.org.in
+                      exp: 1634233203
+                      iat: 1634190003
+                      iid: 'rg:datakaveri.org/04a15c9960ffda227e9546f3f46e629e1fe4132b/rs.iudx.org.in/pune-env-aqm'
                       role: consumer
-                      cons: {}
+                      cons:
+                        access:
+                          - api
         '400':
           description: Invalid/missing information
           content:
