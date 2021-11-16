@@ -264,7 +264,14 @@ paths:
 
         # JWT Token Response Structure
          A valid IUDX AAA access token contains the following fields:
-         ....
+            `sub`: `userId` of the user for whom the token is issued
+            `iss`: this tag contains the url of the server from the where the token was issued(IUDX auth server)
+            `aud`: the 'audience' tag contains the url of the server for which the token is valid
+            `exp`: when the token will expire in unix format
+            `iat`: indicates when the token was issued in unix format
+            `iid`: resource type and resource id of the item for which the token is valid
+            `role`: role of the user 
+            `cons`: the constraints that the resource server recognizes. It is only returned for policies set for consumer 
       tags:
         - Token APIs
       security:
@@ -2241,6 +2248,7 @@ paths:
       description: |-
         Delete policies of an authenticated User.
 
+
         - `id` :is the policy id that the user wants to delete. The user can use the list policy api to get this value.
       parameters:
         - schema:
@@ -2340,13 +2348,23 @@ paths:
                 properties: {}
       description: |
         Create new policies of an authenticated User
+        **NOTE : A `consumer` cannot set policies**
+            
+        ## Policies created by admin
+          - Valid item types - `resource_server`. 
+          - An `admin` can set policies for a `provider` or `delegate` for their server. 
 
+        ## Policies created by provider
+          - Valid item types - `resource`, `resource_group` 
+          - A `provider` can set policies for a `delegate` or `consumer` for the resources owned by the `provider.`
+        **A policy is set by the auth server admin for a provider when they are approved**
 
-        - `userId` : UUID of the user for whom policy is to be set.
-        - `itemId` : String value of the item for which policy is to be set 
-        - `itemType` : String value of the item type
-        - `expiryTime` : ISO8601 compatible time in UTC(yyyy-MM-dd'T'HH:mm:ss). optional field, if not sent default expiry is set for the policy
-        - `constraints` : JsonObject of the constraints that the resource server can recognize.
+        ## Policies created by delegate
+          - Valid item types - `resource`, `resource_group` 
+          - A `delegate` can set policies for other `delegate` or `consumer` for the resources owned by the `provider` 
+          - A policy must be set by the auth server admin for the `delegate` to be able to set policies. 
+            
+        **NOTE : Only Auth server delegates are allowed to create policies**
       parameters:
         - schema:
             type: string
@@ -2463,7 +2481,13 @@ paths:
             schema:
               type: object
               properties: {}
-        description: Request body will be an JsonObject containing JsonArray of requests
+        description: |-
+          Request body will be an JsonObject containing JsonArray of requests
+          - `userId` : UUID of the user for whom policy is to be set.
+          - `itemId` : String value of the item for which policy is to be set 
+          - `itemType` : String value of the item type
+          - `expiryTime` : ISO8601 compatible time in UTC(yyyy-MM-dd'T'HH:mm:ss). optional field, if not sent default expiry is set for the policy
+          - `constraints` : JsonObject of the constraints that the resource server can recognize.
         required: true
       tags:
         - Policies APIs
