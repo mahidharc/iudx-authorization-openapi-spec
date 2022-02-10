@@ -1061,7 +1061,6 @@ paths:
         A user with either 
         - `provider` role
         - `admin` role
-        - `trustee` role
         - is an **auth delegate** 
         may search for a user by providing the email address and role of said user. If a user exists, then the user ID `userId`, email, name and organization details (if applicable) is returned.
 
