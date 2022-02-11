@@ -3520,6 +3520,137 @@ paths:
                       -----END CERTIFICATE-----
       operationId: get-auth-v1-cert
       description: Get the JsonObject having certificate to authenticate/validate the generated JWT using `/auth/v1/token`
+  /auth/v1/apd:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    results:
+                      - name: RBAC APD for IISc
+                        url: apd.iisc.ac.in
+                        status: active
+                        owner:
+                          email: someone@iisc.ac.in
+                          name:
+                            firstName: a
+                            lastName: b
+                          id: 844e251b-574b-46e6-9247-f76f1f70a637
+                properties:
+                  results:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                        url:
+                          type: string
+                          minLength: 1
+                        status:
+                          type: string
+                          minLength: 1
+                        owner:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                              minLength: 1
+                            name:
+                              type: object
+                              required:
+                                - firstName
+                                - lastName
+                              properties:
+                                firstName:
+                                  type: string
+                                  minLength: 1
+                                lastName:
+                                  type: string
+                                  minLength: 1
+                            id:
+                              type: string
+                              minLength: 1
+                          required:
+                            - email
+                            - name
+                            - id
+                      required:
+                        - name
+                        - url
+                        - status
+                  type:
+                    type: string
+                  title:
+                    type: string
+                required:
+                  - results
+              examples:
+                Example:
+                  value:
+                    type: ''
+                    title: ''
+                    results:
+                      - name: RBAC APD for IISc
+                        url: apd.iisc.ac.in
+                        status: active
+                        owner:
+                          email: someone@iisc.ac.in
+                          name:
+                            firstName: a
+                            lastName: b
+                          id: 844e251b-574b-46e6-9247-f76f1f70a637
+      operationId: get-auth-v1-apd
+    post:
+      summary: Register an Access Policy Domain
+      operationId: post-auth-v1-apd
+      responses:
+        '200':
+          description: OK
+      description: |-
+        A registered trustee can register an Access Policy Domain. The AAA admin must approve the registration and set the APD into the **active** state, after which policies can be written using the APD. 
+
+        # APD Requirements during registration
+        The APD URL must be provided during registration. The URL must be reachable as well as:
+        - Must be served on HTTPS at port 443
+        - Must not redirect
+
+        Additionally, The `GET /userclasses` API must be implemented and should 
+        - return `200 OK` with content-type `application/json` 
+        - send at least an empty JSON object in the response body
+      tags:
+        - Access Policy Domain (APD) APIs
+      security:
+        - authorization: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                url:
+                  type: string
+        description: ''
+    put:
+      summary: ''
+      operationId: put-auth-v1-apd
+      responses:
+        '200':
+          description: OK
 components:
   schemas:
     RequestToken:
