@@ -3522,7 +3522,7 @@ paths:
       description: Get the JsonObject having certificate to authenticate/validate the generated JWT using `/auth/v1/token`
   /auth/v1/apd:
     get:
-      summary: Your GET endpoint
+      summary: Get registered Access Policy Domains
       tags: []
       responses:
         '200':
@@ -3612,6 +3612,12 @@ paths:
                             lastName: b
                           id: 844e251b-574b-46e6-9247-f76f1f70a637
       operationId: get-auth-v1-apd
+      description: |-
+        Returns registered APDs. 
+
+        - If called by the AAA admin, returns all APD registrations
+        - If called by a user with `trustee` role, returns all APDs the user has registered
+        - If called by a user with any other roles, returns all APDs in the **active** state
     post:
       summary: Register an Access Policy Domain
       operationId: post-auth-v1-apd
@@ -3646,11 +3652,22 @@ paths:
                   type: string
         description: ''
     put:
-      summary: ''
+      summary: Update Access Policy Domain status
       operationId: put-auth-v1-apd
       responses:
         '200':
           description: OK
+      description: |-
+        Allows the AAA admins and trustees who have registered APDs to update status.
+
+        The AAA admin may change status:
+        - from **pending** to **active**, to allow policies to be written for the APD
+        - from **active** to **inactive**
+        - from **inactive** to **active**
+
+        The trustee may change status of APDs they have registered:
+        - from **active** to **inactive**
+        - from **inactive** to **pending**
 components:
   schemas:
     RequestToken:
