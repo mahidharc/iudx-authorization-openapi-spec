@@ -4110,6 +4110,8 @@ paths:
                       status: active
                     - apdId: 540972fd-43df-43c1-9627-df2402a6b731
                       status: inactive
+      security:
+        - authorization: []
 components:
   schemas:
     RequestToken:
