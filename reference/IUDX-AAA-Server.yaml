@@ -2484,37 +2484,67 @@ paths:
                   uniqueItems: true
                   minItems: 1
                   items:
+                    anyOf:
+                      - additionalProperties: false
+                        properties:
+                          userId:
+                            type: string
+                            format: uuid
+                            minLength: 36
+                            maxLength: 36
+                            pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                          itemId:
+                            type: string
+                            minLength: 1
+                            maxLength: 512
+                            pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
+                          itemType:
+                            type: string
+                            minLength: 1
+                            enum:
+                              - resource
+                              - resource_group
+                              - resource_server
+                              - apd
+                          expiryTime:
+                            type: string
+                            minLength: 1
+                            pattern: '^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
+                          constraints:
+                            type: object
+                        required:
+                          - userId
+                          - itemId
+                          - itemType
+                          - constraints
+                      - additionalProperties: false
+                        properties:
+                          apdId:
+                            type: string
+                          itemId:
+                            type: string
+                          itemType:
+                            type: string
+                            enum:
+                              - resource
+                              - resource_group
+                          userClass:
+                            type: string
+                            pattern: '^[A-Za-z0-9-_]+$'
+                            minLength: 1
+                            maxLength: 10
+                          expiryTime:
+                            type: string
+                            pattern: '^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
+                          constraints:
+                            type: object
+                        required:
+                          - apdId
+                          - itemId
+                          - itemType
+                          - userClass
+                          - constraints
                     type: object
-                    properties:
-                      userId:
-                        type: string
-                        format: uuid
-                        minLength: 36
-                        maxLength: 36
-                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
-                      itemId:
-                        type: string
-                        minLength: 1
-                        maxLength: 512
-                        pattern: '^[a-zA-Z0-9_*\-*\.\/]+$'
-                      itemType:
-                        type: string
-                        minLength: 1
-                        enum:
-                          - resource
-                          - resource_group
-                          - resource_server
-                      expiryTime:
-                        type: string
-                        minLength: 1
-                        pattern: '^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$'
-                      constraints:
-                        type: object
-                    required:
-                      - userId
-                      - itemId
-                      - itemType
-                      - constraints
               required:
                 - request
             examples:
