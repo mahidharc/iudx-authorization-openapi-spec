@@ -2439,7 +2439,7 @@ paths:
       description: |-
         Delete policies created by a user. User policies and APD policies can be deleted.
 
-        The request would contain objects with a key `id`, i.e. the ID of the user policy or APD policy that the user wants to delete. The user can use the List Policy APD to get the policy IDs.
+        The request would contain objects with a key `id`, i.e. the ID of the user policy or APD policy that the user wants to delete. The user can use the List Policy API to get the policy IDs.
 
         ## Auth delegate
          - An auth delegate may use the API to delete policies on behalf of their provider. This is done by passing the user ID of the provider as a header called `providerId`.
