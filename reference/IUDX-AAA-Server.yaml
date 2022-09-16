@@ -4020,6 +4020,8 @@ paths:
               required:
                 - request
         description: Request body is a JsonObject containing a JsonArray having one or multiple ID Objects to delete policies.
+      tags:
+        - Notifications APIs
   /auth/v1/cert:
     get:
       summary: Get JWT Certificate
