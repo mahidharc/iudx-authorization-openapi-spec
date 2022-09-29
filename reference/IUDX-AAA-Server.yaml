@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: IUDX-AAA-Server
-  version: 3.5.0
+  version: '4.0'
   description: 'API specification for IUDX AAA Server. These APIs are used by users manage tokens, policy etc. These APIs requires valid token or client details for authentication.'
   license:
     name: MIT
@@ -250,12 +250,12 @@ paths:
                   role: delegate
               identity token for APD as consumer:
                 value:
-                  itemId: url of apd
+                  itemId: apd.iudx.org.in
                   itemType: resource_server
                   role: consumer
               identity token for APD as trustee:
                 value:
-                  itemId: url of apd
+                  itemId: apd.iudx.org.in
                   itemType: resource_server
                   role: trustee
               identity token for resource_server as provider:
@@ -281,7 +281,9 @@ paths:
           - Item Id - url of the server or apd.
           - Users with any role can get an identity token for either a `resource_server` or `apd`.
           
-          **NOTE :If role is `admin` or `trustee`, the user must own the `resource_server` or `apd` respectively.**   
+          **NOTE : If role is `admin` or `trustee`, the user must own the `resource_server` or `apd` respectively.**   
+          
+          **NOTE : An Admin can give access to other users to get admin tokens for a resource_server**
               
 
         ## Access Token
@@ -334,6 +336,9 @@ paths:
         In case access to a resource is defined using an APD policy (and there is no valid user policy for the requesting user and resource), the AAA server queries the APD with relevant information to see if the user belongs to the **_user class_** specified in the APD policy. The APD may respond in three ways:
 
         - **Allow** : The user belongs to the user class. The AAA server generates the access token based on the constraints defined in the policy and sends it back.
+
+        **NOTE** - The constraints that be set at the APD are added to the response object.
+
         - **Deny** : The user does not belong to the user class. The AAA server returns a `403 Forbidden`.
         - **Deny but the APD needs interaction** : The user does not belong to the user class, but the APD provides a mechanism for the user to interact with it. This interaction **may or may not** result in the user being included in the user class. The AAA server sends a `403 Forbidden` but includes a special **APD JWT token** that the user must use when interacting with the APD. 
 
@@ -3449,7 +3454,17 @@ paths:
                     title: string
                     detail: string
       operationId: get-auth-v1-policies-requests
-      description: 'Lists all the requests of that user. In case of provider or auth delegate, the requests which pertain to the items which are owned by the provider are returned. In case of consumer, the requests which are created by the consumer are returned.'
+      description: |-
+        Lists all the policy requests of the user calling the API
+
+        **PROVIDER**/**DELEGATE**
+
+        The requests that are present for the items of a provider are returned.
+         **NOTE** - Delegate must be for the provider on the AUTH SERVER
+
+        **CONSUMER**
+
+        The requests which are created by the consumer are returned.
       parameters:
         - schema:
             type: string
@@ -3550,7 +3565,16 @@ paths:
                     type: string
                     title: string
                     detail: string
-      description: The access request API called by consumers which will show up on the provider/auth delegate dashboards for approval or rejection. Can be called with unique multiple requests in a single API call.
+      description: |-
+        The access request API called by users with a consumer role.
+
+        Consumers can request for a 'resource' or a 'resource_group' and such requests show up on the `provider`/`auth delegate` dashboards in the `pending` state. The `provider`/`auth delegate` can either `apporve` or `reject` the requests.
+
+        An `approved` request will lead to a policy being generated for the consumer by the provider for the resource for which the request was made and for the duration mentioned in the request.
+
+        A consumer can `withdraw` a notification while it is `pending` state using the DELETE API
+
+        Can be called with unique multiple requests in a single API call.
       security:
         - authorization: []
       requestBody:
@@ -3611,7 +3635,14 @@ paths:
                           - api
                           - subs
                           - file
-        description: ''
+        description: |
+          'itemId' : The catalogue ID of the item for which the request is to be created.
+
+          'itemType' : 'resource' or 'resource_group'.
+
+          'expiryDuration' : Duration for the policy expiry in the ISO-8601 format.
+
+          'constraints' : The constraints that will be included in the policy that will be created.
         required: true
       tags:
         - Notifications APIs
@@ -3690,7 +3721,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Unauthorized'
-      description: This endpoint is used by the provider or an auth delegate to grant access to a consumer for a particular item that they own. This API automatically createed the required policy also.
+      description: |
+        This API can be called by the provider and the auth delegate. It can only be called for requests that are in the `pending` state.
+
+        The status can be updated to either `approved` or `rejected`.
+
+        In case of an `approved` update, A policy is created for corresponding to the request item and expiry for the consumer who created the request.
       security:
         - authorization: []
       requestBody:
@@ -3758,7 +3794,14 @@ paths:
                   request:
                     - requestId: bca11712-f381-46a5-afa3-a29b00568ace
                       status: rejected
-        description: ''
+        description: |-
+          `requestId` :  ID of the request. Can get this Id by using the list policy API.
+
+          `status` : The `provider` or `Auth delegate` can update the status to `approved` or `rejected`.
+
+          `expiryDuration` : duration of the policy that will be created (Only present for the approved requests).
+
+          `constraints` :  constraints for the policy if request is approved. 
         required: true
       tags:
         - Notifications APIs
@@ -3772,6 +3815,231 @@ paths:
           name: Authorization
           required: true
           description: Keycloak Issued token
+        - schema:
+            type: string
+          in: header
+          description: 'User ID of the provider, if an auth delegate wishes to create policy on behalf of a provider'
+          name: providerId
+    delete:
+      summary: Delete Requests
+      operationId: delete-auth-v1-policies-requests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        requestId:
+                          type: string
+                        itemId:
+                          type: string
+                        itemType:
+                          type: string
+                        status:
+                          type: string
+                        expiryDuration:
+                          type: string
+                        constraints:
+                          type: object
+                          properties:
+                            access:
+                              type: array
+                              items:
+                                type: string
+                        user:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                            name:
+                              type: object
+                              properties:
+                                firstName:
+                                  type: string
+                                lastName:
+                                  type: string
+                            id:
+                              type: string
+                        owner:
+                          type: object
+                          properties:
+                            email:
+                              type: string
+                            name:
+                              type: object
+                              properties:
+                                firstName:
+                                  type: string
+                                lastName:
+                                  type: string
+                            id:
+                              type: string
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:Success'
+                    title: deleted requests
+                    results:
+                      - requestId: 383ea497-0de9-4d6f-94c1-e3dd1328d944
+                        itemId: iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/integration-test
+                        itemType: resource_group
+                        status: withdrawn
+                        expiryDuration: '1 year 2 mons 10 days 02:30:00'
+                        constraints:
+                          access:
+                            - api
+                            - sub
+                            - file
+                        user:
+                          email: bryanrobert@iisc.ac.in
+                          name:
+                            firstName: B
+                            lastName: Robert A B C D
+                          id: 844e251b-574b-46e6-9247-f76f1f70a637
+                        owner:
+                          email: bryanrobert@iisc.ac.in
+                          name:
+                            firstName: B
+                            lastName: Robert A B C D
+                          id: 844e251b-574b-46e6-9247-f76f1f70a637
+              examples:
+                successful deletion:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: deleted requests
+                    results:
+                      - requestId: 383ea497-0de9-4d6f-94c1-e3dd1328d944
+                        itemId: iisc.ac.in/89a36273d77dac4cf38114fca1bbe64392547f86/rs.iudx.io/integration-test
+                        itemType: resource_group
+                        status: withdrawn
+                        expiryDuration: '1 year 2 mons 10 days 02:30:00'
+                        constraints:
+                          access:
+                            - api
+                            - sub
+                            - file
+                        user:
+                          email: bryanrobert@iisc.ac.in
+                          name:
+                            firstName: B
+                            lastName: Robert A B C D
+                          id: 844e251b-574b-46e6-9247-f76f1f70a637
+                        owner:
+                          email: bryanrobert@iisc.ac.in
+                          name:
+                            firstName: B
+                            lastName: Robert A B C D
+                          id: 844e251b-574b-46e6-9247-f76f1f70a637
+        '400':
+          description: The Id does not exist or was not created by the user calling the API or is no longer in the `pending` status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: requestId does not exists
+                    detail: '[6c61b9c7-6cfd-4d2a-bfc1-217fd56bb8e3]'
+              examples:
+                item does not es:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: requestId does not exists
+                    detail: '[6c61b9c7-6cfd-4d2a-bfc1-217fd56bb8e3]'
+        '401':
+          description: User with non consumer role trying to call the API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  example-1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: User does not have roles to use API
+                    detail: User with consumer role may call the API
+              examples:
+                example-1:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: User does not have roles to use API
+                    detail: User with consumer role may call the API
+      description: |-
+        A consumer who created a request may `withdraw` it as long as it is still in the `pending` state.
+
+        Request can have multiple ids to delete at once.
+
+        **NOTE** :  Only users with consumer role can call this API
+         
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          description: Keycloak Issued token
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                example-1:
+                  request:
+                    - id: 6c61b9c7-6cfd-4d2a-bfc1-217fd56bb8e3
+              properties:
+                request:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        minLength: 36
+                        maxLength: 36
+                        pattern: '^[0-9a-f]{8}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{4}\b-[0-9a-f]{12}$'
+                    required:
+                      - id
+              required:
+                - request
+            examples:
+              single delete request:
+                value:
+                  request:
+                    - id: 6c61b9c7-6cfd-4d2a-bfc1-217fd56bb8e3
+        description: |-
+          `id` : the UUID of the request that are to be deleted. 
+
+          Consumers can get the ids of the requests they want to delete using the list notifications API.
+      tags:
+        - Notifications APIs
   /auth/v1/cert:
     get:
       summary: Get JWT Certificate
