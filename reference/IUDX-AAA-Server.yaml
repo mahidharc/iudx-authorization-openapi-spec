@@ -3446,7 +3446,7 @@ paths:
             type: string
             example: Bearer <JWT>
             minLength: 1
-            maxLength: 3000
+            maxLength: 4000
           in: header
           name: Authorization
           required: true
@@ -3619,7 +3619,7 @@ paths:
             type: string
             example: Bearer <JWT>
             minLength: 1
-            maxLength: 3000
+            maxLength: 4000
           in: header
           name: Authorization
           required: true
@@ -3778,7 +3778,7 @@ paths:
             type: string
             example: Bearer <JWT>
             minLength: 1
-            maxLength: 3000
+            maxLength: 4000
           in: header
           name: Authorization
           required: true
