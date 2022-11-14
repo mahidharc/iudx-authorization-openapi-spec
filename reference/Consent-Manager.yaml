@@ -1,12 +1,28 @@
 openapi: 3.0.0
-x-stoplight:
-  id: 18vtx0d9afi3b
 info:
   title: Consent-Manager
   version: '1.0'
   description: Consent Manager
 servers:
   - url: 'http://localhost:3000'
+x-tagGroups:
+  - name: General
+    tags:
+      - Purposes APIs
+      - Consent Form APIs
+      - Consent Artifact APIs
+      - Data Principal APIs
+      - AIU APIs
+      - Access Log APIs
+  - name: Models
+    tags:
+      - Consent Form Model
+      - Purpose Model
+      - Data Principal Model
+      - AIU Model
+      - AIP Model
+      - Consent Artifact Model
+      - Access Log Model
 paths:
   /consent/purposes:
     parameters: []
@@ -774,7 +790,8 @@ paths:
   /consent/logs:
     get:
       summary: Get artifact access logs - AIP
-      tags: []
+      tags:
+        - Access Log APIs
       responses:
         '200':
           description: OK
@@ -938,7 +955,7 @@ components:
         - id
         - name
       x-tags:
-        - Purpose
+        - Purpose Model
     Data-Principal:
       title: Data-Principal
       x-stoplight:
