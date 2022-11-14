@@ -905,6 +905,8 @@ components:
         - itemType
         - purposes
         - expiryDuration
+      x-tags:
+        - Consent Form Model
     Consent-Form-Stats:
       title: Consent-Form-Stats
       x-stoplight:
@@ -916,6 +918,8 @@ components:
         artifactCount:
           type: integer
       description: 'Stats for a consent form '
+      x-tags:
+        - Consent Form Model
     Purpose:
       title: Purpose
       x-stoplight:
@@ -933,6 +937,8 @@ components:
       required:
         - id
         - name
+      x-tags:
+        - Purpose
     Data-Principal:
       title: Data-Principal
       x-stoplight:
@@ -958,6 +964,8 @@ components:
         - id
         - ppbNo
         - nameEnglish
+      x-tags:
+        - Data Principal Model
     Data-Principal-Stats:
       title: Data-Principal-Stats
       x-stoplight:
@@ -968,6 +976,8 @@ components:
           type: integer
         accessLogCount:
           type: integer
+      x-tags:
+        - Data Principal Model
     AIU:
       title: AIU
       x-stoplight:
@@ -996,6 +1006,8 @@ components:
         - id
         - name
         - email
+      x-tags:
+        - AIU Model
     AIU-Stats:
       title: AIU-Stats
       x-stoplight:
@@ -1006,6 +1018,8 @@ components:
           type: integer
         accessLogCount:
           type: integer
+      x-tags:
+        - AIU Model
     AIP:
       title: AIP
       x-stoplight:
@@ -1031,6 +1045,8 @@ components:
         - id
         - name
         - email
+      x-tags:
+        - AIP Model
     Consent-Artifact:
       title: Consent-Artifact
       x-stoplight:
@@ -1086,6 +1102,8 @@ components:
         - expiry
         - createdAt
         - updatedAt
+      x-tags:
+        - Consent Artifact Model
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
@@ -1096,6 +1114,8 @@ components:
           type: integer
       required:
         - accessLogCount
+      x-tags:
+        - Consent Artifact Model
     Access-Log:
       title: Access-Log
       x-stoplight:
@@ -1114,6 +1134,8 @@ components:
         - id
         - artifact
         - createdAt
+      x-tags:
+        - Access Log Model
     Signed-Consent-Artifact:
       title: Signed-Consent-Artifact
       x-stoplight:
@@ -1125,6 +1147,8 @@ components:
           format: uuid
         consentArtifact:
           type: string
+      x-tags:
+        - Consent Artifact Model
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
