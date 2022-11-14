@@ -8,15 +8,306 @@ info:
 servers:
   - url: 'http://localhost:3000'
 paths:
-  '/users/{userId}':
-    parameters:
-      - schema:
-          type: integer
-        name: userId
-        in: path
-        required: true
-        description: Id of an existing user.
-  /user: {}
+  /consent/purposes:
+    parameters: []
+    get:
+      summary: 'Get all purposes - AIU, AIP'
+      operationId: get-consent-purposes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Purpose'
+                required:
+                  - type
+                  - title
+                  - results
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        name: string
+                        description: string
+      description: Get all purposes
+      security:
+        - IUDX AAA Identity Token: []
+      tags:
+        - Purposes APIs
+  /consent/forms:
+    parameters: []
+    get:
+      summary: View consent forms - AIP
+      operationId: get-consent-forms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Consent-Form'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        name: string
+                        description: string
+                        itemId: string
+                        itemType: resource_group
+                        purposes:
+                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            name: string
+                            description: string
+                        expiryDuration: P1Y
+                        consentFormStats:
+                          dataPrincipalCount: 0
+                          artifactCount: 0
+      description: AIP views all consent forms they have created
+      tags:
+        - Consent Form APIs
+      security:
+        - IUDX AAA Identity Token: []
+      parameters:
+        - schema:
+            type: array
+          in: query
+          name: purposes
+          description: Search by list of purposes
+        - schema:
+            type: string
+          in: query
+          name: item
+          description: Search by an item ID (Cat ID)
+    post:
+      summary: Create consent form - AIP
+      operationId: post-consent-forms
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    $ref: '#/components/schemas/Consent-Form'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      name: string
+                      description: string
+                      itemId: string
+                      itemType: resource_group
+                      purposes:
+                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          name: string
+                          description: string
+                      expiryDuration: P1Y
+                      consentFormStats:
+                        dataPrincipalCount: 0
+                        artifactCount: 0
+      description: Create a consent form
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                purposes:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                dataPrincipals:
+                  type: array
+                  description: PPB numbers
+                  items:
+                    type: string
+                itemId:
+                  type: string
+                  description: cat ID of resource
+                itemType:
+                  type: string
+                  enum:
+                    - resource_group
+                    - resource
+                expiryDuration:
+                  type: string
+                  format: duration
+              required:
+                - name
+                - description
+                - purposes
+                - dataPrincipals
+                - itemId
+                - itemType
+                - expiryDuration
+            examples:
+              Example 1:
+                value:
+                  name: string
+                  description: string
+                  purposes:
+                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                  dataPrincipals:
+                    - string
+                  itemId: string
+                  itemType: resource_group
+                  expiryDuration: P1Y
+      tags:
+        - Consent Form APIs
+    put:
+      summary: Update an existing consent form - AIP
+      operationId: put-consent-forms
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Consent-Form'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        name: string
+                        description: string
+                        itemId: string
+                        itemType: resource_group
+                        purposes:
+                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            name: string
+                            description: string
+                        expiryDuration: P1Y
+                        consentFormStats:
+                          dataPrincipalCount: 0
+                          artifactCount: 0
+      description: Update purposes/data principals
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  maxItems: 100
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      formId:
+                        type: string
+                        format: uuid
+                      purposes:
+                        type: array
+                        items:
+                          type: string
+                          format: uuid
+                      dataPrincipals:
+                        type: array
+                        items:
+                          type: string
+                    required:
+                      - formId
+                      - purposes
+                      - dataPrincipals
+              required:
+                - request
+            examples:
+              Example 1:
+                value:
+                  request:
+                    - formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
+                      purposes:
+                        - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      dataPrincipals:
+                        - string
+      tags:
+        - Consent Form APIs
+    delete:
+      summary: Delete consent forms - AIP
+      operationId: delete-consent-forms
+      responses:
+        '200':
+          description: OK
+      description: Delete list of consent forms
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                formIds:
+                  type: array
+                  uniqueItems: true
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+            examples:
+              Example 1:
+                value:
+                  formIds:
+                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+      tags:
+        - Consent Form APIs
 components:
   schemas:
     Consent-Form:
@@ -271,6 +562,8 @@ components:
           format: date-time
       required:
         - id
+        - artifact
+        - createdAt
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
