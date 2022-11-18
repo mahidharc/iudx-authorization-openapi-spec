@@ -255,7 +255,7 @@ paths:
                           dataPrincipals:
                             count: 0
                             uri: string
-      description: Update purposes/data principals
+      description: Update purposes/data principals/expiry duration
       requestBody:
         content:
           application/json:
@@ -269,33 +269,32 @@ paths:
                   maxItems: 100
                   items:
                     type: object
-                    additionalProperties: false
                     properties:
-                      formId:
-                        type: string
-                        format: uuid
                       purposes:
                         type: array
                         items:
-                          type: string
-                          format: uuid
+                          type: integer
+                      expiryDuration:
+                        type: string
                       dataPrincipals:
                         type: array
+                        uniqueItems: true
+                        minItems: 1
+                        maxItems: 100
                         items:
                           type: string
                     required:
-                      - formId
                       - purposes
-                      - dataPrincipals
+                      - expiryDuration
               required:
                 - request
             examples:
               Example 1:
                 value:
                   request:
-                    - formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
-                      purposes:
-                        - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    - purposes:
+                        - 0
+                      expiryDuration: string
                       dataPrincipals:
                         - string
       tags:
@@ -616,7 +615,7 @@ paths:
                         accessLogs:
                           count: 0
                           uri: string
-      description: AIU tries to create a consent artifact for a resource + data principal + purposes
+      description: AIU tries to create a consent artifact for a resource + data principal. Purposes are taken from the form ID associated.
       security:
         - IUDX AAA Identity Token: []
       requestBody:
@@ -636,26 +635,21 @@ paths:
                 dataPrincipal:
                   type: string
                   description: PPB number
-                purposes:
-                  type: array
-                  uniqueItems: true
-                  minItems: 1
-                  maxItems: 100
-                  items:
-                    type: string
-                    format: uuid
+                formId:
+                  type: string
+                  format: uuid
               required:
                 - itemId
                 - itemType
                 - dataPrincipal
+                - formId
             examples:
               Example 1:
                 value:
                   itemId: string
                   itemType: resource_group
                   dataPrincipal: string
-                  purposes:
-                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                  formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
       tags:
         - Consent Artifact APIs
     delete:
