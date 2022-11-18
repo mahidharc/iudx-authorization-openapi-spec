@@ -881,6 +881,8 @@ components:
       x-stoplight:
         id: ti854s4kspqie
       type: object
+      x-tags:
+        - Consent Form Model
       properties:
         id:
           type: string
@@ -889,9 +891,6 @@ components:
         name:
           type: string
           description: Simple name of form
-        description:
-          type: string
-          description: Description of form
         itemId:
           type: string
           description: Cat ID of resource
@@ -915,36 +914,43 @@ components:
       required:
         - id
         - name
-        - description
         - itemId
         - itemType
         - purposes
         - expiryDuration
-      x-tags:
-        - Consent Form Model
+      description: Consent form external view
     Consent-Form-Stats:
       title: Consent-Form-Stats
       x-stoplight:
         id: 32u08fgjwdk85
       type: object
-      properties:
-        dataPrincipalCount:
-          type: integer
-        artifactCount:
-          type: integer
       description: 'Stats for a consent form '
       x-tags:
         - Consent Form Model
+      properties:
+        artifactCount:
+          type: integer
+        dataPrincipals:
+          type: object
+          properties:
+            count:
+              type: integer
+            uri:
+              type: string
     Purpose:
       title: Purpose
       x-stoplight:
         id: jyhjlpu5iug53
       type: object
+      x-tags:
+        - Purpose Model
       properties:
         id:
           type: string
           description: UUID ID of purpose
           format: uuid
+        code:
+          type: integer
         name:
           type: string
         description:
@@ -952,13 +958,13 @@ components:
       required:
         - id
         - name
-      x-tags:
-        - Purpose Model
     Data-Principal:
       title: Data-Principal
       x-stoplight:
         id: ydql93jmjxe2a
       type: object
+      x-tags:
+        - Data Principal Model
       properties:
         id:
           type: string
@@ -967,10 +973,7 @@ components:
         ppbNo:
           type: string
           description: PPB number
-        nameRegional:
-          type: string
-          description: Name in regional script
-        nameEnglish:
+        name:
           type: string
           description: Name in English
         dataPrincipalStats:
@@ -978,21 +981,29 @@ components:
       required:
         - id
         - ppbNo
-        - nameEnglish
-      x-tags:
-        - Data Principal Model
+        - name
     Data-Principal-Stats:
       title: Data-Principal-Stats
       x-stoplight:
         id: rff0j8ljamfv8
       type: object
-      properties:
-        artifactCount:
-          type: integer
-        accessLogCount:
-          type: integer
       x-tags:
         - Data Principal Model
+      properties:
+        artifacts:
+          type: object
+          properties:
+            count:
+              type: integer
+            uri:
+              type: string
+        accessLogs:
+          type: object
+          properties:
+            count:
+              type: integer
+            uri:
+              type: string
     AIU:
       title: AIU
       x-stoplight:
@@ -1028,13 +1039,23 @@ components:
       x-stoplight:
         id: ojnrtjbu9ojop
       type: object
-      properties:
-        activeArtifactCount:
-          type: integer
-        accessLogCount:
-          type: integer
       x-tags:
         - AIU Model
+      properties:
+        artifacts:
+          type: object
+          properties:
+            count:
+              type: integer
+            uri:
+              type: string
+        accessLogs:
+          type: object
+          properties:
+            count:
+              type: integer
+            uri:
+              type: string
     AIP:
       title: AIP
       x-stoplight:
@@ -1124,13 +1145,16 @@ components:
       x-stoplight:
         id: vimv51qjgikhf
       type: object
-      properties:
-        accessLogCount:
-          type: integer
-      required:
-        - accessLogCount
       x-tags:
         - Consent Artifact Model
+      properties:
+        accessLogs:
+          type: object
+          properties:
+            count:
+              type: integer
+            uri:
+              type: string
     Access-Log:
       title: Access-Log
       x-stoplight:
