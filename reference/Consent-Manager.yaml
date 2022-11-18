@@ -188,7 +188,6 @@ paths:
                     - resource
                 expiryDuration:
                   type: string
-                  format: duration
               required:
                 - name
                 - description
@@ -911,7 +910,6 @@ components:
           type: string
           description: How long a consent artefact generated from thisform will last
           pattern: '^(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$'
-          format: duration
         consentFormStats:
           $ref: '#/components/schemas/Consent-Form-Stats'
       required:
