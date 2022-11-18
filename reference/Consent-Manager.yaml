@@ -56,6 +56,7 @@ paths:
                     title: string
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        code: 0
                         name: string
                         description: string
       description: Get all purposes
@@ -92,17 +93,19 @@ paths:
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                         name: string
-                        description: string
                         itemId: string
                         itemType: resource_group
                         purposes:
                           - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: 0
                             name: string
                             description: string
-                        expiryDuration: P1Y
+                        expiryDuration: string
                         consentFormStats:
-                          dataPrincipalCount: 0
                           artifactCount: 0
+                          dataPrincipals:
+                            count: 0
+                            uri: string
       description: AIP views all consent forms they have created
       tags:
         - Consent Form APIs
@@ -144,17 +147,19 @@ paths:
                     results:
                       id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                       name: string
-                      description: string
                       itemId: string
                       itemType: resource_group
                       purposes:
                         - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          code: 0
                           name: string
                           description: string
-                      expiryDuration: P1Y
+                      expiryDuration: string
                       consentFormStats:
-                        dataPrincipalCount: 0
                         artifactCount: 0
+                        dataPrincipals:
+                          count: 0
+                          uri: string
       description: Create a consent form
       security:
         - IUDX AAA Identity Token: []
@@ -237,17 +242,19 @@ paths:
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                         name: string
-                        description: string
                         itemId: string
                         itemType: resource_group
                         purposes:
                           - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: 0
                             name: string
                             description: string
-                        expiryDuration: P1Y
+                        expiryDuration: string
                         consentFormStats:
-                          dataPrincipalCount: 0
                           artifactCount: 0
+                          dataPrincipals:
+                            count: 0
+                            uri: string
       description: Update purposes/data principals
       requestBody:
         content:
@@ -299,6 +306,40 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Consent-Form'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        name: string
+                        itemId: string
+                        itemType: resource_group
+                        purposes:
+                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: 0
+                            name: string
+                            description: string
+                        expiryDuration: string
+                        consentFormStats:
+                          artifactCount: 0
+                          dataPrincipals:
+                            count: 0
+                            uri: string
       description: Delete list of consent forms
       security:
         - IUDX AAA Identity Token: []
@@ -358,8 +399,12 @@ paths:
                             lastName: string
                           email: string
                           aiuStats:
-                            activeArtifactCount: 0
-                            accessLogCount: 0
+                            artifacts:
+                              count: 0
+                              uri: string
+                            accessLogs:
+                              count: 0
+                              uri: string
                         aip:
                           id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                           name:
@@ -369,13 +414,17 @@ paths:
                         dataPrincipal:
                           id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                           ppbNo: string
-                          nameRegional: string
-                          nameEnglish: string
+                          name: string
                           dataPrincipalStats:
-                            artifactCount: 0
-                            accessLogCount: 0
+                            artifacts:
+                              count: 0
+                              uri: string
+                            accessLogs:
+                              count: 0
+                              uri: string
                         purposes:
                           - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: 0
                             name: string
                             description: string
                         itemId: string
@@ -383,9 +432,10 @@ paths:
                         status: active
                         expiry: '2019-08-24T14:15:22Z'
                         createdAt: '2019-08-24T14:15:22Z'
-                        updatedAt: '2019-08-24T14:15:22Z'
                         consentArtifactStats:
-                          accessLogCount: 0
+                          accessLogs:
+                            count: 0
+                            uri: string
       operationId: get-consent-artifacts
       description: |-
         # AIP
@@ -451,6 +501,57 @@ paths:
                     type: string
                   results:
                     $ref: '#/components/schemas/Consent-Artifact'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      aiu:
+                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        name:
+                          firstName: string
+                          lastName: string
+                        email: string
+                        aiuStats:
+                          artifacts:
+                            count: 0
+                            uri: string
+                          accessLogs:
+                            count: 0
+                            uri: string
+                      aip:
+                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        name:
+                          firstName: string
+                          lastName: string
+                        email: string
+                      dataPrincipal:
+                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        ppbNo: string
+                        name: string
+                        dataPrincipalStats:
+                          artifacts:
+                            count: 0
+                            uri: string
+                          accessLogs:
+                            count: 0
+                            uri: string
+                      purposes:
+                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          code: 0
+                          name: string
+                          description: string
+                      itemId: string
+                      itemType: resource_group
+                      status: active
+                      expiry: '2019-08-24T14:15:22Z'
+                      createdAt: '2019-08-24T14:15:22Z'
+                      consentArtifactStats:
+                        accessLogs:
+                          count: 0
+                          uri: string
       description: AIU tries to create a consent artifact for a resource + data principal + purposes
       security:
         - IUDX AAA Identity Token: []
@@ -526,8 +627,12 @@ paths:
                             lastName: string
                           email: string
                           aiuStats:
-                            activeArtifactCount: 0
-                            accessLogCount: 0
+                            artifacts:
+                              count: 0
+                              uri: string
+                            accessLogs:
+                              count: 0
+                              uri: string
                         aip:
                           id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                           name:
@@ -537,13 +642,17 @@ paths:
                         dataPrincipal:
                           id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                           ppbNo: string
-                          nameRegional: string
-                          nameEnglish: string
+                          name: string
                           dataPrincipalStats:
-                            artifactCount: 0
-                            accessLogCount: 0
+                            artifacts:
+                              count: 0
+                              uri: string
+                            accessLogs:
+                              count: 0
+                              uri: string
                         purposes:
                           - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: 0
                             name: string
                             description: string
                         itemId: string
@@ -553,64 +662,12 @@ paths:
                         createdAt: '2019-08-24T14:15:22Z'
                         updatedAt: '2019-08-24T14:15:22Z'
                         consentArtifactStats:
-                          accessLogCount: 0
+                          accessLogs:
+                            count: 0
+                            uri: string
       description: Revoke a consent artifact owned by AIP
       security:
         - IUDX AAA Identity Token: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                artifactIds:
-                  type: array
-                  uniqueItems: true
-                  minItems: 1
-                  maxItems: 100
-                  items:
-                    type: string
-                    format: uuid
-      tags:
-        - Consent Artifact APIs
-  /consent/artifacts/download:
-    get:
-      summary: 'Download consent artifacts - AIP, AIU'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  title:
-                    type: string
-                  results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Signed-Consent-Artifact'
-              examples:
-                Example 1:
-                  value:
-                    type: string
-                    title: string
-                    results:
-                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        consentArtifact: string
-      operationId: get-consent-artifacts-download
-      tags:
-        - Consent Artifact APIs
-      description: |-
-        # AIP
-
-        Download list of consent artifacts 
-
-        # AIU
-
-        Download list of consent artifacts 
       requestBody:
         content:
           application/json:
@@ -630,6 +687,115 @@ paths:
                 value:
                   artifactIds:
                     - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+      tags:
+        - Consent Artifact APIs
+  /consent/artifacts/download:
+    get:
+      summary: 'Download consent artifact - AIP, AIU'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: object
+                    properties:
+                      signedArtifact:
+                        $ref: '#/components/schemas/Signed-Consent-Artifact'
+                      accessLogs:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Access-Log'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      signedArtifact:
+                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                        consentArtifact: string
+                      accessLogs:
+                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          artifact:
+                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            aiu:
+                              id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                              name:
+                                firstName: string
+                                lastName: string
+                              email: string
+                              aiuStats:
+                                artifacts:
+                                  count: 0
+                                  uri: string
+                                accessLogs:
+                                  count: 0
+                                  uri: string
+                            aip:
+                              id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                              name:
+                                firstName: string
+                                lastName: string
+                              email: string
+                            dataPrincipal:
+                              id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                              ppbNo: string
+                              name: string
+                              dataPrincipalStats:
+                                artifacts:
+                                  count: 0
+                                  uri: string
+                                accessLogs:
+                                  count: 0
+                                  uri: string
+                            purposes:
+                              - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                                code: 0
+                                name: string
+                                description: string
+                            itemId: string
+                            itemType: resource_group
+                            status: active
+                            expiry: '2019-08-24T14:15:22Z'
+                            createdAt: '2019-08-24T14:15:22Z'
+                            updatedAt: '2019-08-24T14:15:22Z'
+                            consentArtifactStats:
+                              accessLogs:
+                                count: 0
+                                uri: string
+                          createdAt: '2019-08-24T14:15:22Z'
+      operationId: get-consent-artifacts-download
+      tags:
+        - Consent Artifact APIs
+      description: |-
+        # AIP
+
+        Download list of consent artifacts and access logs
+
+        # AIU
+
+        Download list of consent artifacts and access logs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                artifactIds:
+                  type: string
+                  format: uuid
+            examples:
+              Example 1:
+                value:
+                  artifactIds: e018c1e3-12b2-47d3-8524-fe5f07db979b
   /consent/principals:
     get:
       summary: 'Get data principals - AIP, AIU'
@@ -657,8 +823,7 @@ paths:
                     results:
                       id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                       ppbNo: string
-                      nameRegional: string
-                      nameEnglish: string
+                      name: string
                       dataPrincipalStats:
                         artifactCount: 0
                         accessLogCount: 0
@@ -834,8 +999,7 @@ paths:
                           dataPrincipal:
                             id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
                             ppbNo: string
-                            nameRegional: string
-                            nameEnglish: string
+                            name: string
                             dataPrincipalStats:
                               artifactCount: 0
                               accessLogCount: 0
@@ -1088,6 +1252,8 @@ components:
       x-stoplight:
         id: q0amvhva2o2fb
       type: object
+      x-tags:
+        - Consent Artifact Model
       properties:
         id:
           type: string
@@ -1121,9 +1287,6 @@ components:
         createdAt:
           type: string
           format: date-time
-        updatedAt:
-          type: string
-          format: date-time
         consentArtifactStats:
           $ref: '#/components/schemas/Consent-Artifact-Stats'
       required:
@@ -1137,9 +1300,6 @@ components:
         - status
         - expiry
         - createdAt
-        - updatedAt
-      x-tags:
-        - Consent Artifact Model
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
