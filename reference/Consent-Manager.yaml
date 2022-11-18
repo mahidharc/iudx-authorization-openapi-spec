@@ -100,7 +100,7 @@ paths:
                             code: 0
                             name: string
                             description: string
-                        expiryDuration: string
+                        expiryDuration: P1Y
                         consentFormStats:
                           artifactCount: 0
                           dataPrincipals:
@@ -154,7 +154,7 @@ paths:
                           code: 0
                           name: string
                           description: string
-                      expiryDuration: string
+                      expiryDuration: P1Y
                       consentFormStats:
                         artifactCount: 0
                         dataPrincipals:
@@ -249,7 +249,7 @@ paths:
                             code: 0
                             name: string
                             description: string
-                        expiryDuration: string
+                        expiryDuration: P1Y
                         consentFormStats:
                           artifactCount: 0
                           dataPrincipals:
@@ -334,7 +334,7 @@ paths:
                             code: 0
                             name: string
                             description: string
-                        expiryDuration: string
+                        expiryDuration: P1Y
                         consentFormStats:
                           artifactCount: 0
                           dataPrincipals:
@@ -364,6 +364,70 @@ paths:
                     - 497f6eca-6276-4993-bfeb-53cbbbba6f08
       tags:
         - Consent Form APIs
+  /consent/forms/search:
+    get:
+      summary: Search for resource + data principal - AIU
+      tags:
+        - Consent Form APIs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    $ref: '#/components/schemas/Consent-Form-Search'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
+                      effectiveItemId: string
+                      effectiveItemType: resource_group
+                      purposes:
+                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          code: 0
+                          name: string
+                          description: string
+                      expiryDuration: string
+                      dataPrincipal: string
+      operationId: get-consent-forms-search
+      description: 'AIU can search if a consent form exists for a given resource and data principal '
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemId:
+                  type: string
+                itemType:
+                  type: string
+                  enum:
+                    - resource_group
+                    - resource
+                dataPrincipal:
+                  type: string
+              required:
+                - itemId
+                - itemType
+                - dataPrincipal
+            examples:
+              Example 1:
+                value:
+                  itemId: string
+                  itemType: resource_group
+                  dataPrincipal: string
   /consent/artifacts:
     get:
       summary: 'Get all consent artifacts - AIP, AIU'
@@ -789,7 +853,7 @@ paths:
             schema:
               type: object
               properties:
-                artifactIds:
+                artifactId:
                   type: string
                   format: uuid
             examples:
@@ -1348,6 +1412,30 @@ components:
           type: string
       x-tags:
         - Consent Artifact Model
+    Consent-Form-Search:
+      title: Consent-Form-Search
+      x-stoplight:
+        id: hr5tg674z8wgh
+      type: object
+      properties:
+        formId:
+          type: string
+          format: uuid
+        effectiveItemId:
+          type: string
+        effectiveItemType:
+          type: string
+          enum:
+            - resource_group
+            - resource
+        purposes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Purpose'
+        expiryDuration:
+          type: string
+        dataPrincipal:
+          type: string
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
