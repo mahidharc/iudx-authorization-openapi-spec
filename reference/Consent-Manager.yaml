@@ -111,17 +111,7 @@ paths:
         - Consent Form APIs
       security:
         - IUDX AAA Identity Token: []
-      parameters:
-        - schema:
-            type: array
-          in: query
-          name: purposes
-          description: Search by list of purposes
-        - schema:
-            type: string
-          in: query
-          name: item
-          description: Search by an item ID (Cat ID)
+      parameters: []
     post:
       summary: Create consent form - AIP
       operationId: post-consent-forms
@@ -283,6 +273,9 @@ paths:
                         maxItems: 100
                         items:
                           type: string
+                      formId:
+                        type: string
+                        format: uuid
                     required:
                       - purposes
                       - expiryDuration
@@ -294,9 +287,10 @@ paths:
                   request:
                     - purposes:
                         - 0
-                      expiryDuration: string
+                      expiryDuration: P1Y
                       dataPrincipals:
                         - string
+                      formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
       tags:
         - Consent Form APIs
     delete:
@@ -508,45 +502,7 @@ paths:
         Get all consent artifacts created for them
       security:
         - IUDX AAA Identity Token: []
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-          in: query
-          name: formId
-          description: Search by form ID
-        - schema:
-            type: string
-          in: query
-          name: dataPrincipal
-          description: Search by data principal (UUID or PPB?)
-        - schema:
-            type: string
-            enum:
-              - active
-              - revoked
-          in: query
-          name: status
-          description: Search by status
-        - schema:
-            type: string
-          in: query
-          name: item
-          description: Search by resource (cat ID)
-        - schema:
-            type: array
-            uniqueItems: true
-            minItems: 1
-            maxItems: 10
-          in: query
-          name: purposes
-          description: Search by list of purposes
-        - schema:
-            type: string
-            format: uuid
-          in: query
-          name: aiu
-          description: Search by AIU
+      parameters: []
     post:
       summary: Create consent artifact - AIU
       operationId: post-consent-artifacts
@@ -896,13 +852,7 @@ paths:
         Get all data principals present in consent artifacts of AIU
       security:
         - IUDX AAA Identity Token: []
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-          in: query
-          name: formId
-          description: Search by formId
+      parameters: []
     delete:
       summary: Revoke consent for data principals - AIP
       operationId: delete-consent-principals
@@ -1075,27 +1025,7 @@ paths:
                             accessLogCount: 0
                         createdAt: '2019-08-24T14:15:22Z'
       operationId: get-consent-logs
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: aiu
-          description: 'Search by AIU '
-        - schema:
-            type: string
-          in: query
-          name: dataPrincipal
-          description: Search by data principal
-        - schema:
-            type: string
-          in: query
-          name: artifact
-          description: Search by consent artifact ID
-        - schema:
-            type: string
-          in: query
-          name: resource
-          description: Search by cat ID
+      parameters: []
 components:
   schemas:
     Consent-Form:
@@ -1105,6 +1035,7 @@ components:
       type: object
       x-tags:
         - Consent Form Model
+      description: Consent form external view
       properties:
         id:
           type: string
@@ -1127,6 +1058,10 @@ components:
           description: List of purposes
           items:
             $ref: '#/components/schemas/Purpose'
+        dataPrincipals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Data-Principal'
         expiryDuration:
           type: string
           description: How long a consent artefact generated from thisform will last
@@ -1140,7 +1075,6 @@ components:
         - itemType
         - purposes
         - expiryDuration
-      description: Consent form external view
     Consent-Form-Stats:
       title: Consent-Form-Stats
       x-stoplight:
@@ -1157,8 +1091,6 @@ components:
           properties:
             count:
               type: integer
-            uri:
-              type: string
     Purpose:
       title: Purpose
       x-stoplight:
@@ -1217,15 +1149,11 @@ components:
           properties:
             count:
               type: integer
-            uri:
-              type: string
         accessLogs:
           type: object
           properties:
             count:
               type: integer
-            uri:
-              type: string
     AIU:
       title: AIU
       x-stoplight:
@@ -1269,15 +1197,11 @@ components:
           properties:
             count:
               type: integer
-            uri:
-              type: string
         accessLogs:
           type: object
           properties:
             count:
               type: integer
-            uri:
-              type: string
     AIP:
       title: AIP
       x-stoplight:
@@ -1371,8 +1295,6 @@ components:
           properties:
             count:
               type: integer
-            uri:
-              type: string
     Access-Log:
       title: Access-Log
       x-stoplight:
@@ -1398,14 +1320,14 @@ components:
       x-stoplight:
         id: loi8sp7mzk5dy
       type: object
+      x-tags:
+        - Consent Artifact Model
       properties:
         id:
           type: string
           format: uuid
         consentArtifact:
-          type: string
-      x-tags:
-        - Consent Artifact Model
+          type: object
     Consent-Form-Search:
       title: Consent-Form-Search
       x-stoplight:
