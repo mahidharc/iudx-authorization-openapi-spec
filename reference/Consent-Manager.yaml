@@ -719,73 +719,10 @@ paths:
                   title:
                     type: string
                   results:
-                    type: object
-                    properties:
-                      signedArtifact:
-                        $ref: '#/components/schemas/Signed-Consent-Artifact'
-                      accessLogs:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Access-Log'
-              examples:
-                Example 1:
-                  value:
-                    type: string
-                    title: string
-                    results:
-                      signedArtifact:
-                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        consentArtifact: string
-                      accessLogs:
-                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          artifact:
-                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            aiu:
-                              id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                              name:
-                                firstName: string
-                                lastName: string
-                              email: string
-                              aiuStats:
-                                artifacts:
-                                  count: 0
-                                  uri: string
-                                accessLogs:
-                                  count: 0
-                                  uri: string
-                            aip:
-                              id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                              name:
-                                firstName: string
-                                lastName: string
-                              email: string
-                            dataPrincipal:
-                              id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                              ppbNo: string
-                              name: string
-                              dataPrincipalStats:
-                                artifacts:
-                                  count: 0
-                                  uri: string
-                                accessLogs:
-                                  count: 0
-                                  uri: string
-                            purposes:
-                              - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                                code: 0
-                                name: string
-                                description: string
-                            itemId: string
-                            itemType: resource_group
-                            status: active
-                            expiry: '2019-08-24T14:15:22Z'
-                            createdAt: '2019-08-24T14:15:22Z'
-                            updatedAt: '2019-08-24T14:15:22Z'
-                            consentArtifactStats:
-                              accessLogs:
-                                count: 0
-                                uri: string
-                          createdAt: '2019-08-24T14:15:22Z'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Download-Consent-Artifact'
+              examples: {}
       operationId: get-consent-artifacts-download
       tags:
         - Consent Artifact APIs
@@ -804,12 +741,21 @@ paths:
               type: object
               properties:
                 artifactId:
-                  type: string
+                  type: array
                   format: uuid
+                  uniqueItems: true
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    format: uuid
+              required:
+                - artifactId
             examples:
               Example 1:
                 value:
-                  artifactIds: e018c1e3-12b2-47d3-8524-fe5f07db979b
+                  artifactId:
+                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
   /consent/principals:
     get:
       summary: 'Get data principals - AIP, AIU'
@@ -987,43 +933,11 @@ paths:
                     title: string
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        artifact:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          aiu:
-                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            name:
-                              firstName: string
-                              lastName: string
-                            email: string
-                            aiuStats:
-                              activeArtifactCount: 0
-                              accessLogCount: 0
-                          aip:
-                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            name:
-                              firstName: string
-                              lastName: string
-                            email: string
-                          dataPrincipal:
-                            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            ppbNo: string
-                            name: string
-                            dataPrincipalStats:
-                              artifactCount: 0
-                              accessLogCount: 0
-                          purposes:
-                            - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                              name: string
-                              description: string
-                          itemId: string
-                          itemType: resource_group
-                          status: active
-                          expiry: '2019-08-24T14:15:22Z'
-                          createdAt: '2019-08-24T14:15:22Z'
-                          updatedAt: '2019-08-24T14:15:22Z'
-                          consentArtifactStats:
-                            accessLogCount: 0
+                        artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
                         createdAt: '2019-08-24T14:15:22Z'
+                        signedAccessLog: {}
+                        itemId: string
+                        itemType: resource_group
       operationId: get-consent-logs
       parameters: []
 components:
@@ -1075,6 +989,31 @@ components:
         - itemType
         - purposes
         - expiryDuration
+      x-examples:
+        Example 1:
+          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          name: string
+          itemId: string
+          itemType: resource_group
+          purposes:
+            - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+              code: 0
+              name: string
+              description: string
+          dataPrincipals:
+            - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+              ppbNo: string
+              name: string
+              dataPrincipalStats:
+                artifacts:
+                  count: 0
+                accessLogs:
+                  count: 0
+          expiryDuration: P1Y
+          consentFormStats:
+            artifactCount: 0
+            dataPrincipals:
+              count: 0
     Consent-Form-Stats:
       title: Consent-Form-Stats
       x-stoplight:
@@ -1084,8 +1023,11 @@ components:
       x-tags:
         - Consent Form Model
       properties:
-        artifactCount:
-          type: integer
+        artifact:
+          type: object
+          properties:
+            count:
+              type: integer
         dataPrincipals:
           type: object
           properties:
@@ -1111,6 +1053,7 @@ components:
           type: string
       required:
         - id
+        - code
         - name
     Data-Principal:
       title: Data-Principal
@@ -1157,7 +1100,7 @@ components:
     AIU:
       title: AIU
       x-stoplight:
-        id: jygt2ro3zd9ce
+        id: 30c8733454a35
       type: object
       properties:
         id:
@@ -1300,34 +1243,35 @@ components:
       x-stoplight:
         id: 863xx35dw6y26
       type: object
+      x-tags:
+        - Access Log Model
       properties:
         id:
           type: string
           format: uuid
         artifact:
-          $ref: '#/components/schemas/Consent-Artifact'
+          anyOf:
+            - type: string
+              format: uuid
+            - $ref: '#/components/schemas/Consent-Artifact'
         createdAt:
           type: string
           format: date-time
+        signedAccessLog:
+          type: object
+        itemId:
+          type: string
+        itemType:
+          type: string
+          enum:
+            - resource_group
+            - resource
       required:
         - id
         - artifact
         - createdAt
-      x-tags:
-        - Access Log Model
-    Signed-Consent-Artifact:
-      title: Signed-Consent-Artifact
-      x-stoplight:
-        id: loi8sp7mzk5dy
-      type: object
-      x-tags:
-        - Consent Artifact Model
-      properties:
-        id:
-          type: string
-          format: uuid
-        consentArtifact:
-          type: object
+        - itemId
+        - itemType
     Consent-Form-Search:
       title: Consent-Form-Search
       x-stoplight:
@@ -1352,6 +1296,57 @@ components:
           type: string
         dataPrincipal:
           type: string
+    Revocation:
+      title: Revocation
+      x-stoplight:
+        id: 1wz53v0rvi7s4
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        revokedBy:
+          $ref: '#/components/schemas/AIP'
+        role:
+          type: string
+          enum:
+            - AIP
+            - AIU
+        artifact:
+          anyOf:
+            - type: string
+              format: uuid
+            - $ref: '#/components/schemas/Consent-Artifact'
+        signedRevocation:
+          type: object
+      required:
+        - id
+        - revokedBy
+        - role
+        - artifact
+    Download-Consent-Artifact:
+      title: Download-Consent-Artifact
+      x-stoplight:
+        id: 018uztqernzyd
+      type: object
+      properties:
+        artifact:
+          $ref: '#/components/schemas/Consent-Artifact'
+        signedArtifact:
+          type: object
+        revocation:
+          $ref: '#/components/schemas/Revocation'
+        accessLogs:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Access-Log'
+      required:
+        - artifact
+        - signedArtifact
+        - accessLogs
+      x-tags:
+        - Consent Artifact Model
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
