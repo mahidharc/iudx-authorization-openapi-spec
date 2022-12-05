@@ -991,7 +991,7 @@ components:
       x-tags:
         - Consent Form Model
       properties:
-        artifact:
+        artifacts:
           type: object
           properties:
             count:
@@ -1001,6 +1001,41 @@ components:
           properties:
             count:
               type: integer
+      x-examples:
+        Example 1:
+          artifacts:
+            count: 100
+          dataPrincipals:
+            count: 2
+    PurposeCode:
+      title: PurposeCode
+      x-stoplight:
+        id: a3gdxlwhpe33h
+      type: string
+      description: Allowed codes for ADeX purposes
+      x-examples:
+        Example 1: B1
+      example: B1
+      enum:
+        - B1
+        - B2
+        - B3
+        - B4
+        - B5
+        - B6
+        - '_1'
+        - P2
+        - P3
+        - P4
+        - P5
+        - G1
+        - G2
+        - G3
+        - G4
+        - G5
+        - G6
+      x-tags:
+        - Purpose Model
     Purpose:
       title: Purpose
       x-stoplight:
@@ -1014,7 +1049,7 @@ components:
           description: UUID ID of purpose
           format: uuid
         code:
-          type: integer
+          $ref: '#/components/schemas/PurposeCode'
         name:
           type: string
         description:
@@ -1023,30 +1058,15 @@ components:
         - id
         - code
         - name
-    Data-Principal:
-      title: Data-Principal
-      x-stoplight:
-        id: ydql93jmjxe2a
-      type: object
-      x-tags:
-        - Data Principal Model
-      properties:
-        id:
-          type: string
-          description: UUID ID of data principal
-          format: uuid
-        ppbNo:
-          type: string
-          description: PPB number
-        name:
-          type: string
-          description: Name in English
-        dataPrincipalStats:
-          $ref: '#/components/schemas/Data-Principal-Stats'
-      required:
-        - id
-        - ppbNo
-        - name
+      description: ''
+      x-examples:
+        Example 1:
+          id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+          code: B1
+          name: Agricultural credit
+          description: |-
+            - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+            - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
     Data-Principal-Stats:
       title: Data-Principal-Stats
       x-stoplight:
@@ -1065,26 +1085,68 @@ components:
           properties:
             count:
               type: integer
+      x-examples:
+        Example 1:
+          artifacts:
+            count: 0
+          accessLogs:
+            count: 0
+    Data-Principal:
+      title: Data-Principal
+      x-stoplight:
+        id: ydql93jmjxe2a
+      type: object
+      x-tags:
+        - Data Principal Model
+      properties:
+        id:
+          type: string
+          description: UUID ID of data principal
+          format: uuid
+        ppbNo:
+          $ref: '#/components/schemas/PPBNo'
+        name:
+          type: string
+          description: Name in English
+        dataPrincipalStats:
+          $ref: '#/components/schemas/Data-Principal-Stats'
+      required:
+        - id
+        - ppbNo
+        - name
+      x-examples:
+        Example 1:
+          id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+          ppbNo: T13010130532
+          name: Farmer
+          dataPrincipalStats:
+            artifacts:
+              count: 4
+            accessLogs:
+              count: 9
+    PPBNo:
+      title: PPBNo
+      x-stoplight:
+        id: 31lsvpan6jmty
+      type: string
+      description: A PPB number
+      example: T13010130532
+      x-examples:
+        Example 1: T13010130532
     AIU:
       title: AIU
       x-stoplight:
         id: 30c8733454a35
       type: object
+      x-tags:
+        - AIU Model
       properties:
         id:
           type: string
           description: IUDX user ID of AIU
           format: uuid
         name:
-          type: object
-          required:
-            - firstName
-            - lastName
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
+          type: string
         email:
           type: string
         aiuStats:
@@ -1093,8 +1155,16 @@ components:
         - id
         - name
         - email
-      x-tags:
-        - AIU Model
+      x-examples:
+        Example 1:
+          id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+          name: AIU Person
+          email: aiu.person@example.com
+          aiuStats:
+            artifacts:
+              count: 0
+            accessLogs:
+              count: 0
     AIU-Stats:
       title: AIU-Stats
       x-stoplight:
@@ -1113,33 +1183,36 @@ components:
           properties:
             count:
               type: integer
+      x-examples:
+        Example 1:
+          artifacts:
+            count: 4
+          accessLogs:
+            count: 1
     AIP:
       title: AIP
       x-stoplight:
         id: h80aoxodvm5r8
       type: object
+      x-tags:
+        - AIP Model
       properties:
         id:
           type: string
           format: uuid
         name:
-          type: object
-          required:
-            - firstName
-            - lastName
-          properties:
-            firstName:
-              type: string
-            lastName:
-              type: string
+          type: string
         email:
           type: string
       required:
         - id
         - name
         - email
-      x-tags:
-        - AIP Model
+      x-examples:
+        Example 1:
+          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+          name: AIU Person
+          email: aiu.person@example.com
     Consent-Artifact:
       title: Consent-Artifact
       x-stoplight:
@@ -1193,6 +1266,7 @@ components:
         - status
         - expiry
         - createdAt
+      x-examples: {}
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
