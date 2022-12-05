@@ -867,7 +867,7 @@ paths:
             examples:
               Example 1:
                 value:
-                  principalIds:
+                  dataPrincipals:
                     - T13010130532
       security:
         - IUDX AAA Identity Token: []
