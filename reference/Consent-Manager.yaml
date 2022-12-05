@@ -3,26 +3,11 @@ info:
   title: Consent-Manager
   version: '1.0'
   description: Consent Manager
+  contact: {}
+  license:
+    name: MIT
 servers:
   - url: 'http://localhost:3000'
-x-tagGroups:
-  - name: General
-    tags:
-      - Purposes APIs
-      - Consent Form APIs
-      - Consent Artifact APIs
-      - Data Principal APIs
-      - AIU APIs
-      - Access Log APIs
-  - name: Models
-    tags:
-      - Consent Form Model
-      - Purpose Model
-      - Data Principal Model
-      - AIU Model
-      - AIP Model
-      - Consent Artifact Model
-      - Access Log Model
 paths:
   /consent/purposes:
     parameters: []
@@ -55,10 +40,12 @@ paths:
                     type: string
                     title: string
                     results:
-                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        code: 0
-                        name: string
-                        description: string
+                      - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                        code: B1
+                        name: Agricultural credit
+                        description: |-
+                          - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                          - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
       description: Get all purposes
       security:
         - IUDX AAA Identity Token: []
@@ -92,20 +79,26 @@ paths:
                     title: string
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        name: string
-                        itemId: string
+                        name: Consent Form 124320943
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
                         purposes:
-                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            code: 0
-                            name: string
-                            description: string
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        dataPrincipals:
+                          - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                            ppbNo: T13010130532
+                            name: Farmer
                         expiryDuration: P1Y
                         consentFormStats:
-                          artifactCount: 0
+                          artifacts:
+                            count: 0
                           dataPrincipals:
                             count: 0
-                            uri: string
       description: AIP views all consent forms they have created
       tags:
         - Consent Form APIs
@@ -136,20 +129,26 @@ paths:
                     title: string
                     results:
                       id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                      name: string
-                      itemId: string
+                      name: Consent Form 124320943
+                      itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                       itemType: resource_group
                       purposes:
-                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          code: 0
-                          name: string
-                          description: string
+                        - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                          code: B1
+                          name: Agricultural credit
+                          description: |-
+                            - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                            - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                      dataPrincipals:
+                        - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                          ppbNo: T13010130532
+                          name: Farmer
                       expiryDuration: P1Y
                       consentFormStats:
-                        artifactCount: 0
+                        artifacts:
+                          count: 0
                         dataPrincipals:
                           count: 0
-                          uri: string
       description: Create a consent form
       security:
         - IUDX AAA Identity Token: []
@@ -164,13 +163,12 @@ paths:
                 purposes:
                   type: array
                   items:
-                    type: string
-                    format: uuid
+                    $ref: '#/components/schemas/PurposeCode'
                 dataPrincipals:
                   type: array
                   description: PPB numbers
                   items:
-                    type: string
+                    $ref: '#/components/schemas/PPBNo'
                 itemId:
                   type: string
                   description: cat ID of resource
@@ -191,13 +189,12 @@ paths:
             examples:
               Example 1:
                 value:
-                  name: string
-                  description: string
+                  name: Consent Form 124320943
                   purposes:
-                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    - B1
                   dataPrincipals:
-                    - string
-                  itemId: string
+                    - T13010130532
+                  itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                   itemType: resource_group
                   expiryDuration: P1Y
       tags:
@@ -228,43 +225,85 @@ paths:
                     title: string
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        name: string
-                        itemId: string
+                        name: Consent Form 124320943
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
                         purposes:
-                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            code: 0
-                            name: string
-                            description: string
-                        expiryDuration: P1Y
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        dataPrincipals:
+                          - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                            ppbNo: T13010130532
+                            name: Farmer
+                        expiryDuration: P1M5D
                         consentFormStats:
-                          artifactCount: 0
+                          artifacts:
+                            count: 0
                           dataPrincipals:
                             count: 0
-                            uri: string
-      description: Update purposes/data principals/expiry duration
+      description: |-
+        Updates 
+        - purposes
+        - data principals
+        - expiry duration
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
+                formId:
+                  type: string
+                  format: uuid
                 name:
                   type: string
+                purposes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PurposeCode'
+                dataPrincipals:
+                  type: array
+                  description: PPB numbers
+                  items:
+                    $ref: '#/components/schemas/PPBNo'
+                itemId:
+                  type: string
+                  description: cat ID of resource
+                itemType:
+                  type: string
+                  enum:
+                    - resource_group
+                    - resource
+                expiryDuration:
+                  type: string
+              required:
+                - formId
+                - name
+                - purposes
+                - dataPrincipals
+                - itemId
+                - itemType
+                - expiryDuration
             examples:
               Example 1:
                 value:
-                  request:
-                    - purposes:
-                        - 0
-                      expiryDuration: P1Y
-                      dataPrincipals:
-                        - string
-                      formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
+                  formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
+                  name: Consent Form 124320943
+                  purposes:
+                    - B1
+                  dataPrincipals:
+                    - T13010130532
+                  itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                  itemType: resource_group
+                  expiryDuration: P1M5D
       tags:
         - Consent Form APIs
     delete:
-      summary: Delete consent forms - AIP
+      summary: Deactivate consent forms - AIP
       operationId: delete-consent-forms
       responses:
         '200':
@@ -289,21 +328,22 @@ paths:
                     title: string
                     results:
                       - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        name: string
-                        itemId: string
+                        name: Consent Form 124320943
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
                         purposes:
-                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            code: 0
-                            name: string
-                            description: string
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
                         expiryDuration: P1Y
-                        consentFormStats:
-                          artifactCount: 0
-                          dataPrincipals:
-                            count: 0
-                            uri: string
-      description: Delete list of consent forms
+                        dataPrincipals:
+                          - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                            ppbNo: T13010130532
+                            name: Farmer
+      description: 'Deactivate list of consent forms. Additionally, all consent forms associated with the consent forms can be **optionally revoked**.'
       security:
         - IUDX AAA Identity Token: []
       requestBody:
@@ -312,21 +352,27 @@ paths:
             schema:
               type: object
               properties:
+                revokeConsentArtifacts:
+                  type: boolean
                 formIds:
                   type: array
                   format: uuid
                   items:
                     type: string
                     format: uuid
+              required:
+                - revokeConsentArtifacts
+                - formIds
             examples:
               Example 1:
                 value:
+                  revokeConsentArtifacts: true
                   formIds:
-                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    - a4263677-9531-46c9-8acd-1f2c9a9200da
       tags:
         - Consent Form APIs
   /consent/forms/search:
-    get:
+    post:
       summary: Search for resource + data principal - AIU
       tags:
         - Consent Form APIs
@@ -350,17 +396,22 @@ paths:
                     type: string
                     title: string
                     results:
-                      formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
-                      effectiveItemId: string
+                      formId: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                       effectiveItemType: resource_group
                       purposes:
-                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          code: 0
-                          name: string
-                          description: string
-                      expiryDuration: string
-                      dataPrincipal: string
-      operationId: get-consent-forms-search
+                        - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                          code: B1
+                          name: Agricultural credit
+                          description: |-
+                            - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                            - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                      expiryDuration: P1Y
+                      dataPrincipal:
+                        id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                        ppbNo: T13010130532
+                        name: Farmer
+      operationId: post-consent-forms-search
       description: 'AIU can search if a consent form exists for a given resource and data principal '
       security:
         - IUDX AAA Identity Token: []
@@ -378,7 +429,7 @@ paths:
                     - resource_group
                     - resource
                 dataPrincipal:
-                  type: string
+                  $ref: '#/components/schemas/PPBNo'
               required:
                 - itemId
                 - itemType
@@ -386,9 +437,9 @@ paths:
             examples:
               Example 1:
                 value:
-                  itemId: string
+                  itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                   itemType: resource_group
-                  dataPrincipal: string
+                  dataPrincipal: T13010130532
   /consent/artifacts:
     get:
       summary: 'Get all consent artifacts - AIP, AIU'
@@ -416,51 +467,34 @@ paths:
                     type: string
                     title: string
                     results:
-                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      - id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
                         aiu:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          name:
-                            firstName: string
-                            lastName: string
-                          email: string
-                          aiuStats:
-                            artifacts:
-                              count: 0
-                              uri: string
-                            accessLogs:
-                              count: 0
-                              uri: string
+                          id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                          name: AIU Person
+                          email: aiu.person@example.com
                         aip:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          name:
-                            firstName: string
-                            lastName: string
-                          email: string
+                          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                          name: AIP Person
+                          email: aip.person@example.com
                         dataPrincipal:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          ppbNo: string
-                          name: string
-                          dataPrincipalStats:
-                            artifacts:
-                              count: 0
-                              uri: string
-                            accessLogs:
-                              count: 0
-                              uri: string
+                          id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                          ppbNo: T13010130532
+                          name: Farmer
                         purposes:
-                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            code: 0
-                            name: string
-                            description: string
-                        itemId: string
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
                         status: active
-                        expiry: '2019-08-24T14:15:22Z'
+                        expiry: '2027-08-24T14:15:22Z'
                         createdAt: '2019-08-24T14:15:22Z'
                         consentArtifactStats:
                           accessLogs:
                             count: 0
-                            uri: string
       operationId: get-consent-artifacts
       description: |-
         # AIP
@@ -494,51 +528,31 @@ paths:
                     type: string
                     title: string
                     results:
-                      id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
                       aiu:
-                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        name:
-                          firstName: string
-                          lastName: string
-                        email: string
-                        aiuStats:
-                          artifacts:
-                            count: 0
-                            uri: string
-                          accessLogs:
-                            count: 0
-                            uri: string
+                        id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                        name: AIU Person
+                        email: aiu.person@example.com
                       aip:
-                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        name:
-                          firstName: string
-                          lastName: string
-                        email: string
+                        id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                        name: AIP Person
+                        email: aip.person@example.com
                       dataPrincipal:
-                        id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        ppbNo: string
-                        name: string
-                        dataPrincipalStats:
-                          artifacts:
-                            count: 0
-                            uri: string
-                          accessLogs:
-                            count: 0
-                            uri: string
+                        id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                        ppbNo: T13010130532
+                        name: Farmer
                       purposes:
-                        - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          code: 0
-                          name: string
-                          description: string
-                      itemId: string
+                        - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                          code: B1
+                          name: Agricultural credit
+                          description: |-
+                            - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                            - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                      itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                       itemType: resource_group
                       status: active
-                      expiry: '2019-08-24T14:15:22Z'
+                      expiry: '2027-08-24T14:15:22Z'
                       createdAt: '2019-08-24T14:15:22Z'
-                      consentArtifactStats:
-                        accessLogs:
-                          count: 0
-                          uri: string
       description: AIU tries to create a consent artifact for a resource + data principal. Purposes are taken from the form ID associated.
       security:
         - IUDX AAA Identity Token: []
@@ -557,8 +571,7 @@ paths:
                     - resource_group
                     - resource
                 dataPrincipal:
-                  type: string
-                  description: PPB number
+                  $ref: '#/components/schemas/PPBNo'
                 formId:
                   type: string
                   format: uuid
@@ -570,14 +583,14 @@ paths:
             examples:
               Example 1:
                 value:
-                  itemId: string
+                  itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                   itemType: resource_group
-                  dataPrincipal: string
-                  formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
+                  dataPrincipal: T13010130532
+                  formId: 497f6eca-6276-4993-bfeb-53cbbbba6f08
       tags:
         - Consent Artifact APIs
     delete:
-      summary: Revoke consent artifact - AIP
+      summary: 'Revoke consent artifact - AIP, AIU'
       operationId: delete-consent-artifacts
       responses:
         '200':
@@ -599,55 +612,39 @@ paths:
                 Example 1:
                   value:
                     type: string
-                    title: string
+                    title: Revoked consent artifacts
                     results:
-                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                      - id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
                         aiu:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          name:
-                            firstName: string
-                            lastName: string
-                          email: string
-                          aiuStats:
-                            artifacts:
-                              count: 0
-                              uri: string
-                            accessLogs:
-                              count: 0
-                              uri: string
+                          id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                          name: AIU Person
+                          email: aiu.person@example.com
                         aip:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          name:
-                            firstName: string
-                            lastName: string
-                          email: string
+                          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                          name: AIP Person
+                          email: aip.person@example.com
                         dataPrincipal:
-                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                          ppbNo: string
-                          name: string
-                          dataPrincipalStats:
-                            artifacts:
-                              count: 0
-                              uri: string
-                            accessLogs:
-                              count: 0
-                              uri: string
+                          id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                          ppbNo: T13010130532
+                          name: Farmer
                         purposes:
-                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                            code: 0
-                            name: string
-                            description: string
-                        itemId: string
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
-                        status: active
-                        expiry: '2019-08-24T14:15:22Z'
+                        status: revoked
+                        expiry: '2027-08-24T14:15:22Z'
                         createdAt: '2019-08-24T14:15:22Z'
-                        updatedAt: '2019-08-24T14:15:22Z'
-                        consentArtifactStats:
-                          accessLogs:
-                            count: 0
-                            uri: string
-      description: Revoke a consent artifact owned by AIP
+      description: |-
+        # AIP
+        Revoke consent artifacts
+
+        # AIU
+        Revoke consent artifacts
       security:
         - IUDX AAA Identity Token: []
       requestBody:
@@ -668,12 +665,12 @@ paths:
               Example 1:
                 value:
                   artifactIds:
-                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    - ee3f7aff-9306-41b6-b4dc-67ea751511f2
       tags:
         - Consent Artifact APIs
   /consent/artifacts/download:
-    get:
-      summary: 'Download consent artifact - AIP, AIU'
+    post:
+      summary: 'Download consent artifacts - AIP, AIU'
       responses:
         '200':
           description: OK
@@ -690,25 +687,73 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Download-Consent-Artifact'
-              examples: {}
-      operationId: get-consent-artifacts-download
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - artifact:
+                          id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                          aiu:
+                            id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                            name: AIU Person
+                            email: aiu.person@example.com
+                          aip:
+                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                            name: AIP Person
+                            email: aip.person@example.com
+                          dataPrincipal:
+                            id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                            ppbNo: T13010130532
+                            name: Farmer
+                          purposes:
+                            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                              code: B1
+                              name: Agricultural credit
+                              description: |-
+                                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                          itemType: resource_group
+                          status: revoked
+                          expiry: '2027-08-24T14:15:22Z'
+                          createdAt: '2019-08-24T14:15:22Z'
+                        signedArtifact: {}
+                        revocation:
+                          id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
+                          revokedBy:
+                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                            name: AIP Person
+                            email: aip.person@example.com
+                          role: AIP
+                          artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
+                          signedRevocation: {}
+                        accessLogs:
+                          - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
+                            artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                            createdAt: '2022-08-24T14:15:22Z'
+                            signedAccessLog: {}
+                            itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                            itemType: resource_group
+      operationId: post-consent-artifacts-download
       tags:
         - Consent Artifact APIs
       description: |-
         # AIP
 
-        Download list of consent artifacts and access logs
+        Download list of consent artifacts, access logs artifacts and revocation artifact if applicable
 
         # AIU
 
-        Download list of consent artifacts and access logs
+        Download list of consent artifacts, access logs artifacts and revocation artifact if applicable
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                artifactId:
+                artifactIds:
                   type: array
                   format: uuid
                   uniqueItems: true
@@ -718,12 +763,12 @@ paths:
                     type: string
                     format: uuid
               required:
-                - artifactId
+                - artifactIds
             examples:
               Example 1:
                 value:
-                  artifactId:
-                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                  artifactIds:
+                    - ee3f7aff-9306-41b6-b4dc-67ea751511f2
   /consent/principals:
     get:
       summary: 'Get data principals - AIP, AIU'
@@ -742,19 +787,23 @@ paths:
                   title:
                     type: string
                   results:
-                    $ref: '#/components/schemas/Data-Principal'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Data-Principal'
               examples:
                 Example 1:
                   value:
                     type: string
                     title: string
                     results:
-                      id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                      ppbNo: string
-                      name: string
-                      dataPrincipalStats:
-                        artifactCount: 0
-                        accessLogCount: 0
+                      - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                        ppbNo: T13010130532
+                        name: Farmer
+                        dataPrincipalStats:
+                          artifacts:
+                            count: 4
+                          accessLogs:
+                            count: 9
       operationId: get-consent-principals
       description: |-
         # AIP
@@ -768,7 +817,7 @@ paths:
         - IUDX AAA Identity Token: []
       parameters: []
     delete:
-      summary: Revoke consent for data principals - AIP
+      summary: 'Revoke consent for data principals - AIP, AIU'
       operationId: delete-consent-principals
       responses:
         '200':
@@ -786,26 +835,40 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Data-Principal'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                        ppbNo: T13010130532
+                        name: Farmer
       description: |-
+        # AIP
         AIPs can revoke consent for a DP
-        - removes them from all consent forms the AIP owns
-        - revokes all consent artifacts the DP is part of
+        - removes them from all **consent forms** the AIP owns
+        - revokes all **consent artifacts** the DP is part of
+
+        # AIU
+        AIUs can revoke consent for a DP
+        - revokes all **consent artifacts** the DP and AIU is part of
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                principalIds:
+                dataPrincipals:
                   type: array
                   description: UUID or PPB?
                   items:
-                    type: string
+                    $ref: '#/components/schemas/PPBNo'
             examples:
               Example 1:
                 value:
                   principalIds:
-                    - string
+                    - T13010130532
       security:
         - IUDX AAA Identity Token: []
       tags:
@@ -831,8 +894,24 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/AIU'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                        name: AIU Person
+                        email: aiu.person@example.com
+                        aiuStats:
+                          artifacts:
+                            count: 0
+                          accessLogs:
+                            count: 0
       operationId: get-consent-aius
-      description: AIPs can get all AIUs that have consent artifacts for their forms
+      description: AIPs can get all AIUs that have consent artifacts for their consent forms
+      security:
+        - IUDX AAA Identity Token: []
     delete:
       summary: Revoke artifacts of AIUs - AIPs
       operationId: delete-consent-aius
@@ -852,6 +931,40 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Consent-Artifact'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                        aiu:
+                          id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                          name: AIU Person
+                          email: aiu.person@example.com
+                        aip:
+                          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                          name: AIP Person
+                          email: aip.person@example.com
+                        dataPrincipal:
+                          id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                          ppbNo: T13010130532
+                          name: Farmer
+                        purposes:
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                        itemType: resource_group
+                        status: revoked
+                        expiry: '2027-08-24T14:15:22Z'
+                        createdAt: '2019-08-24T14:15:22Z'
+                        consentArtifactStats:
+                          accessLogs:
+                            count: 0
       description: AIPs can send a list of AIUs whose artifacts must be revoked for forms they have created
       security:
         - IUDX AAA Identity Token: []
@@ -870,7 +983,7 @@ paths:
               Example 1:
                 value:
                   aiuIds:
-                    - 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    - 2ad34eb1-9934-4128-b3d8-acad37d0574d
       tags:
         - AIU APIs
   /consent/logs:
@@ -900,11 +1013,38 @@ paths:
                     type: string
                     title: string
                     results:
-                      - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                        artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
-                        createdAt: '2019-08-24T14:15:22Z'
-                        signedAccessLog: {}
-                        itemId: string
+                      - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
+                        artifact:
+                          id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                          aiu:
+                            id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                            name: AIU Person
+                            email: aiu.person@example.com
+                          aip:
+                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                            name: AIP Person
+                            email: aip.person@example.com
+                          dataPrincipal:
+                            id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                            ppbNo: T13010130532
+                            name: Farmer
+                          purposes:
+                            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                              code: B1
+                              name: Agricultural credit
+                              description: |-
+                                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                          itemType: resource_group
+                          status: active
+                          expiry: '2027-08-24T14:15:22Z'
+                          createdAt: '2019-08-24T14:15:22Z'
+                          consentArtifactStats:
+                            accessLogs:
+                              count: 0
+                        createdAt: '2022-08-24T14:15:22Z'
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
       operationId: get-consent-logs
       parameters: []
@@ -960,26 +1100,24 @@ components:
       x-examples:
         Example 1:
           id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-          name: string
-          itemId: string
+          name: Consent Form 124320943
+          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
           itemType: resource_group
           purposes:
-            - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-              code: 0
-              name: string
-              description: string
+            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+              code: B1
+              name: Agricultural credit
+              description: |-
+                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
           dataPrincipals:
-            - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-              ppbNo: string
-              name: string
-              dataPrincipalStats:
-                artifacts:
-                  count: 0
-                accessLogs:
-                  count: 0
+            - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+              ppbNo: T13010130532
+              name: Farmer
           expiryDuration: P1Y
           consentFormStats:
-            artifactCount: 0
+            artifacts:
+              count: 0
             dataPrincipals:
               count: 0
     Consent-Form-Stats:
@@ -1211,8 +1349,8 @@ components:
       x-examples:
         Example 1:
           id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-          name: AIU Person
-          email: aiu.person@example.com
+          name: AIP Person
+          email: aip.person@example.com
     Consent-Artifact:
       title: Consent-Artifact
       x-stoplight:
@@ -1266,7 +1404,36 @@ components:
         - status
         - expiry
         - createdAt
-      x-examples: {}
+      x-examples:
+        Example 1:
+          id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+          aiu:
+            id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+            name: AIU Person
+            email: aiu.person@example.com
+          aip:
+            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+            name: AIP Person
+            email: aip.person@example.com
+          dataPrincipal:
+            id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+            ppbNo: T13010130532
+            name: Farmer
+          purposes:
+            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+              code: B1
+              name: Agricultural credit
+              description: |-
+                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          itemType: resource_group
+          status: active
+          expiry: '2027-08-24T14:15:22Z'
+          createdAt: '2019-08-24T14:15:22Z'
+          consentArtifactStats:
+            accessLogs:
+              count: 0
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
@@ -1280,6 +1447,10 @@ components:
           properties:
             count:
               type: integer
+      x-examples:
+        Example 1:
+          accessLogs:
+            count: 0
     Access-Log:
       title: Access-Log
       x-stoplight:
@@ -1287,12 +1458,54 @@ components:
       type: object
       x-tags:
         - Access Log Model
+      x-examples:
+        Access Log when downloaded in POST /consent/artifacts/download:
+          id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
+          artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+          createdAt: '2022-08-24T14:15:22Z'
+          signedAccessLog: {}
+          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          itemType: resource_group
+        Access Log when listed in GET /consent/logs:
+          id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
+          artifact:
+            id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+            aiu:
+              id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+              name: AIU Person
+              email: aiu.person@example.com
+            aip:
+              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+              name: AIP Person
+              email: aip.person@example.com
+            dataPrincipal:
+              id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+              ppbNo: T13010130532
+              name: Farmer
+            purposes:
+              - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                code: B1
+                name: Agricultural credit
+                description: |-
+                  - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                  - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+            itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+            itemType: resource_group
+            status: active
+            expiry: '2027-08-24T14:15:22Z'
+            createdAt: '2019-08-24T14:15:22Z'
+            consentArtifactStats:
+              accessLogs:
+                count: 0
+          createdAt: '2022-08-24T14:15:22Z'
+          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          itemType: resource_group
       properties:
         id:
           type: string
           format: uuid
         artifact:
-          anyOf:
+          oneOf:
             - type: string
               format: uuid
             - $ref: '#/components/schemas/Consent-Artifact'
@@ -1319,6 +1532,8 @@ components:
       x-stoplight:
         id: hr5tg674z8wgh
       type: object
+      x-tags:
+        - Consent Artifact Model
       properties:
         formId:
           type: string
@@ -1337,25 +1552,56 @@ components:
         expiryDuration:
           type: string
         dataPrincipal:
-          type: string
+          $ref: '#/components/schemas/Data-Principal'
+      x-examples:
+        Example 1:
+          formId: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          effectiveItemType: resource_group
+          purposes:
+            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+              code: B1
+              name: Agricultural credit
+              description: |-
+                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+          expiryDuration: P1Y
+          dataPrincipal:
+            id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+            ppbNo: T13010130532
+            name: Farmer
     Revocation:
       title: Revocation
       x-stoplight:
         id: 1wz53v0rvi7s4
       type: object
+      x-tags:
+        - Consent Artifact Model
+      x-examples:
+        Example 1:
+          id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
+          revokedBy:
+            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+            name: AIP Person
+            email: aip.person@example.com
+          role: AIP
+          artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
+          signedRevocation: {}
       properties:
         id:
           type: string
           format: uuid
         revokedBy:
-          $ref: '#/components/schemas/AIP'
+          oneOf:
+            - $ref: '#/components/schemas/AIU'
+            - $ref: '#/components/schemas/AIP'
         role:
           type: string
           enum:
             - AIP
             - AIU
         artifact:
-          anyOf:
+          oneOf:
             - type: string
               format: uuid
             - $ref: '#/components/schemas/Consent-Artifact'
@@ -1389,6 +1635,51 @@ components:
         - accessLogs
       x-tags:
         - Consent Artifact Model
+      x-examples:
+        Example 1:
+          artifact:
+            id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+            aiu:
+              id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+              name: AIU Person
+              email: aiu.person@example.com
+            aip:
+              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+              name: AIP Person
+              email: aip.person@example.com
+            dataPrincipal:
+              id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+              ppbNo: T13010130532
+              name: Farmer
+            purposes:
+              - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                code: B1
+                name: Agricultural credit
+                description: |-
+                  - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                  - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+            itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+            itemType: resource_group
+            status: revoked
+            expiry: '2027-08-24T14:15:22Z'
+            createdAt: '2019-08-24T14:15:22Z'
+          signedArtifact: {}
+          revocation:
+            id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
+            revokedBy:
+              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+              name: AIP Person
+              email: aip.person@example.com
+            role: AIU
+            artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
+            signedRevocation: {}
+          accessLogs:
+            - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
+              artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+              createdAt: '2022-08-24T14:15:22Z'
+              signedAccessLog: {}
+              itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+              itemType: resource_group
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
