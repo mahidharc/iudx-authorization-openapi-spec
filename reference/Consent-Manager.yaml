@@ -157,6 +157,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 name:
                   type: string
@@ -199,9 +200,9 @@ paths:
                   expiryDuration: P1Y
       tags:
         - Consent Form APIs
-    put:
+    patch:
       summary: Update an existing consent form - AIP
-      operationId: put-consent-forms
+      operationId: patch-consent-forms
       responses:
         '200':
           description: OK
@@ -255,12 +256,11 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 formId:
                   type: string
                   format: uuid
-                name:
-                  type: string
                 purposes:
                   type: array
                   items:
@@ -270,35 +270,21 @@ paths:
                   description: PPB numbers
                   items:
                     $ref: '#/components/schemas/PPBNo'
-                itemId:
-                  type: string
-                  description: cat ID of resource
-                itemType:
-                  type: string
-                  enum:
-                    - resource_group
-                    - resource
                 expiryDuration:
                   type: string
               required:
                 - formId
-                - name
                 - purposes
                 - dataPrincipals
-                - itemId
-                - itemType
                 - expiryDuration
             examples:
               Example 1:
                 value:
                   formId: 126460ed-49b2-4c69-849a-bd8904ec5d8f
-                  name: Consent Form 124320943
                   purposes:
                     - B1
                   dataPrincipals:
                     - T13010130532
-                  itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-                  itemType: resource_group
                   expiryDuration: P1M5D
       tags:
         - Consent Form APIs
@@ -351,6 +337,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 revokeConsentArtifacts:
                   type: boolean
@@ -420,6 +407,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 itemId:
                   type: string
@@ -561,6 +549,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 itemId:
                   type: string
@@ -652,6 +641,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 artifactIds:
                   type: array
@@ -670,7 +660,7 @@ paths:
         - Consent Artifact APIs
   /consent/artifacts/download:
     post:
-      summary: 'Download consent artifacts - AIP, AIU'
+      summary: 'Download consent artifact - AIP, AIU'
       responses:
         '200':
           description: OK
@@ -684,91 +674,83 @@ paths:
                   title:
                     type: string
                   results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Download-Consent-Artifact'
+                    $ref: '#/components/schemas/Download-Consent-Artifact'
               examples:
                 Example 1:
                   value:
                     type: string
                     title: string
                     results:
-                      - artifact:
-                          id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
-                          aiu:
-                            id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
-                            name: AIU Person
-                            email: aiu.person@example.com
-                          aip:
-                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-                            name: AIP Person
-                            email: aip.person@example.com
-                          dataPrincipal:
-                            id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
-                            ppbNo: T13010130532
-                            name: Farmer
-                          purposes:
-                            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
-                              code: B1
-                              name: Agricultural credit
-                              description: |-
-                                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
-                                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                      artifact:
+                        id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                        aiu:
+                          id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                          name: AIU Person
+                          email: aiu.person@example.com
+                        aip:
+                          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                          name: AIP Person
+                          email: aip.person@example.com
+                        dataPrincipal:
+                          id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                          ppbNo: T13010130532
+                          name: Farmer
+                        purposes:
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                        itemType: resource_group
+                        status: revoked
+                        expiry: '2027-08-24T14:15:22Z'
+                        createdAt: '2019-08-24T14:15:22Z'
+                      signedArtifact: {}
+                      revocation:
+                        id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
+                        revokedBy:
+                          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                          name: AIP Person
+                          email: aip.person@example.com
+                        role: AIP
+                        artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
+                        signedRevocation: {}
+                      accessLogs:
+                        - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
+                          artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                          createdAt: '2022-08-24T14:15:22Z'
+                          signedAccessLog: {}
                           itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                           itemType: resource_group
-                          status: revoked
-                          expiry: '2027-08-24T14:15:22Z'
-                          createdAt: '2019-08-24T14:15:22Z'
-                        signedArtifact: {}
-                        revocation:
-                          id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
-                          revokedBy:
-                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-                            name: AIP Person
-                            email: aip.person@example.com
-                          role: AIP
-                          artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
-                          signedRevocation: {}
-                        accessLogs:
-                          - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
-                            artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
-                            createdAt: '2022-08-24T14:15:22Z'
-                            signedAccessLog: {}
-                            itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-                            itemType: resource_group
       operationId: post-consent-artifacts-download
       tags:
         - Consent Artifact APIs
       description: |-
         # AIP
 
-        Download list of consent artifacts, access logs artifacts and revocation artifact if applicable
+        Download a consent artifact with it's access logs artifacts and revocation artifact if applicable
 
         # AIU
 
-        Download list of consent artifacts, access logs artifacts and revocation artifact if applicable
+        Download a consent artifact with it's access logs artifacts and revocation artifact if applicable
       requestBody:
         content:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
-                artifactIds:
-                  type: array
+                artifactId:
+                  type: string
                   format: uuid
-                  uniqueItems: true
-                  minItems: 1
-                  maxItems: 100
-                  items:
-                    type: string
-                    format: uuid
               required:
-                - artifactIds
+                - artifactId
             examples:
               Example 1:
                 value:
-                  artifactIds:
-                    - ee3f7aff-9306-41b6-b4dc-67ea751511f2
+                  artifactId: ee3f7aff-9306-41b6-b4dc-67ea751511f2
   /consent/principals:
     get:
       summary: 'Get data principals - AIP, AIU'
@@ -858,6 +840,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 dataPrincipals:
                   type: array
@@ -973,6 +956,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               properties:
                 aiuIds:
                   type: array
