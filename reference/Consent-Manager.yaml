@@ -9,6 +9,72 @@ info:
 servers:
   - url: 'http://localhost:3000'
 paths:
+  /consent/userinfo:
+    post:
+      summary: Complete User Information
+      operationId: post-consent-userinfo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+                      email:
+                        type: string
+                      organization:
+                        type: string
+                      address:
+                        type: string
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                      name: AIP Person
+                      email: aip.person@example.com
+                      organization: Internet Widgits Pty Ltd
+                      address: 'Some-Place, Some-State'
+      description: Add relevant user information to the system
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                organization:
+                  type: string
+                address:
+                  type: string
+              required:
+                - organization
+                - address
+            examples:
+              Example 1:
+                value:
+                  organization: Internet Widgits Pty Ltd
+                  address: 'Some-Place, Some-State'
+      tags:
+        - User Info API
+    parameters: []
   /consent/purposes:
     parameters: []
     get:
