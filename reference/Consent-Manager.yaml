@@ -1098,6 +1098,143 @@ paths:
                         itemType: resource_group
       operationId: get-consent-logs
       parameters: []
+  /userclasses:
+    get:
+      summary: Get all User Classes
+      tags:
+        - APD APIs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userclasses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        description:
+                          type: string
+              examples:
+                Example:
+                  value:
+                    userclasses:
+                      - name: 'urn:apd:consent.apd.io:hasConsent'
+                        description: User has consent to access resource
+      operationId: get-userclasses
+      description: 'Get all applicable user classes. '
+  /verify:
+    post:
+      summary: Verify user has consent
+      operationId: post-verify
+      responses:
+        '200':
+          description: The user has consent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  constraints:
+                    type: string
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:apd:Allow'
+                    constraints: {}
+        '403':
+          description: User does not have consent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:apd:Deny'
+                    title: User does not have consent
+                    detail: Contact APD to obtain consent
+      tags:
+        - APD APIs
+      description: '**This API is ONLY called by the DX AAA Server to check if a given user has consent to access a resource**'
+      security:
+        - DX Auth Server Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: object
+                      properties:
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                    email:
+                      type: string
+                owner:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: object
+                      properties:
+                        firstName:
+                          type: string
+                        lastName:
+                          type: string
+                    email:
+                      type: string
+                item:
+                  type: object
+                  properties:
+                    itemId:
+                      type: string
+                    itemType:
+                      type: string
+                userClass:
+                  type: string
+              x-examples:
+                Example 1:
+                  user:
+                    id: <iudx user ID>
+                    name:
+                      firstName: ''
+                      lastName: ''
+                    email: ''
+                  owner:
+                    id: <iudx user ID>
+                    name:
+                      firstName: ''
+                      lastName: ''
+                    email: ''
+                  item:
+                    itemId: vmc.com/<>/rs.iudx.io/resource
+                    itemType: ''
+                  userClass: something
+            examples: {}
 components:
   schemas:
     Consent-Form:
@@ -1732,5 +1869,8 @@ components:
               itemType: resource_group
   securitySchemes:
     IUDX AAA Identity Token:
+      type: http
+      scheme: bearer
+    DX Auth Server Token:
       type: http
       scheme: bearer
