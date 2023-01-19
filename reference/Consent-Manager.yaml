@@ -1788,10 +1788,7 @@ components:
             - AIP
             - AIU
         artifact:
-          oneOf:
-            - type: string
-              format: uuid
-            - $ref: '#/components/schemas/Consent-Artifact'
+          $ref: '#/components/schemas/Consent-Artifact'
         signedRevocation:
           type: object
       required:
