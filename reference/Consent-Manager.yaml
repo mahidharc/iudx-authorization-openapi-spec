@@ -922,6 +922,67 @@ paths:
         - IUDX AAA Identity Token: []
       tags:
         - Data Principal APIs
+    post:
+      summary: Verify PPB Numbers - AIP
+      operationId: post-consent-principals
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: object
+                    properties:
+                      verified:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PPBNo'
+                      unverified:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PPBNo'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      verified:
+                        - T13010130532
+                      unverified:
+                        - T13010130000
+      description: |-
+        Verify set of PPB numbers. PPB numbers are used to identify data principals.
+
+        The API response will contain PPB numbers that were successfully verified and those that were unverified in 2 JSON arrays, `verified` and `unverified` respectively. The verified PPB numbers represent real data principals and can be used in consent form creation. 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ppbNumbers:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  uniqueItems: true
+                  items:
+                    $ref: '#/components/schemas/PPBNo'
+            examples:
+              Example 1:
+                value:
+                  ppbNumbers:
+                    - T13010130532
+                    - T13010130000
+      security:
+        - IUDX AAA Identity Token: []
   /consent/aius:
     get:
       summary: Get AIUs - AIPs
@@ -1458,6 +1519,7 @@ components:
       example: T13010130532
       x-examples:
         Example 1: T13010130532
+      pattern: '^(?=.{11,12}$)[TR][A-Z0-9].*$'
     AIU:
       title: AIU
       x-stoplight:
