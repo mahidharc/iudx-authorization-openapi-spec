@@ -560,7 +560,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/Consent-Artifact'
               examples:
-                Example 1:
+                Listing artifacts (output has both active and revoked artifacts):
                   value:
                     type: string
                     title: string
@@ -593,6 +593,43 @@ paths:
                         updatedAt: '2019-08-24T14:15:22Z'
                         consentArtifactStats:
                           accessLogs: 0
+                      - id: 9b3bf126-a4f2-4e09-b9b5-6055fb0d3dcb
+                        aiu:
+                          id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+                          name: AIU Person
+                          email: aiu.person@example.com
+                        aip:
+                          id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                          name: AIP Person
+                          email: aip.person@example.com
+                        dataPrincipal:
+                          id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                          ppbNo: T13010130532
+                          name: Farmer
+                        purposes:
+                          - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+                            code: B1
+                            name: Agricultural credit
+                            description: |-
+                              - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                              - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group/resource
+                        itemType: resource
+                        status: revoked
+                        revocation:
+                          id: 5781251b-add0-43a0-b9b8-d48e0bebc65c
+                          revokedBy:
+                            user:
+                              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                              name: AIP Person
+                              email: aip.person@example.com
+                            role: AIP
+                          revokedAt: '2023-01-20T14:15:22Z'
+                        expiry: '2027-08-24T14:15:22Z'
+                        createdAt: '2019-08-24T14:15:22Z'
+                        updatedAt: '2023-01-20T14:15:22Z'
+                        consentArtifactStats:
+                          accessLogs: 500
       operationId: get-consent-artifacts
       description: |-
         # AIP
@@ -737,6 +774,15 @@ paths:
                         itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
                         status: revoked
+                        revocation:
+                          id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
+                          revokedBy:
+                            user:
+                              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                              name: AIP Person
+                              email: aip.person@example.com
+                            role: AIP
+                          revokedAt: '2023-01-24T14:15:22Z'
                         expiry: '2027-08-24T14:15:22Z'
                         createdAt: '2019-08-24T14:15:22Z'
                         updatedAt: '2023-01-24T14:15:22Z'
@@ -1702,6 +1748,7 @@ components:
         - expiry
         - createdAt
         - updatedAt
+      description: 'If the artifact is revoked, `revocation` is also included in the model'
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
@@ -1850,7 +1897,7 @@ components:
               name: AIP Person
               email: aip.person@example.com
             role: AIP
-          revokedAt: ''
+          revokedAt: '2023-01-24T14:15:22Z'
           signedRevocation: {}
       properties:
         id:
@@ -1934,11 +1981,12 @@ components:
           revocation:
             id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
             revokedBy:
-              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-              name: AIP Person
-              email: aip.person@example.com
-            role: AIU
-            artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
+              user:
+                id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                name: AIP Person
+                email: aip.person@example.com
+              role: AIP
+            revokedAt: '2023-01-24T14:15:22Z'
             signedRevocation: {}
           accessLogs:
             - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
