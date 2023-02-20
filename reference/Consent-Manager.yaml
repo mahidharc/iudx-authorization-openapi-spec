@@ -1620,56 +1620,6 @@ components:
       type: object
       x-tags:
         - Consent Artifact Model
-      properties:
-        id:
-          type: string
-          description: UUID ID of artifact
-          format: uuid
-        aiu:
-          $ref: '#/components/schemas/AIU'
-        aip:
-          $ref: '#/components/schemas/AIP'
-        dataPrincipal:
-          $ref: '#/components/schemas/Data-Principal'
-        purposes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Purpose'
-        itemId:
-          type: string
-        itemType:
-          type: string
-          enum:
-            - resource_group
-            - resource
-        status:
-          type: string
-          enum:
-            - active
-            - revoked
-        expiry:
-          type: string
-          format: date-time
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        consentArtifactStats:
-          $ref: '#/components/schemas/Consent-Artifact-Stats'
-      required:
-        - id
-        - aiu
-        - aip
-        - dataPrincipal
-        - purposes
-        - itemId
-        - itemType
-        - status
-        - expiry
-        - createdAt
-        - updatedAt
       x-examples:
         Example 1:
           id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
@@ -1700,6 +1650,58 @@ components:
           updatedAt: '2019-08-24T14:15:22Z'
           consentArtifactStats:
             accessLogs: 0
+      properties:
+        id:
+          type: string
+          description: UUID ID of artifact
+          format: uuid
+        aiu:
+          $ref: '#/components/schemas/AIU'
+        aip:
+          $ref: '#/components/schemas/AIP'
+        dataPrincipal:
+          $ref: '#/components/schemas/Data-Principal'
+        purposes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Purpose'
+        itemId:
+          type: string
+        itemType:
+          type: string
+          enum:
+            - resource_group
+            - resource
+        status:
+          type: string
+          enum:
+            - active
+            - revoked
+        expiry:
+          type: string
+          format: date-time
+        revocation:
+          $ref: '#/components/schemas/Revocation'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        consentArtifactStats:
+          $ref: '#/components/schemas/Consent-Artifact-Stats'
+      required:
+        - id
+        - aiu
+        - aip
+        - dataPrincipal
+        - purposes
+        - itemId
+        - itemType
+        - status
+        - expiry
+        - createdAt
+        - updatedAt
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
@@ -1843,25 +1845,31 @@ components:
         Example 1:
           id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
           revokedBy:
-            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-            name: AIP Person
-            email: aip.person@example.com
-          role: AIP
-          artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
+            user:
+              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+              name: AIP Person
+              email: aip.person@example.com
+            role: AIP
+          revokedAt: ''
           signedRevocation: {}
       properties:
         id:
           type: string
           format: uuid
         revokedBy:
-          oneOf:
-            - $ref: '#/components/schemas/AIU'
-            - $ref: '#/components/schemas/AIP'
-        role:
+          type: object
+          properties:
+            user:
+              anyOf:
+                - $ref: '#/components/schemas/AIU'
+                - $ref: '#/components/schemas/AIP'
+            role:
+              type: string
+              enum:
+                - AIU
+                - AIP
+        revokedAt:
           type: string
-          enum:
-            - AIP
-            - AIU
         artifact:
           $ref: '#/components/schemas/Consent-Artifact'
         signedRevocation:
@@ -1869,8 +1877,7 @@ components:
       required:
         - id
         - revokedBy
-        - role
-        - artifact
+        - revokedAt
     Download-Consent-Artifact:
       title: Download-Consent-Artifact
       x-stoplight:
