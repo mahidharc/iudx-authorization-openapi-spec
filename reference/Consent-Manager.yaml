@@ -1930,22 +1930,6 @@ components:
       x-stoplight:
         id: 018uztqernzyd
       type: object
-      properties:
-        artifact:
-          $ref: '#/components/schemas/Consent-Artifact'
-        signedArtifact:
-          type: object
-        revocation:
-          $ref: '#/components/schemas/Revocation'
-        accessLogs:
-          type: array
-          minItems: 0
-          items:
-            $ref: '#/components/schemas/Access-Log'
-      required:
-        - artifact
-        - signedArtifact
-        - accessLogs
       x-tags:
         - Consent Artifact Model
       x-examples:
@@ -1974,20 +1958,20 @@ components:
             itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
             itemType: resource_group
             status: revoked
+            revocation:
+              id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
+              revokedBy:
+                user:
+                  id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                  name: AIP Person
+                  email: aip.person@example.com
+                role: AIP
+              revokedAt: '2023-01-24T14:15:22Z'
+              signedRevocation: {}
             expiry: '2027-08-24T14:15:22Z'
             createdAt: '2019-08-24T14:15:22Z'
-            updatedAt: '2019-08-24T14:15:22Z'
+            updatedAt: '2023-01-24T14:15:22Z'
           signedArtifact: {}
-          revocation:
-            id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
-            revokedBy:
-              user:
-                id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-                name: AIP Person
-                email: aip.person@example.com
-              role: AIP
-            revokedAt: '2023-01-24T14:15:22Z'
-            signedRevocation: {}
           accessLogs:
             - id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
               artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
@@ -1995,6 +1979,20 @@ components:
               signedAccessLog: {}
               itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
               itemType: resource_group
+      properties:
+        artifact:
+          $ref: '#/components/schemas/Consent-Artifact'
+        signedArtifact:
+          type: object
+        accessLogs:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Access-Log'
+      required:
+        - artifact
+        - signedArtifact
+        - accessLogs
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
