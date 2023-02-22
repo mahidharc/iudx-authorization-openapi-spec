@@ -619,10 +619,9 @@ paths:
                         revocation:
                           id: 5781251b-add0-43a0-b9b8-d48e0bebc65c
                           revokedBy:
-                            user:
-                              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-                              name: AIP Person
-                              email: aip.person@example.com
+                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                            name: AIP Person
+                            email: aip.person@example.com
                             role: AIP
                           revokedAt: '2023-01-20T14:15:22Z'
                         expiry: '2027-08-24T14:15:22Z'
@@ -777,10 +776,9 @@ paths:
                         revocation:
                           id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
                           revokedBy:
-                            user:
-                              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-                              name: AIP Person
-                              email: aip.person@example.com
+                            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                            name: AIP Person
+                            email: aip.person@example.com
                             role: AIP
                           revokedAt: '2023-01-24T14:15:22Z'
                         expiry: '2027-08-24T14:15:22Z'
@@ -873,7 +871,7 @@ paths:
                           id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
                           name: AIP Person
                           email: aip.person@example.com
-                        role: AIP
+                          role: AIP
                         artifact: d314337b-6c0d-4d0e-a3b2-d6fc0160357d
                         signedRevocation: {}
                       accessLogs:
@@ -1892,10 +1890,9 @@ components:
         Example 1:
           id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
           revokedBy:
-            user:
-              id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-              name: AIP Person
-              email: aip.person@example.com
+            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+            name: AIP Person
+            email: aip.person@example.com
             role: AIP
           revokedAt: '2023-01-24T14:15:22Z'
           signedRevocation: {}
@@ -1904,17 +1901,11 @@ components:
           type: string
           format: uuid
         revokedBy:
-          type: object
-          properties:
-            user:
-              anyOf:
+          allOf:
+            - oneOf:
                 - $ref: '#/components/schemas/AIU'
                 - $ref: '#/components/schemas/AIP'
-            role:
-              type: string
-              enum:
-                - AIU
-                - AIP
+            - $ref: '#/components/schemas/Role'
         revokedAt:
           type: string
         artifact:
@@ -1961,10 +1952,9 @@ components:
             revocation:
               id: b68eae1e-9c52-454e-80d7-a64d1ce706e9
               revokedBy:
-                user:
-                  id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
-                  name: AIP Person
-                  email: aip.person@example.com
+                id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+                name: AIP Person
+                email: aip.person@example.com
                 role: AIP
               revokedAt: '2023-01-24T14:15:22Z'
               signedRevocation: {}
@@ -1993,6 +1983,21 @@ components:
         - artifact
         - signedArtifact
         - accessLogs
+    Role:
+      title: Role
+      x-stoplight:
+        id: aeh4vzy1tgq01
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - AIU
+            - AIP
+      required:
+        - role
+      x-tags:
+        - Role Model
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
