@@ -879,8 +879,8 @@ paths:
                           artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
                           createdAt: '2022-08-24T14:15:22Z'
                           signedAccessLog: {}
-                          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-                          itemType: resource_group
+                          effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                          effectiveItemType: resource_group
       operationId: post-consent-artifacts-download
       tags:
         - Consent Artifact APIs
@@ -1240,8 +1240,8 @@ paths:
                           createdAt: '2019-08-24T14:15:22Z'
                           updatedAt: '2019-08-24T14:15:22Z'
                         createdAt: '2022-08-24T14:15:22Z'
-                        itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-                        itemType: resource_group
+                        effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+                        effectiveItemType: resource_group
       operationId: get-consent-logs
       parameters: []
       security:
@@ -1773,8 +1773,8 @@ components:
           artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
           createdAt: '2022-08-24T14:15:22Z'
           signedAccessLog: {}
-          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-          itemType: resource_group
+          effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          effectiveItemType: resource_group
         Access Log when listed in GET /consent/logs:
           id: ab55b457-5047-41f3-81f2-05b21ff6ebd1
           artifact:
@@ -1807,8 +1807,8 @@ components:
             consentArtifactStats:
               accessLogs: 0
           createdAt: '2022-08-24T14:15:22Z'
-          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-          itemType: resource_group
+          effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          effectiveItemType: resource_group
       properties:
         id:
           type: string
@@ -1823,9 +1823,9 @@ components:
           format: date-time
         signedAccessLog:
           type: object
-        itemId:
+        effectiveItemId:
           type: string
-        itemType:
+        effectiveItemType:
           type: string
           enum:
             - resource_group
@@ -1834,8 +1834,8 @@ components:
         - id
         - artifact
         - createdAt
-        - itemId
-        - itemType
+        - effectiveItemId
+        - effectiveItemType
     Consent-Form-Search:
       title: Consent-Form-Search
       x-stoplight:
@@ -1967,8 +1967,8 @@ components:
               artifact: ee3f7aff-9306-41b6-b4dc-67ea751511f2
               createdAt: '2022-08-24T14:15:22Z'
               signedAccessLog: {}
-              itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-              itemType: resource_group
+              effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+              effectiveItemType: resource_group
       properties:
         artifact:
           $ref: '#/components/schemas/Consent-Artifact'
