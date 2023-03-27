@@ -458,6 +458,24 @@ paths:
                       cons:
                         access:
                           - api
+                Introspecting an identity token:
+                  value:
+                    type: 'urn:dx:as:Success'
+                    title: Token authenticated
+                    results:
+                      sub: 72a08b8b-518f-4bff-b263-0693bc7f2e98
+                      iss: authorization.iudx.org.in
+                      aud: rs.iudx.org.in
+                      exp: 1679935348
+                      iat: 1679892148
+                      iid: 'rs:rs.iudx.org.in'
+                      role: consumer
+                      cons: {}
+                      userInfo:
+                        email: user@datakaveri.org
+                        name:
+                          firstName: User
+                          lastName: DataKaveri
         '400':
           description: |-
             - Missing/malformed token
@@ -529,6 +547,8 @@ paths:
         - checks if the token has been issued by the IUDX AAA server
         - checks if the token is expired
         If all checks pass, the decoded token is returned
+
+        If an identity token is introspected, the user information of the user ID represented in the `sub` field is also included in the introspection response.
       tags:
         - Token APIs
     parameters: []
@@ -2619,7 +2639,7 @@ paths:
         - This policy allows providers to be able to use the APD for APD policies on their own resources. 
            
         ## Policies created by provider
-       
+
         ### User Policies
         - Valid item types - `resource`, `resource_group`
         - A `provider` can set **user policies** for a `delegate` or `consumer` for the resources owned by the `provider`.
@@ -3575,7 +3595,6 @@ paths:
         - With the constraints they desire for the associated policy (in case the provider chooses to approve the request)
 
         Users may make multiple access requests with a single API call. 
-
       security:
         - authorization: []
       requestBody:
@@ -3721,7 +3740,7 @@ paths:
                 $ref: '#/components/schemas/Unauthorized'
       description: |
         Providers or auth delegates can choose to approve or reject **pending** access requests associated with their resources.
-   
+
         If the request is approved
         - The user can choose to set an alternate expiry duration or constraints from what the consumer requested.
         - The request is modified to the `approved` state
@@ -3995,7 +4014,7 @@ paths:
 
         Only users with `consumer` role can call this API.
       security:
-              - authorization: []
+        - authorization: []
       parameters:
         - schema:
             type: string
