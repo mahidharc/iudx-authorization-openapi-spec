@@ -14,8 +14,8 @@ paths:
       summary: Complete User Information
       operationId: post-consent-userinfo
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -40,6 +40,8 @@ paths:
                         type: string
                       address:
                         type: string
+                      entity:
+                        type: string
               examples:
                 Example 1:
                   value:
@@ -51,7 +53,32 @@ paths:
                       email: aip.person@example.com
                       organization: Internet Widgits Pty Ltd
                       address: 'Some-Place, Some-State'
-      description: Add relevant user information to the system
+                      entity: Some entity
+        '409':
+          description: User Info already exists.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:AlreadyExists'
+                    title: User info already added
+                    detail: The user information for this user has been obtained
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:AlreadyExists'
+                    title: User info already added
+                    detail: The user information for this user has been obtained
+      description: Add relevant user information to the consent manager APD. This step must be completed before trying to use any other APIs of the consent manager.
       security:
         - IUDX AAA Identity Token: []
       requestBody:
@@ -62,16 +89,30 @@ paths:
               properties:
                 organization:
                   type: string
+                  minLength: 1
                 address:
                   type: string
+                  minLength: 1
+                entity:
+                  type: string
+                  enum:
+                    - CORPORATION
+                    - NOT FOR PROFIT
+                    - UNIVERSITY
+                    - GOVERNMENT DEPARTMENT
+                    - PRESS
+                    - INDIVIDUAL
+                  minLength: 1
               required:
                 - organization
                 - address
+                - entity
             examples:
               Example 1:
                 value:
                   organization: Internet Widgits Pty Ltd
                   address: 'Some-Place, Some-State'
+                  entity: CORPORATION
       tags:
         - User Info API
     parameters: []
@@ -103,6 +144,8 @@ paths:
                         type: string
                       address:
                         type: string
+                      entity:
+                        type: string
                 x-examples:
                   Example 1:
                     type: string
@@ -113,16 +156,34 @@ paths:
                       email: aip.person@example.com
                       organization: Internet Widgits Pty Ltd
                       address: 'Some-Place, Some-State'
-        '201':
-          description: Created
+                      entity: CORPORATION
+        '401':
+          description: User Info not present
           content:
             application/json:
               schema:
                 type: object
-                properties: {}
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
       security:
         - IUDX AAA Identity Token: []
-      description: Get User info if already registered
+      description: Get User info if already registered on the consent manager APD
       tags:
         - User Info API
   /consent/purposes:
@@ -162,7 +223,7 @@ paths:
                         description: |-
                           - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
                           - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
-      description: Get all purposes
+      description: Get all purposes that can be used to create a consent form.
       security:
         - IUDX AAA Identity Token: []
       tags:
@@ -198,6 +259,7 @@ paths:
                         name: Consent Form 124320943
                         itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
+                        itemName: title
                         purposes:
                           - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
                             code: B1
@@ -213,6 +275,54 @@ paths:
                         consentFormStats:
                           artifacts: 0
                           dataPrincipals: 0
+        '401':
+          description: User info not present
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
       description: AIP views all consent forms they have created
       tags:
         - Consent Form APIs
@@ -261,7 +371,123 @@ paths:
                       consentFormStats:
                         artifacts: 0
                         dataPrincipals: 0
-      description: Create a consent form
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Item not a PII RESOURCE
+                    detail: string
+              examples:
+                Invalid expiryDuration:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid expiryDuration
+                    detail: Invalid expiryDuration
+                Invalid Purposes:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid Purposes
+                    detail: Some purposes may not exist
+                invalid data principals:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid Data Principals
+                    detail: Some data principals may not exist / may not be verified
+                invalid access policy:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Item not a PII RESOURCE
+                    detail: string
+        '401':
+          description: User info not added
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid role to perform operation / User does not own resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Invalid Role:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+                'User does not own resource ':
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: User does not own resource
+                    detail: Cannot create consent form as the user does not own the resource
+        '409':
+          description: Form already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:AlreadyExists'
+                    title: Consent form already exists for resource
+                    detail: A consent form 0403826b-f435-4acf-985f-561e0a250115 already exists for the resource
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:AlreadyExists'
+                    title: Consent form already exists for resource
+                    detail: A consent form 0403826b-f435-4acf-985f-561e0a250115 already exists for the resource
+      description: AIP users can Create a consent form for a resource/resource_group that they own
       security:
         - IUDX AAA Identity Token: []
       requestBody:
@@ -292,6 +518,7 @@ paths:
                     - resource
                 expiryDuration:
                   type: string
+                  pattern: '^(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$'
               required:
                 - name
                 - purposes
@@ -310,6 +537,18 @@ paths:
                   itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                   itemType: resource_group
                   expiryDuration: P1Y
+        description: |-
+          `name` : name of the form to be created.
+
+          `purposes`: array of codes of the purposes that a user can use a resource for.
+
+          `dataPrincipals` : PPBnos of the farmer whose consent the provider has already obtained.
+
+          `itemId`: catalogue id of the resource for which the AIP has obtained consent.
+
+          `itemType`: resource or resource_group
+
+          `expiryDuration`: the duration for which artifacts created with this form are valid for.
       tags:
         - Consent Form APIs
     patch:
@@ -356,11 +595,98 @@ paths:
                         consentFormStats:
                           artifacts: 0
                           dataPrincipals: 0
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid Consent Form ID
+                    detail: Some IDs may not exist/not be active
+              examples:
+                invalid form id:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid Consent Form ID
+                    detail: Some IDs may not exist/not be active
+                '':
+                  value:
+                    type: string
+                    title: string
+                    detail: string
+                Invalid ppbno:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid PPbNos
+                    detail: Some PPBNos may not exist/not be active
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Invalid role:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
       description: |-
-        Updates 
+        Updates an existing consent form.
+        the following fields can be updated
         - purposes
         - data principals
         - expiry duration
+
+        **NOTE**   : all fields in the exisiting form will be replaced by the values of the fields in the request
+      security:
+        - IUDX AAA Identity Token: []
       requestBody:
         content:
           application/json:
@@ -373,15 +699,18 @@ paths:
                   format: uuid
                 purposes:
                   type: array
+                  minItems: 1
                   items:
                     $ref: '#/components/schemas/PurposeCode'
                 dataPrincipals:
                   type: array
                   description: PPB numbers
+                  minItems: 1
                   items:
                     $ref: '#/components/schemas/PPBNo'
                 expiryDuration:
                   type: string
+                  pattern: '^(-?)P(?=\d|T\d)(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)([DW]))?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$'
               required:
                 - formId
                 - purposes
@@ -396,6 +725,14 @@ paths:
                   dataPrincipals:
                     - T13010130532
                   expiryDuration: P1M5D
+        description: |-
+          `formId` UUID of the form that is to be updated.
+
+          `purposes`: array of codes of purposes.
+
+          `dataPrincipals` : array of PPBnos.
+
+          `expiryDuration` : Duration of validity of the consent artifact created using the consent form.
       tags:
         - Consent Form APIs
     delete:
@@ -439,6 +776,60 @@ paths:
                           - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
                             ppbNo: T13010130532
                             name: Farmer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API/ invalid form ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Invalid Role:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+                Form is not active/ not owned by the AIP:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid Consent Form IDs
+                    detail: Some IDs may not exist/not be active
+                    ids: []
       description: 'Deactivate list of consent forms. Additionally, all consent artifacts associated with the consent forms can be **optionally revoked**.'
       security:
         - IUDX AAA Identity Token: []
@@ -490,24 +881,162 @@ paths:
               examples:
                 Example 1:
                   value:
-                    type: string
-                    title: string
+                    type: 'urn:dx:as:Success'
+                    title: Consent Form
                     results:
-                      formId: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-                      effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-                      effectiveItemType: resource_group
+                      id: 30c66b93-4b54-4d4c-b359-1ec07e24ae62
+                      name: form_8
                       purposes:
-                        - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
-                          code: B1
-                          name: Agricultural credit
-                          description: |-
-                            - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
-                            - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
-                      expiryDuration: P1Y
-                      dataPrincipal:
-                        id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
-                        ppbNo: T13010130532
-                        name: Farmer
+                        - code: P2
+                          description: '- The entire range of personalised advisory services required for enhancing the production, productivity, and profitability of the farmer, including those relating to weather, inputs and good agricultural practices (GAP). - Digital extension services \n'
+                          id: 47cc4b97-a27a-46a2-8a17-7a3ab4a6fdd4
+                          name: Farm advisories
+                        - code: B5
+                          description: '- Enabling the producers to access the markets – physical or digital – for selling of their produce.- Providing personalised services relating to the sale of the produce, including hyper-local market intelligence. \n'
+                          id: 4e932d50-aecc-4925-9a5f-a8adcdb043b1
+                          name: Market-related services
+                        - code: G2
+                          description: '- Maintenance of land records and record of rights on land - Creation and maintenance of cadastral records specifying the field boundaries of agricultural parcels, digital form including geo-referencing, using GIS and GPS \n'
+                          id: f5215989-f903-44b0-8f8d-50ccb7a3dabb
+                          name: Land Records
+                      dataPrincipals:
+                        - id: 00231147-9ad5-4577-802e-c43a04404c6f
+                          ppbNo: T13010030220
+                          name: రసం శకుంతలా
+                      expiryDuration: 1 year
+                      createdAt: '2023-03-06T14:03:12.535917'
+                      updatedAt: '2023-03-06T14:03:12.535931'
+                      effectiveItemId: datakaveri.org/5841d4c98a9ef8ab708e01a3c5fc1ab955e6ada0/rs.iudx.io/resGrp8
+                      effectiveItemType: resource_group
+                      aip:
+                        id: e958f1ad-13ee-40b5-a3e6-ef8f974afb5d
+                        email: test.aip@datakaveri.org
+                        name: Test AIP
+                        organization: Internet Widgits Pty Ltd
+                        address: 'Some-Place, Some-State'
+                        entity: CORPORATION
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                itemtype mismatch:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid itemtype
+                    detail: itemType mismatch
+                Invalid PPbNos:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid PPBNOs
+                    results:
+                      dataPrincipal: T1301013052
+                    detail: Some IDs may not exist
+                item does not exist:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Item does not exist
+                    detail: string
+                Not a PII resource:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Item not a PII RESOURCE
+                    detail: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Invalid Role:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIUs may use this API
+                Not present:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid request
+                    results:
+                      itemId: datakaveri.org/089abba8-9a80-4e41-b6cb-ab396fc2273a/rs.iudx.io/resGrp0
+                      itemType: resource_group
+                      dataPrincipal: T13010130532
+                    detail: No consent form found
+        '404':
+          description: Item Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIUs may use this API
+              examples:
+                Item Not Found:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Item does not exist
+                    detail: string
       operationId: post-consent-forms-search
       description: 'AIU can search if a consent form exists for a given resource and data principal '
       security:
@@ -587,6 +1116,7 @@ paths:
                               - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
                         itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         itemType: resource_group
+                        itemName: title
                         status: active
                         expiry: '2027-08-24T14:15:22Z'
                         createdAt: '2019-08-24T14:15:22Z'
@@ -615,6 +1145,7 @@ paths:
                               - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
                         itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group/resource
                         itemType: resource
+                        itemName: title2
                         status: revoked
                         revocation:
                           id: 5781251b-add0-43a0-b9b8-d48e0bebc65c
@@ -629,10 +1160,34 @@ paths:
                         updatedAt: '2023-01-20T14:15:22Z'
                         consentArtifactStats:
                           accessLogs: 500
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
       operationId: get-consent-artifacts
       description: |-
         # AIP
-        Get all consent artifacts for resources they own 
+        Get all consent artifacts for resources they own
 
         # AIU
         Get all consent artifacts created for them
@@ -643,8 +1198,8 @@ paths:
       summary: Create consent artifact - AIU
       operationId: post-consent-artifacts
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
           content:
             application/json:
               schema:
@@ -688,6 +1243,95 @@ paths:
                       expiry: '2027-08-24T14:15:22Z'
                       createdAt: '2019-08-24T14:15:22Z'
                       updatedAt: '2019-08-24T14:15:22Z'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid form ID
+                    detail: The form ID does not exist / not active
+              examples:
+                Invalid Form Id:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid form ID
+                    detail: The form ID does not exist / not active
+                Invalid data principal:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid data principal
+                    detail: The data principal does not exist / has not been verified
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIUs may use this API
+              examples:
+                Invalid Role:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIUs may use this API
+                Already exists:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Consent Artifact already exists
+                    detail: An active and un-expired consent artifact already exists for data principal and resource
+                    context:
+                      artifactId: dd380942-d26d-4b1c-9efb-a87e2f89ac06
+                form does not exist:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid form ID
+                    detail: The form ID does not exist / not active
       description: AIU tries to create a consent artifact for a resource + data principal. Purposes are taken from the form ID associated.
       security:
         - IUDX AAA Identity Token: []
@@ -723,6 +1367,7 @@ paths:
                   itemType: resource_group
                   dataPrincipal: T13010130532
                   formId: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+        description: ''
       tags:
         - Consent Artifact APIs
     delete:
@@ -784,6 +1429,50 @@ paths:
                         expiry: '2027-08-24T14:15:22Z'
                         createdAt: '2019-08-24T14:15:22Z'
                         updatedAt: '2023-01-24T14:15:22Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid Consent Artifact IDs
+                    detail: Some IDs may not exist/not be active
+              examples:
+                Invalid artifactID: {}
       description: |-
         # AIP
         Revoke consent artifacts
@@ -814,6 +1503,296 @@ paths:
                     - ee3f7aff-9306-41b6-b4dc-67ea751511f2
       tags:
         - Consent Artifact APIs
+  /consent/principals:
+    get:
+      summary: 'Get data principals - AIP, AIU'
+      tags:
+        - Data Principal APIs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Data-Principal'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                        ppbNo: T13010130532
+                        name: Farmer
+                        dataPrincipalStats:
+                          artifacts: 4
+                          accessLogs: 9
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+          description: Unauthorized
+      operationId: get-consent-principals
+      description: |-
+        # AIP
+
+        Get all data principals present in consent forms of AIP
+
+        # AIU
+
+        Get all data principals present in consent artifacts of AIU
+      security:
+        - IUDX AAA Identity Token: []
+      parameters: []
+    delete:
+      summary: 'Revoke consent for data principals - AIP, AIU'
+      operationId: delete-consent-principals
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Data-Principal'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+                        ppbNo: T13010130532
+                        name: Farmer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: PPBnos have no associated forms/artifact
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                No associated forms/artifacts:
+                  value:
+                    type: 'urn:dx:as:InvalidInput'
+                    title: Invalid PPBNOs
+                    detail: Nothing to delete
+      description: |-
+        # AIP
+        AIPs can revoke consent for a DP
+        - removes them from all **consent forms** the AIP owns
+        - revokes all **consent artifacts** the DP is part of
+
+        # AIU
+        AIUs can revoke consent for a DP
+        - revokes all **consent artifacts** the DP and AIU is part of
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                dataPrincipals:
+                  type: array
+                  description: UUID or PPB?
+                  items:
+                    $ref: '#/components/schemas/PPBNo'
+            examples:
+              Example 1:
+                value:
+                  dataPrincipals:
+                    - T13010130532
+      security:
+        - IUDX AAA Identity Token: []
+      tags:
+        - Data Principal APIs
+    post:
+      summary: Verify PPB Numbers - AIP
+      operationId: post-consent-principals
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  results:
+                    type: object
+                    properties:
+                      verified:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PPBNo'
+                      unverified:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PPBNo'
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      verified:
+                        - T13010130532
+                      unverified:
+                        - T13010130000
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+      description: |-
+        Verify set of PPB numbers. PPB numbers are used to identify data principals.
+
+        The API response will contain PPB numbers that were successfully verified and those that were unverified in 2 JSON arrays, `verified` and `unverified` respectively. The verified PPB numbers represent real data principals and can be used in consent form creation.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ppbNumbers:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  uniqueItems: true
+                  items:
+                    $ref: '#/components/schemas/PPBNo'
+            examples:
+              Example 1:
+                value:
+                  ppbNumbers:
+                    - T13010130532
+                    - T13010130000
+      security:
+        - IUDX AAA Identity Token: []
+      tags:
+        - Data Principal APIs
   /consent/artifacts/download:
     post:
       summary: 'Download consent artifact - AIP, AIU'
@@ -881,6 +1860,34 @@ paths:
                           signedAccessLog: {}
                           effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                           effectiveItemType: resource_group
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
       operationId: post-consent-artifacts-download
       tags:
         - Consent Artifact APIs
@@ -892,6 +1899,8 @@ paths:
         # AIU
 
         Download a consent artifact with it's access logs artifacts and revocation artifact if applicable
+      security:
+        - IUDX AAA Identity Token: []
       requestBody:
         content:
           application/json:
@@ -908,170 +1917,6 @@ paths:
               Example 1:
                 value:
                   artifactId: ee3f7aff-9306-41b6-b4dc-67ea751511f2
-  /consent/principals:
-    get:
-      summary: 'Get data principals - AIP, AIU'
-      tags:
-        - Data Principal APIs
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  title:
-                    type: string
-                  results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Data-Principal'
-              examples:
-                Example 1:
-                  value:
-                    type: string
-                    title: string
-                    results:
-                      - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
-                        ppbNo: T13010130532
-                        name: Farmer
-                        dataPrincipalStats:
-                          artifacts: 4
-                          accessLogs: 9
-      operationId: get-consent-principals
-      description: |-
-        # AIP
-
-        Get all data principals present in consent forms of AIP
-
-        # AIU
-
-        Get all data principals present in consent artifacts of AIU
-      security:
-        - IUDX AAA Identity Token: []
-      parameters: []
-    delete:
-      summary: 'Revoke consent for data principals - AIP, AIU'
-      operationId: delete-consent-principals
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  title:
-                    type: string
-                  results:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Data-Principal'
-              examples:
-                Example 1:
-                  value:
-                    type: string
-                    title: string
-                    results:
-                      - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
-                        ppbNo: T13010130532
-                        name: Farmer
-      description: |-
-        # AIP
-        AIPs can revoke consent for a DP
-        - removes them from all **consent forms** the AIP owns
-        - revokes all **consent artifacts** the DP is part of
-
-        # AIU
-        AIUs can revoke consent for a DP
-        - revokes all **consent artifacts** the DP and AIU is part of
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                dataPrincipals:
-                  type: array
-                  description: UUID or PPB?
-                  items:
-                    $ref: '#/components/schemas/PPBNo'
-            examples:
-              Example 1:
-                value:
-                  dataPrincipals:
-                    - T13010130532
-      security:
-        - IUDX AAA Identity Token: []
-      tags:
-        - Data Principal APIs
-    post:
-      summary: Verify PPB Numbers - AIP
-      operationId: post-consent-principals
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  title:
-                    type: string
-                  results:
-                    type: object
-                    properties:
-                      verified:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/PPBNo'
-                      unverified:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/PPBNo'
-              examples:
-                Example 1:
-                  value:
-                    type: string
-                    title: string
-                    results:
-                      verified:
-                        - T13010130532
-                      unverified:
-                        - T13010130000
-      description: |-
-        Verify set of PPB numbers. PPB numbers are used to identify data principals.
-
-        The API response will contain PPB numbers that were successfully verified and those that were unverified in 2 JSON arrays, `verified` and `unverified` respectively. The verified PPB numbers represent real data principals and can be used in consent form creation. 
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ppbNumbers:
-                  type: array
-                  minItems: 1
-                  maxItems: 500
-                  uniqueItems: true
-                  items:
-                    $ref: '#/components/schemas/PPBNo'
-            examples:
-              Example 1:
-                value:
-                  ppbNumbers:
-                    - T13010130532
-                    - T13010130000
-      security:
-        - IUDX AAA Identity Token: []
   /consent/aius:
     get:
       summary: Get AIUs - AIPs
@@ -1105,6 +1950,54 @@ paths:
                         aiuStats:
                           artifacts: 0
                           accessLogs: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
       operationId: get-consent-aius
       description: AIPs can get all AIUs that have consent artifacts for their consent forms
       security:
@@ -1162,6 +2055,56 @@ paths:
                         updatedAt: '2023-01-24T14:15:22Z'
                         consentArtifactStats:
                           accessLogs: 0
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+        '403':
+          description: Invalid user role to call API
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:InvalidRole'
+                    title: Not permitted
+                    detail: Only AIPs may use this API
       description: AIPs can send a list of AIUs whose artifacts must be revoked for forms they have created
       security:
         - IUDX AAA Identity Token: []
@@ -1235,6 +2178,7 @@ paths:
                                 - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
                           itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                           itemType: resource_group
+                          itemName: title
                           status: active
                           expiry: '2027-08-24T14:15:22Z'
                           createdAt: '2019-08-24T14:15:22Z'
@@ -1242,6 +2186,31 @@ paths:
                         createdAt: '2022-08-24T14:15:22Z'
                         effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
                         effectiveItemType: resource_group
+                        effectiveItemName: Title
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
+              examples:
+                Example 1:
+                  value:
+                    type: 'urn:dx:as:MissingInformation'
+                    title: Missing user information
+                    detail: Please visit /consent/userinfo to add user information for consent manager
       operationId: get-consent-logs
       parameters: []
       security:
@@ -1274,6 +2243,30 @@ paths:
                     userclasses:
                       - name: 'urn:apd:consent.apd.io:hasConsent'
                         description: User has consent to access resource
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: string
+                    title: string
+                    detail: string
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
       operationId: get-userclasses
       description: 'Get all applicable user classes. '
   /verify:
@@ -1297,6 +2290,30 @@ paths:
                   value:
                     type: 'urn:apd:Allow'
                     constraints: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                x-examples:
+                  Example 1:
+                    type: 'urn:dx:as:MissingAuthenticationToken'
+                    title: Missing token
+                    detail: No token sent
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    detail: string
         '403':
           description: User does not have consent
           content:
@@ -1393,6 +2410,28 @@ components:
       x-tags:
         - Consent Form Model
       description: Consent form external view
+      x-examples:
+        Example 1:
+          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          name: Consent Form 124320943
+          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          itemType: resource_group
+          itemName: Title
+          purposes:
+            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+              code: B1
+              name: Agricultural credit
+              description: |-
+                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+          dataPrincipals:
+            - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
+              ppbNo: T13010130532
+              name: Farmer
+          expiryDuration: P1Y
+          consentFormStats:
+            artifacts: 0
+            dataPrincipals: 0
       properties:
         id:
           type: string
@@ -1410,6 +2449,10 @@ components:
           enum:
             - resource_group
             - resource
+        itemName:
+          type: string
+          x-stoplight:
+            id: w6rmg8pib6x0i
         purposes:
           type: array
           description: List of purposes
@@ -1432,27 +2475,6 @@ components:
         - itemType
         - purposes
         - expiryDuration
-      x-examples:
-        Example 1:
-          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-          name: Consent Form 124320943
-          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-          itemType: resource_group
-          purposes:
-            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
-              code: B1
-              name: Agricultural credit
-              description: |-
-                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
-                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
-          dataPrincipals:
-            - id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
-              ppbNo: T13010130532
-              name: Farmer
-          expiryDuration: P1Y
-          consentFormStats:
-            artifacts: 0
-            dataPrincipals: 0
     Consent-Form-Stats:
       title: Consent-Form-Stats
       x-stoplight:
@@ -1486,7 +2508,7 @@ components:
         - B4
         - B5
         - B6
-        - '_1'
+        - P1
         - P2
         - P3
         - P4
@@ -1688,12 +2710,14 @@ components:
                 - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
           itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
           itemType: resource_group
+          itemName: title
           status: active
           expiry: '2027-08-24T14:15:22Z'
           createdAt: '2019-08-24T14:15:22Z'
           updatedAt: '2019-08-24T14:15:22Z'
           consentArtifactStats:
             accessLogs: 0
+      description: 'If the artifact is revoked, `revocation` is also included in the model'
       properties:
         id:
           type: string
@@ -1716,6 +2740,13 @@ components:
           enum:
             - resource_group
             - resource
+        itemName:
+          type: string
+          enum:
+            - resource_group
+            - resource
+          x-stoplight:
+            id: d52wkgr8wcp2e
         status:
           type: string
           enum:
@@ -1742,11 +2773,11 @@ components:
         - purposes
         - itemId
         - itemType
+        - itemName
         - status
         - expiry
         - createdAt
         - updatedAt
-      description: 'If the artifact is revoked, `revocation` is also included in the model'
     Consent-Artifact-Stats:
       title: Consent-Artifact-Stats
       x-stoplight:
@@ -1809,6 +2840,7 @@ components:
           createdAt: '2022-08-24T14:15:22Z'
           effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
           effectiveItemType: resource_group
+          effectiveItemName: Title
       properties:
         id:
           type: string
@@ -1830,12 +2862,20 @@ components:
           enum:
             - resource_group
             - resource
+        effectiveItemName:
+          type: string
+          enum:
+            - resource_group
+            - resource
+          x-stoplight:
+            id: oifbys5ma3pfd
       required:
         - id
         - artifact
         - createdAt
         - effectiveItemId
         - effectiveItemType
+        - effectiveItemName
     Consent-Form-Search:
       title: Consent-Form-Search
       x-stoplight:
@@ -1843,42 +2883,77 @@ components:
       type: object
       x-tags:
         - Consent Artifact Model
+      x-examples:
+        Example 1:
+          id: 30c66b93-4b54-4d4c-b359-1ec07e24ae62
+          name: form_8
+          purposes:
+            - code: P1
+              description: '- The entire range of personalised advisory services required for enhancing the production, productivity, and profitability of the farmer, including those relating to weather, inputs and good agricultural practices (GAP). - Digital extension services \n'
+              id: 47cc4b97-a27a-46a2-8a17-7a3ab4a6fdd4
+              name: Farm advisories
+            - code: B5
+              description: '- Enabling the producers to access the markets – physical or digital – for selling of their produce.- Providing personalised services relating to the sale of the produce, including hyper-local market intelligence. \n'
+              id: 4e932d50-aecc-4925-9a5f-a8adcdb043b1
+              name: Market-related services
+            - code: G2
+              description: '- Maintenance of land records and record of rights on land - Creation and maintenance of cadastral records specifying the field boundaries of agricultural parcels, digital form including geo-referencing, using GIS and GPS \n'
+              id: f5215989-f903-44b0-8f8d-50ccb7a3dabb
+              name: Land Records
+          dataPrincipals:
+            - id: 00231147-9ad5-4577-802e-c43a04404c6f
+              ppbNo: T13010030220
+              name: రసం శకుంతలా
+          expiryDuration: 1 year
+          createdAt: '2023-03-06T14:03:12.535917'
+          updatedAt: '2023-03-06T14:03:12.535931'
+          effectiveItemId: datakaveri.org/5841d4c98a9ef8ab708e01a3c5fc1ab955e6ada0/rs.iudx.io/resGrp8
+          effectiveItemType: resource_group
+          aip:
+            id: e958f1ad-13ee-40b5-a3e6-ef8f974afb5d
+            email: test.aip@datakaveri.org
+            name: Test AIP
+            organization: Internet Widgits Pty Ltd
+            address: 'Some-Place, Some-State'
+            entity: CORPORATION
       properties:
-        formId:
+        id:
           type: string
           format: uuid
-        effectiveItemId:
+        name:
           type: string
-        effectiveItemType:
-          type: string
-          enum:
-            - resource_group
-            - resource
         purposes:
           type: array
           items:
             $ref: '#/components/schemas/Purpose'
+        dataPrincipals:
+          $ref: '#/components/schemas/Data-Principal'
         expiryDuration:
           type: string
-        dataPrincipal:
-          $ref: '#/components/schemas/Data-Principal'
-      x-examples:
-        Example 1:
-          formId: 497f6eca-6276-4993-bfeb-53cbbbba6f08
-          effectiveItemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
-          effectiveItemType: resource_group
-          purposes:
-            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
-              code: B1
-              name: Agricultural credit
-              description: |-
-                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
-                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
-          expiryDuration: P1Y
-          dataPrincipal:
-            id: baa153a1-a7f7-469b-b6cd-f7fa4581c65e
-            ppbNo: T13010130532
-            name: Farmer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        effectiveItemId:
+          type: string
+        effectiveItemType:
+          type: string
+        aip:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            email:
+              type: string
+            name:
+              type: string
+            organization:
+              type: string
+            address:
+              type: string
+            entity:
+              type: string
     Revocation:
       title: Revocation
       x-stoplight:
