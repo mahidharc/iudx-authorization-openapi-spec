@@ -505,6 +505,8 @@ paths:
                     $ref: '#/components/schemas/PurposeCode'
                 dataPrincipals:
                   type: array
+                  minItems: 1
+                  maxItems: 1
                   description: PPB numbers
                   items:
                     $ref: '#/components/schemas/PPBNo'
@@ -2400,6 +2402,330 @@ paths:
                     itemType: ''
                   userClass: something
             examples: {}
+  /consent/agreements:
+    get:
+      summary: 'Get agreements - AIP, AIU'
+      tags:
+        - Agreement APIs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    x-stoplight:
+                      id: zfoeorzh51c9z
+                  title:
+                    type: string
+                    x-stoplight:
+                      id: jsvehaqirv9nv
+                  results:
+                    type: array
+                    x-stoplight:
+                      id: hdf30kdgekate
+                    items:
+                      $ref: '#/components/schemas/Agreement'
+                      x-stoplight:
+                        id: 49wsuufqg9iwz
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: string
+                        aiu:
+                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          name: string
+                          email: string
+                          aiuStats:
+                            artifacts: 0
+                            accessLogs: 0
+                        aip:
+                          id: string
+                          name: string
+                          email: string
+                        purposes:
+                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: B1
+                            name: string
+                            description: string
+                        itemId: string
+                        itemType: string
+                        itemName: string
+                        status: string
+                        expiryDuration: string
+                        createdAt: string
+                        updatedAt: string
+      operationId: get-consent-agreements
+      security:
+        - IUDX AAA Identity Token: []
+    post:
+      summary: Create agreement - AIU
+      operationId: post-consent-agreements
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    x-stoplight:
+                      id: yswvnj5ffwiyg
+                  title:
+                    type: string
+                    x-stoplight:
+                      id: rdvvbhln2q1bd
+                  results:
+                    $ref: '#/components/schemas/Agreement'
+                    x-stoplight:
+                      id: wqd9w6571o5yh
+      tags:
+        - Agreement APIs
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                itemId:
+                  type: string
+                  x-stoplight:
+                    id: l0j9clavrvzdx
+                itemType:
+                  type: string
+                  x-stoplight:
+                    id: 55ksu5osy5o49
+                  enum:
+                    - resource
+                    - resource_group
+                expiryDuration:
+                  type: string
+                  x-stoplight:
+                    id: 8pax2n2eolhr6
+                purposes:
+                  type: array
+                  x-stoplight:
+                    id: nchi436tqwsr7
+                  items:
+                    $ref: '#/components/schemas/PurposeCode'
+                    x-stoplight:
+                      id: dq7gilmxpyqr3
+              required:
+                - itemId
+                - itemType
+                - expiryDuration
+                - purposes
+            examples:
+              Example 1:
+                value:
+                  itemId: string
+                  itemType: resource
+                  expiryDuration: string
+                  purposes:
+                    - B1
+    put:
+      summary: Approve/reject agreement - AIP
+      operationId: put-consent-agreements
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    x-stoplight:
+                      id: qkx1x6btx0hjg
+                  title:
+                    type: string
+                    x-stoplight:
+                      id: 66ytrz9xmrygm
+                  results:
+                    type: array
+                    x-stoplight:
+                      id: sf2rssq5vkn7l
+                    items:
+                      $ref: '#/components/schemas/Agreement'
+                      x-stoplight:
+                        id: 3xnsiv3kxhpk0
+              examples:
+                Example 1:
+                  value:
+                    type: string
+                    title: string
+                    results:
+                      - id: string
+                        aiu:
+                          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                          name: string
+                          email: string
+                        aip:
+                          id: string
+                          name: string
+                          email: string
+                        purposes:
+                          - id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                            code: B1
+                            name: string
+                            description: string
+                        itemId: string
+                        itemType: string
+                        itemName: string
+                        status: string
+                        expiryDuration: string
+                        createdAt: string
+                        updatedAt: string
+      tags:
+        - Agreement APIs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  type: array
+                  x-stoplight:
+                    id: 2dvslfrraekl9
+                  minItems: 1
+                  maxItems: 100
+                  uniqueItems: true
+                  items:
+                    x-stoplight:
+                      id: 29i8bsw65i4zh
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      agreementId:
+                        type: string
+                        x-stoplight:
+                          id: ymc688qv04vyi
+                        format: uuid
+                      status:
+                        type: string
+                        x-stoplight:
+                          id: fqsatokh5fho0
+                        enum:
+                          - approved
+                          - rejected
+                    required:
+                      - agreementId
+                      - status
+              required:
+                - request
+            examples:
+              Example 1:
+                value:
+                  request:
+                    - agreementId: 79458f91-82b5-4c38-a886-56df6a6b7980
+                      status: approved
+      security:
+        - IUDX AAA Identity Token: []
+    delete:
+      summary: Withdraw pending agreement - AIU / Revoke agreement - AIP
+      operationId: delete-consent-agreements
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    x-stoplight:
+                      id: 8aixt7jmzffzd
+                  title:
+                    type: string
+                    x-stoplight:
+                      id: cvbkivyd3p5w9
+                  results:
+                    type: array
+                    x-stoplight:
+                      id: ao0d4iw3vt75b
+                    items:
+                      $ref: '#/components/schemas/Agreement'
+                      x-stoplight:
+                        id: bgu4t5osu1e3x
+      tags:
+        - Agreement APIs
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  type: array
+                  x-stoplight:
+                    id: i3kxbkjm720mi
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    x-stoplight:
+                      id: vgnvfhsroirsv
+                    type: object
+                    properties:
+                      agreementId:
+                        type: string
+                        x-stoplight:
+                          id: sws9z7q0y4i23
+                        format: uuid
+                    required:
+                      - agreementId
+              required:
+                - request
+            examples:
+              Example 1:
+                value:
+                  request:
+                    - agreementId: 79458f91-82b5-4c38-a886-56df6a6b7980
+  /consent/agreements/download:
+    post:
+      summary: Download agreement as PDF
+      operationId: post-consent-agreements-download
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+      security:
+        - IUDX AAA Identity Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agreementId:
+                  type: string
+                  x-stoplight:
+                    id: a3kq84z4wtdgn
+                  format: uuid
+              required:
+                - agreementId
+            examples:
+              Example 1:
+                value:
+                  agreementId: 79458f91-82b5-4c38-a886-56df6a6b7980
 components:
   schemas:
     Consent-Form:
@@ -3073,6 +3399,63 @@ components:
         - role
       x-tags:
         - Role Model
+    Agreement:
+      type: object
+      x-examples:
+        Example 1:
+          id: ee3f7aff-9306-41b6-b4dc-67ea751511f2
+          aiu:
+            id: 2ad34eb1-9934-4128-b3d8-acad37d0574d
+            name: AIU Person
+            email: aiu.person@example.com
+          aip:
+            id: 530f4c2b-bc4c-4c4a-bddb-31c1ab2343fb
+            name: AIP Person
+            email: aip.person@example.com
+          purposes:
+            - id: 2174e669-82dd-4053-be23-e69a8ecb6d94
+              code: B1
+              name: Agricultural credit
+              description: |-
+                - Assessment of credit worthiness and extension of short,medium, and long-term loans to farmers and the associated processes like recovery.
+                - Extending credit to farmers basing on NegotiableWarehouse Receipts (NWR)
+          itemId: datakaveri.org/27e503da0bdda6efae3a52b3ef423c1f9005657a/rs.iudx.org.in/resource-group
+          itemType: resource_group
+          itemName: title
+          status: active
+          expiryDuration: P1Y
+          createdAt: '2019-08-24T14:15:22Z'
+          updatedAt: '2019-08-24T14:15:22Z'
+      properties:
+        id:
+          type: string
+        aiu:
+          $ref: '#/components/schemas/AIU'
+        aip:
+          $ref: '#/components/schemas/AIP'
+        purposes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Purpose'
+        itemId:
+          type: string
+        itemType:
+          type: string
+        itemName:
+          type: string
+        status:
+          type: string
+        expiryDuration:
+          type: string
+          x-stoplight:
+            id: 6hs06eiy0omrt
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      title: Agreement
+      x-tags:
+        - Agreement Model
   securitySchemes:
     IUDX AAA Identity Token:
       type: http
